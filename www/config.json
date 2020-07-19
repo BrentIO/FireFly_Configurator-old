@@ -1,0 +1,6 @@
+{
+    "server": "localhost",
+    "database": "firefly",
+    "username": "firefly",
+    "password": "password"
+}
