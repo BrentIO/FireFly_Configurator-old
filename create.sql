@@ -33,7 +33,6 @@ CREATE TABLE IF NOT EXISTS `firefly`.`buttonColors` (
   UNIQUE INDEX `id_UNIQUE` (`id` ASC) VISIBLE,
   UNIQUE INDEX `friendlyName_UNIQUE` (`friendlyName` ASC) VISIBLE)
 ENGINE = InnoDB
-AUTO_INCREMENT = 19
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_0900_ai_ci;
 
@@ -60,7 +59,6 @@ CREATE TABLE IF NOT EXISTS `firefly`.`switches` (
   UNIQUE INDEX `macAddress_UNIQUE` (`macAddress` ASC) VISIBLE,
   INDEX `controllerId_idx` (`controllerId` ASC) VISIBLE)
 ENGINE = InnoDB
-AUTO_INCREMENT = 2
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_0900_ai_ci;
 
@@ -91,7 +89,6 @@ CREATE TABLE IF NOT EXISTS `firefly`.`inputs` (
     FOREIGN KEY (`switchId`)
     REFERENCES `firefly`.`switches` (`id`))
 ENGINE = InnoDB
-AUTO_INCREMENT = 4
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_0900_ai_ci;
 
@@ -116,7 +113,6 @@ CREATE TABLE IF NOT EXISTS `firefly`.`controllers` (
   UNIQUE INDEX `id_UNIQUE` (`id` ASC) VISIBLE,
   UNIQUE INDEX `macAddress_UNIQUE` (`macAddress` ASC) VISIBLE)
 ENGINE = InnoDB
-AUTO_INCREMENT = 2
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_0900_ai_ci;
 
@@ -134,6 +130,8 @@ CREATE TABLE IF NOT EXISTS `firefly`.`outputs` (
   `friendlyName` VARCHAR(20) NULL DEFAULT NULL,
   `outputType` ENUM('BINARY', 'VARIABLE') NULL DEFAULT NULL,
   `enabled` TINYINT UNSIGNED NOT NULL DEFAULT '1',
+  `amperage` TINYINT UNSIGNED NULL DEFAULT '0',
+  `breakerId` INT NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE INDEX `id_UNIQUE` (`id` ASC) VISIBLE,
   UNIQUE INDEX `uniqueRow` (`controllerId` ASC, `controllerPort` ASC, `pin` ASC, `friendlyName` ASC) VISIBLE,
@@ -142,7 +140,6 @@ CREATE TABLE IF NOT EXISTS `firefly`.`outputs` (
     FOREIGN KEY (`controllerId`)
     REFERENCES `firefly`.`controllers` (`id`))
 ENGINE = InnoDB
-AUTO_INCREMENT = 4
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_0900_ai_ci;
 
@@ -169,7 +166,22 @@ CREATE TABLE IF NOT EXISTS `firefly`.`actions` (
     FOREIGN KEY (`outputId`)
     REFERENCES `firefly`.`outputs` (`id`))
 ENGINE = InnoDB
-AUTO_INCREMENT = 3
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_0900_ai_ci;
+
+
+-- -----------------------------------------------------
+-- Table `firefly`.`breakers`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `firefly`.`breakers` ;
+
+CREATE TABLE IF NOT EXISTS `firefly`.`breakers` (
+  `id` INT NOT NULL,
+  `friendlyName` VARCHAR(20) NOT NULL,
+  `amperage` TINYINT UNSIGNED NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`),
+  UNIQUE INDEX `friendlyName_UNIQUE` (`friendlyName` ASC) VISIBLE)
+ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_0900_ai_ci;
 
@@ -187,7 +199,6 @@ CREATE TABLE IF NOT EXISTS `firefly`.`brightnessNames` (
   UNIQUE INDEX `id_UNIQUE` (`id` ASC) VISIBLE,
   UNIQUE INDEX `friendlyName_UNIQUE` (`friendlyName` ASC) VISIBLE)
 ENGINE = InnoDB
-AUTO_INCREMENT = 9
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_0900_ai_ci;
 
@@ -208,7 +219,6 @@ CREATE TABLE IF NOT EXISTS `firefly`.`controllerPins` (
   UNIQUE INDEX `id_UNIQUE` (`id` ASC) VISIBLE,
   UNIQUE INDEX `hwVersionPinUnique` (`hwVersion` ASC, `pin` ASC) VISIBLE)
 ENGINE = InnoDB
-AUTO_INCREMENT = 139
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_0900_ai_ci;
 
@@ -228,7 +238,6 @@ CREATE TABLE IF NOT EXISTS `firefly`.`controllerPorts` (
   UNIQUE INDEX `id_UNIQUE` (`id` ASC) VISIBLE,
   UNIQUE INDEX `unique` (`hwVersion` ASC, `port` ASC) VISIBLE)
 ENGINE = InnoDB
-AUTO_INCREMENT = 65
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_0900_ai_ci;
 
@@ -247,7 +256,6 @@ CREATE TABLE IF NOT EXISTS `firefly`.`firmware` (
   UNIQUE INDEX `version_UNIQUE` (`version` ASC) VISIBLE,
   UNIQUE INDEX `unique` (`deviceType` ASC, `version` ASC) VISIBLE)
 ENGINE = InnoDB
-AUTO_INCREMENT = 5
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_0900_ai_ci;
 
@@ -265,7 +273,6 @@ CREATE TABLE IF NOT EXISTS `firefly`.`settings` (
   UNIQUE INDEX `id_UNIQUE` (`id` ASC) VISIBLE,
   UNIQUE INDEX `settingName_UNIQUE` (`settingName` ASC) VISIBLE)
 ENGINE = InnoDB
-AUTO_INCREMENT = 25
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_0900_ai_ci;
 
@@ -275,6 +282,11 @@ USE `firefly` ;
 -- Placeholder table for view `firefly`.`getActionsJson`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `firefly`.`getActionsJson` (`json` INT, `inputId` INT);
+
+-- -----------------------------------------------------
+-- Placeholder table for view `firefly`.`getBreakers`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `firefly`.`getBreakers` (`id` INT, `friendlyName` INT, `amperage` INT, `json` INT);
 
 -- -----------------------------------------------------
 -- Placeholder table for view `firefly`.`getColorBrightnessNames`
@@ -314,7 +326,7 @@ CREATE TABLE IF NOT EXISTS `firefly`.`getInputs` (`controllerId` INT, `name` INT
 -- -----------------------------------------------------
 -- Placeholder table for view `firefly`.`getOutputs`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `firefly`.`getOutputs` (`outputId` INT, `controllerId` INT, `outputName` INT, `outputType` INT, `pin` INT, `controllerPort` INT, `position` INT, `enabled` INT, `json` INT);
+CREATE TABLE IF NOT EXISTS `firefly`.`getOutputs` (`outputId` INT, `controllerId` INT, `outputName` INT, `outputType` INT, `pin` INT, `controllerPort` INT, `position` INT, `enabled` INT, `amperage` INT, `breakerId` INT, `json` INT);
 
 -- -----------------------------------------------------
 -- Placeholder table for view `firefly`.`getSwitchButtons`
@@ -339,7 +351,7 @@ CREATE DEFINER=`root`@`%` FUNCTION `adjustBrightnessLevels`(colorMinimum int, co
     DETERMINISTIC
 BEGIN
 
--- Always allow a brightness level of "OFF"
+
 IF brightnessLevel = 0 THEN
 
 	RETURN brightnessLevel;
@@ -348,27 +360,62 @@ END IF;
 
 IF brightnessLevel BETWEEN colorMinimum AND colorMaximum THEN
 
-	-- Named brightness level is between the minimum and maximum for the given color, it can be used
+	
 	RETURN brightnessLevel;
 
 END IF;
 
 IF brightnessLevel < colorMinimum THEN
 
-	-- Brightness is less than the color's minimum; Use the color's minimum
+	
 	RETURN colorMinimum;
     
 END IF;
 
 IF brightnessLevel > colorMaximum THEN
 
-	-- Brightness is greater than the color's maximum, use the color's maximum
+	
 	RETURN colorMaximum;
     
 END IF;
 
--- Failsafe, return the requested brightness level
+
 RETURN brightnessLevel;
+
+END$$
+
+DELIMITER ;
+
+-- -----------------------------------------------------
+-- procedure deleteBreaker
+-- -----------------------------------------------------
+
+USE `firefly`;
+DROP procedure IF EXISTS `firefly`.`deleteBreaker`;
+
+DELIMITER $$
+USE `firefly`$$
+CREATE DEFINER=`root`@`%` PROCEDURE `deleteBreaker`(IN _id int)
+BEGIN
+
+DECLARE breakerCount int;
+
+SELECT 
+    COUNT(*)
+INTO breakerCount FROM
+    outputs
+WHERE
+    breakerId = _id;
+
+IF breakerCount > 0 THEN
+
+	SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'One or more outputs are using this breaker.';
+
+END IF;
+
+DELETE FROM breakers 
+WHERE
+    id = _id;
 
 END$$
 
@@ -487,7 +534,7 @@ DECLARE inputCount int;
 DECLARE outputCount int;
 DECLARE _id int;
 
--- Get the ID of the pin we are attempting to delete
+
 SELECT 
     id
 INTO _id FROM
@@ -561,7 +608,7 @@ USE `firefly`$$
 CREATE DEFINER=`root`@`%` PROCEDURE `deleteInput`(IN _id int)
 BEGIN
 
--- Deletes an input
+
 
 DECLARE actionsCount int;
 
@@ -596,7 +643,7 @@ USE `firefly`$$
 CREATE DEFINER=`root`@`%` PROCEDURE `deleteOutput`(IN _id int)
 BEGIN
 
--- Deletes an output
+
 
 DECLARE actionsCount int;
 
@@ -631,7 +678,7 @@ USE `firefly`$$
 CREATE DEFINER=`root`@`%` PROCEDURE `deleteSetting`(IN _id int)
 BEGIN
 
--- Delete a setting
+
 
 DELETE FROM settings where id = _id;
 
@@ -686,7 +733,7 @@ USE `firefly`$$
 CREATE DEFINER=`root`@`%` PROCEDURE `editAction`(IN _id int, IN _inputId int, IN _outputId int, _actionType ENUM('INCREASE','DECREASE','TOGGLE'), OUT id_ int)
 BEGIN
 
--- Creates or edits an action for the given input/output pair
+
 
 DECLARE inputControllerId int;
 DECLARE outputControllerId int;
@@ -726,14 +773,14 @@ IF inputControllerId <> outputControllerId is null THEN
 
 END IF;
 
--- Make sure the outputType matches the action type
+
 IF (_actionType IN ('INCREASE', 'DECREASE') AND _outputType = 'BINARY') OR (_actionType IN ('TOGGLE') AND _outputType = 'VARIABLE') THEN
 
 	SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'The action type is not valid for the output type.';
 
 END IF;
 
--- Create the action
+
 INSERT INTO actions (id, inputId, outputId, actionType)
 VALUES (_id, _inputId, _outputId, _actionType)
 ON DUPLICATE KEY UPDATE
@@ -746,6 +793,40 @@ INTO id_ FROM
 WHERE
     inputId = _inputId
         AND outputId = _outputId;
+
+END$$
+
+DELIMITER ;
+
+-- -----------------------------------------------------
+-- procedure editBreaker
+-- -----------------------------------------------------
+
+USE `firefly`;
+DROP procedure IF EXISTS `firefly`.`editBreaker`;
+
+DELIMITER $$
+USE `firefly`$$
+CREATE DEFINER=`root`@`%` PROCEDURE `editBreaker`(IN _id int,
+IN _friendlyName varchar(20),
+IN _amperage tinyint,
+OUT id_ INT)
+BEGIN
+
+SET _friendlyName = TRIM(_friendlyName);
+
+INSERT INTO breakers (id, friendlyName, amperage)
+VALUES (_id, _friendlyName, IFNULL(_amperage, 0))
+ON DUPLICATE KEY UPDATE
+	friendlyName = _friendlyName,
+	amperage = IFNULL(_amperage, 0);
+
+SELECT 
+    id
+INTO id_ FROM
+    breakers
+WHERE
+    friendlyName = _friendlyName;
 
 END$$
 
@@ -766,12 +847,12 @@ IN _brightness tinyint,
 OUT id_ int)
 BEGIN
 
--- Creates or edits a named brightness level
 
--- Clean up the input data
+
+
 SET _name = UPPER(trim(_name));
 
--- Validate that the brightness is between 0 and 100
+
 IF _brightness < 0 THEN
 	SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Brightness must be >=0.';
 END IF;
@@ -816,13 +897,13 @@ IN _brightnessMaximum tinyint,
 OUT id_ int)
 BEGIN
 
--- Creates or edits a button color
 
--- Clean up the input data
+
+
 SET _color = UPPER(trim(_color));
 SET _hexValue = UPPER(TRIM(REPLACE(_hexValue, '#','')));
 
--- Validate that the minimum is between 0 and maximum
+
 IF _brightnessMinimum < 0 THEN
 	SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Minimum brightness must be >=0.';
 END IF;
@@ -888,14 +969,14 @@ OUT id_ int
 )
 BEGIN
 
--- Clean up the input data
+
 SET _name = trim(_name);
 SET _mqttUsername = trim(_mqttUsername);
 SET _mqttPassword = trim(_mqttPassword);
 SET _macAddress = trim(REPLACE(_macAddress, ':',''));
 
 
--- Set the MQTT fields to NULL if their length is 0
+
 IF length(_mqttUsername) = 0 THEN
 	SET _mqttUsername = NULL;
 END IF;
@@ -904,7 +985,7 @@ IF length(_mqttPassword) = 0 THEN
 	SET _mqttPassword = NULL;
 END IF;
 
--- Adds or updates a controller record
+
 INSERT INTO controllers
 	(id, macAddress, friendlyName, ipAddress, subnet, dns, gateway, mqttUsername, mqttPassword, hwVersion)
 VALUES
@@ -950,7 +1031,7 @@ OUT id_ int
 )
 BEGIN
 
--- Adds or updates a controller pin
+
 INSERT INTO controllerPins(
 id, hwVersion, pin, inputAllowed, binaryOutputAllowed, variableOutputAllowed)
 VALUES
@@ -984,7 +1065,7 @@ CREATE DEFINER=`root`@`%` PROCEDURE `editControllerPorts`(IN _id int, IN _hwVers
 BEGIN
 
 
--- Adds or updates a controller port
+
 
 INSERT INTO controllerPorts(id, hwVersion, port, inputAllowed, outputAllowed)
 VALUES (_id, _hwVersion, _port, _inputAllowed, _outputAllowed)
@@ -1015,7 +1096,7 @@ USE `firefly`$$
 CREATE DEFINER=`root`@`%` PROCEDURE `editFirmware`(IN _id int, IN _deviceType ENUM('CONTROLLER','CLIENT'), IN _version int, IN _url varchar(255), OUT id_ int)
 BEGIN
 
--- Clean up the URL
+
 SET _url = trim(_url);
 
 INSERT INTO firmware (id, deviceType, version, url)
@@ -1059,12 +1140,12 @@ OUT id_ int
 )
 BEGIN
 
--- Adds or updates an input
 
--- Clean up the input data
+
+
 SET _name = trim(_name);
 
--- Insert into the table
+
 INSERT INTO inputs (
 	id,
 	switchId,
@@ -1108,7 +1189,7 @@ WHERE
         AND friendlyName = _name
         AND broadcastOnChange = _broadcastOnChange;
         
--- Increment the bootstrap counter
+
 CALL incrementSwitchBootstrapCounter(id_);
 
 END$$
@@ -1132,26 +1213,27 @@ IN _pin tinyint,
 IN _name varchar(20),
 IN _outputType ENUM('BINARY','VARIABLE'),
 IN _enabled tinyint,
+IN _amperage tinyint,
+IN _breakerId int,
 OUT id_ int
 )
 BEGIN
 
--- Adds or updates an output.
-
--- Clean up the input data
 SET _name = trim(_name);
 
 INSERT INTO outputs
-	(id, controllerId, controllerPort, pin, friendlyName, outputType, enabled)
+	(id, controllerId, controllerPort, pin, friendlyName, outputType, enabled, amperage, breakerId)
 VALUES
-	(_id, _controllerId, _controllerPort, _pin, _name, _outputType, true)
+	(_id, _controllerId, _controllerPort, _pin, _name, _outputType, true, IFNULL(_amperage, 0), breakerId)
 ON DUPLICATE KEY UPDATE
 	controllerId = _controllerId,
     controllerPort = _controllerPort,
     pin = _pin, 
     friendlyName = _name,
     outputType = _outputType,
-    enabled = _enabled;
+    enabled = _enabled,
+    amperage = IFNULL(_amperage, 0),
+    breakerId = _breakerId;
 
 SELECT 
     id
@@ -1164,7 +1246,7 @@ WHERE
         AND outputType = _outputType
         AND friendlyName = _name;
     
--- Delete non-compliant actions
+
 IF _outputType = 'VARIABLE' THEN
 	DELETE FROM actions 
 	WHERE
@@ -1200,13 +1282,13 @@ OUT id_ int
 )
 BEGIN
 
--- Adds or edits a global setting
 
--- Clean up the input
+
+
 SET _name = trim(_name);
 SET _value = trim(_value);
 
--- Insert or update
+
 INSERT INTO settings
 	(settingName, settingValue)
 VALUES 
@@ -1252,16 +1334,16 @@ BEGIN
 
 DECLARE _firmwareId_ int;
 
--- Adds or updates a switch
 
--- Clean up the input data
+
+
 SET _name = trim(_name);
 SET _mqttUsername = trim(_mqttUsername);
 SET _mqttPassword = trim(_mqttPassword);
 SET _macAddress = trim(REPLACE(_macAddress, ':',''));
 SET _bootstrapURL = trim(_bootstrapURL);
 
--- Set the MQTT fields to NULL if their length is 0
+
 IF length(_mqttUsername) = 0 THEN
 	SET _mqttUsername = NULL;
 END IF;
@@ -1281,7 +1363,7 @@ INTO _firmwareId_ FROM
 WHERE
     id = _firmwareId AND deviceType = 'CLIENT';
 
--- If the firmware is not found, fail to edit
+
 IF _firmwareId_ is null THEN
 
 	SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Invalid firmware.';
@@ -1311,7 +1393,7 @@ INTO id_ FROM
 WHERE
     macAddress = CONV(_macAddress, 16, 10);
     
--- Increment the bootstrap counter
+
 CALL incrementSwitchBootstrapCounter(id_);
 
 END$$
@@ -1331,7 +1413,7 @@ CREATE DEFINER=`root`@`%` FUNCTION `formatMacAddress`(macAddress bigint) RETURNS
     DETERMINISTIC
 BEGIN
 	
-    -- Returns a MAC Address in a human-friendly readable output in XX:XX:XX:XX:XX:XX format
+    
     
 	return CONCAT_WS(':',substring(hex(macAddress),1,2), substring(hex(macAddress),3,2), substring(hex(macAddress),5,2),
    substring(hex(macAddress),7,2), substring(hex(macAddress),9,2), substring(hex(macAddress),11,2));
@@ -1363,7 +1445,7 @@ WHERE
     macAddress = requestedMacAddress;
 
     
--- Nothing defined for the switch; Use the system defaults
+
 IF isnull(returnValue) THEN
 	SELECT
 		settingValue
@@ -1396,7 +1478,7 @@ BEGIN
 
 DECLARE returnValue int;
 
--- Clean Up the input
+
 SET _colorName = UPPER(TRIM(_colorName));
 
 SELECT 
@@ -1432,7 +1514,7 @@ INTO returnValue FROM
 WHERE
     macAddress = requestedMacAddress;
     
--- Nothing defined; See if this is a switch
+
 IF isnull(returnValue) THEN
 SELECT 
     mqttPassword
@@ -1444,7 +1526,7 @@ WHERE
     macAddress = requestedMacAddress;
 END IF;
     
--- Nothing defined for a controller or a switch; Use the system defaults
+
 IF isnull(returnValue) THEN
 	SELECT
 		settingValue
@@ -1484,7 +1566,7 @@ INTO returnValue FROM
 WHERE
     macAddress = requestedMacAddress;
     
--- Nothing defined; See if this is a switch
+
 IF isnull(returnValue) THEN
 SELECT 
     mqttUsername
@@ -1496,7 +1578,7 @@ WHERE
     macAddress = requestedMacAddress;
 END IF;
     
--- Nothing defined for a controller or a switch; Use the system defaults
+
 IF isnull(returnValue) THEN
 	SELECT
 		settingValue
@@ -1530,7 +1612,7 @@ BEGIN
 
 DECLARE returnValue tinyint;
 
--- Prioritze using input only pins before binary output before variable output
+
 
 SELECT 
     pin
@@ -1569,7 +1651,7 @@ BEGIN
 
 DECLARE returnValue tinyint;
 
--- Prioritize the output type on the PIN
+
 
 IF _outputType = 'BINARY' THEN
 
@@ -1675,7 +1757,7 @@ CREATE DEFINER=`root`@`%` FUNCTION `getSetting`(requstedName varchar(20)) RETURN
     DETERMINISTIC
 BEGIN
 
--- Use getMQTTUsername or getMQTTPassword
+
 IF requstedName = 'mqttUsername' OR requstedName = 'mqttPassword' THEN
 
 	return NULL;
@@ -1705,7 +1787,7 @@ USE `firefly`$$
 CREATE DEFINER=`root`@`%` PROCEDURE `incrementSwitchBootstrapCounter`(IN _switchId int)
 BEGIN
 
--- Increments the given switch ID's counter
+
 
 UPDATE switches SET bootstrapCounter = bootstrapCounter + 1 WHERE id = _switchId;
 
@@ -1720,6 +1802,14 @@ DROP TABLE IF EXISTS `firefly`.`getActionsJson`;
 DROP VIEW IF EXISTS `firefly`.`getActionsJson` ;
 USE `firefly`;
 CREATE  OR REPLACE ALGORITHM=UNDEFINED DEFINER=`root`@`%` SQL SECURITY DEFINER VIEW `firefly`.`getActionsJson` AS select json_arrayagg(json_object('output',`firefly`.`outputs`.`friendlyName`,'action',`firefly`.`actions`.`actionType`)) AS `json`,`firefly`.`actions`.`inputId` AS `inputId` from (`firefly`.`actions` join `firefly`.`outputs` on((`firefly`.`outputs`.`id` = `firefly`.`actions`.`outputId`))) group by `firefly`.`actions`.`inputId`;
+
+-- -----------------------------------------------------
+-- View `firefly`.`getBreakers`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `firefly`.`getBreakers`;
+DROP VIEW IF EXISTS `firefly`.`getBreakers` ;
+USE `firefly`;
+CREATE  OR REPLACE ALGORITHM=UNDEFINED DEFINER=`root`@`%` SQL SECURITY DEFINER VIEW `firefly`.`getBreakers` AS select `firefly`.`breakers`.`id` AS `id`,`firefly`.`breakers`.`friendlyName` AS `friendlyName`,`firefly`.`breakers`.`amperage` AS `amperage`,json_object('id',`firefly`.`breakers`.`id`,'friendlyName',`firefly`.`breakers`.`friendlyName`,'amperage',`firefly`.`breakers`.`amperage`) AS `json` from `firefly`.`breakers`;
 
 -- -----------------------------------------------------
 -- View `firefly`.`getColorBrightnessNames`
@@ -1783,7 +1873,7 @@ CREATE  OR REPLACE ALGORITHM=UNDEFINED DEFINER=`root`@`%` SQL SECURITY DEFINER V
 DROP TABLE IF EXISTS `firefly`.`getOutputs`;
 DROP VIEW IF EXISTS `firefly`.`getOutputs` ;
 USE `firefly`;
-CREATE  OR REPLACE ALGORITHM=UNDEFINED DEFINER=`root`@`%` SQL SECURITY DEFINER VIEW `firefly`.`getOutputs` AS select `firefly`.`outputs`.`id` AS `outputId`,`firefly`.`outputs`.`controllerId` AS `controllerId`,`firefly`.`outputs`.`friendlyName` AS `outputName`,`firefly`.`outputs`.`outputType` AS `outputType`,`firefly`.`outputs`.`pin` AS `pin`,`firefly`.`outputs`.`controllerPort` AS `controllerPort`,if((`firefly`.`outputs`.`outputType` = 'BINARY'),1,2) AS `position`,if(`firefly`.`outputs`.`enabled`,'TRUE','FALSE') AS `enabled`,json_object('name',`firefly`.`outputs`.`friendlyName`,'outputType',`firefly`.`outputs`.`outputType`,'pin',`firefly`.`outputs`.`pin`,'enabled',((0 <> `firefly`.`outputs`.`enabled`) is true)) AS `json` from `firefly`.`outputs`;
+CREATE  OR REPLACE ALGORITHM=UNDEFINED DEFINER=`root`@`%` SQL SECURITY DEFINER VIEW `firefly`.`getOutputs` AS select `firefly`.`outputs`.`id` AS `outputId`,`firefly`.`outputs`.`controllerId` AS `controllerId`,`firefly`.`outputs`.`friendlyName` AS `outputName`,`firefly`.`outputs`.`outputType` AS `outputType`,`firefly`.`outputs`.`pin` AS `pin`,`firefly`.`outputs`.`controllerPort` AS `controllerPort`,if((`firefly`.`outputs`.`outputType` = 'BINARY'),1,2) AS `position`,if(`firefly`.`outputs`.`enabled`,'TRUE','FALSE') AS `enabled`,`firefly`.`outputs`.`amperage` AS `amperage`,`firefly`.`outputs`.`breakerId` AS `breakerId`,json_object('name',`firefly`.`outputs`.`friendlyName`,'outputType',`firefly`.`outputs`.`outputType`,'pin',`firefly`.`outputs`.`pin`,'enabled',((0 <> `firefly`.`outputs`.`enabled`) is true),'amperage',`firefly`.`outputs`.`amperage`,'breakerId',`firefly`.`outputs`.`breakerId`) AS `json` from `firefly`.`outputs`;
 
 -- -----------------------------------------------------
 -- View `firefly`.`getSwitchButtons`
@@ -1804,59 +1894,3 @@ CREATE  OR REPLACE ALGORITHM=UNDEFINED DEFINER=`root`@`%` SQL SECURITY DEFINER V
 SET SQL_MODE=@OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
-
-/* Drop and recreate the user */
-DROP USER IF EXISTS 'firefly'@'localhost';
-CREATE USER 'firefly'@'localhost' IDENTIFIED BY 'firefly';
-
-/* Grant permissions to the views */
-GRANT SELECT ON firefly.getActionsJson TO 'firefly'@'localhost';
-GRANT SELECT ON firefly.getColorBrightnessNames TO 'firefly'@'localhost';
-GRANT SELECT ON firefly.getControllerPinsUnused TO 'firefly'@'localhost';
-GRANT SELECT ON firefly.getControllerPinsUsed TO 'firefly'@'localhost';
-GRANT SELECT ON firefly.getControllerPortsUnused TO 'firefly'@'localhost';
-GRANT SELECT ON firefly.getControllerPortsUsed TO 'firefly'@'localhost';
-GRANT SELECT ON firefly.getControllers TO 'firefly'@'localhost';
-GRANT SELECT ON firefly.getInputs TO 'firefly'@'localhost';
-GRANT SELECT ON firefly.getOutputs TO 'firefly'@'localhost';
-GRANT SELECT ON firefly.getSwitchButtons TO 'firefly'@'localhost';
-GRANT SELECT ON firefly.getSwitches TO 'firefly'@'localhost';
-
-/* Grant permissions to the stored procedures */ 
-
-GRANT EXECUTE ON PROCEDURE firefly.deleteBrightnessName TO 'firefly'@'localhost';
-GRANT EXECUTE ON PROCEDURE firefly.deleteButtonColor TO 'firefly'@'localhost';
-GRANT EXECUTE ON PROCEDURE firefly.deleteController TO 'firefly'@'localhost';
-GRANT EXECUTE ON PROCEDURE firefly.deleteControllerPins TO 'firefly'@'localhost';
-GRANT EXECUTE ON PROCEDURE firefly.deleteInput TO 'firefly'@'localhost';
-GRANT EXECUTE ON PROCEDURE firefly.deleteOutput TO 'firefly'@'localhost';
-GRANT EXECUTE ON PROCEDURE firefly.deleteSetting TO 'firefly'@'localhost';
-GRANT EXECUTE ON PROCEDURE firefly.deleteSwitch TO 'firefly'@'localhost';
-GRANT EXECUTE ON PROCEDURE firefly.editAction TO 'firefly'@'localhost';
-GRANT EXECUTE ON PROCEDURE firefly.editBrightnessName TO 'firefly'@'localhost';
-GRANT EXECUTE ON PROCEDURE firefly.editButtonColor TO 'firefly'@'localhost';
-GRANT EXECUTE ON PROCEDURE firefly.editController TO 'firefly'@'localhost';
-GRANT EXECUTE ON PROCEDURE firefly.editControllerPins TO 'firefly'@'localhost';
-GRANT EXECUTE ON PROCEDURE firefly.editControllerPorts TO 'firefly'@'localhost';
-GRANT EXECUTE ON PROCEDURE firefly.editFirmware TO 'firefly'@'localhost';
-GRANT EXECUTE ON PROCEDURE firefly.editInput TO 'firefly'@'localhost';
-GRANT EXECUTE ON PROCEDURE firefly.editOutput TO 'firefly'@'localhost';
-GRANT EXECUTE ON PROCEDURE firefly.editSetting TO 'firefly'@'localhost';
-GRANT EXECUTE ON PROCEDURE firefly.editSwitch TO 'firefly'@'localhost';
-GRANT EXECUTE ON PROCEDURE firefly.incrementSwitchBootstrapCounter TO 'firefly'@'localhost';
-
-/* Grant permissions to the functions */ 
-
-GRANT EXECUTE ON FUNCTION firefly.adjustBrightnessLevels TO 'firefly'@'localhost';
-GRANT EXECUTE ON FUNCTION firefly.formatMacAddress TO 'firefly'@'localhost';
-GRANT EXECUTE ON FUNCTION firefly.getBootstrapURL TO 'firefly'@'localhost';
-GRANT EXECUTE ON FUNCTION firefly.getButtonColorId TO 'firefly'@'localhost';
-GRANT EXECUTE ON FUNCTION firefly.getMQTTPassword TO 'firefly'@'localhost';
-GRANT EXECUTE ON FUNCTION firefly.getMQTTUsername TO 'firefly'@'localhost';
-GRANT EXECUTE ON FUNCTION firefly.getNextInputPin TO 'firefly'@'localhost';
-GRANT EXECUTE ON FUNCTION firefly.getNextOutputPin TO 'firefly'@'localhost';
-GRANT EXECUTE ON FUNCTION firefly.getNextPort TO 'firefly'@'localhost';
-GRANT EXECUTE ON FUNCTION firefly.getSetting TO 'firefly'@'localhost';
-
-/* Pickup the changes */
-FLUSH PRIVILEGES;
