@@ -38,6 +38,7 @@ GRANT EXECUTE ON PROCEDURE firefly.editInput TO 'firefly'@'localhost';
 GRANT EXECUTE ON PROCEDURE firefly.editOutput TO 'firefly'@'localhost';
 GRANT EXECUTE ON PROCEDURE firefly.editSetting TO 'firefly'@'localhost';
 GRANT EXECUTE ON PROCEDURE firefly.editSwitch TO 'firefly'@'localhost';
+GRANT EXECUTE ON PROCEDURE firefly.getHeartbeat TO 'firefly'@'localhost';
 GRANT EXECUTE ON PROCEDURE firefly.incrementSwitchBootstrapCounter TO 'firefly'@'localhost';
 
 
