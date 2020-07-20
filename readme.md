@@ -38,8 +38,7 @@ MySQL will prompt for various input to secure the MySQL server.  Recommended set
 
 ### For development access only
 
-> [!IMPORTANT]
-> Do not execute this section on a production server.  The following steps must be taken to enable MySQL Workbench access.  If you do not need access to MySQL Workbench for development purposes, do not execute this section.
+> **Do not execute this section on a production server.  The following steps must be taken to enable MySQL Workbench access.  If you do not need access to MySQL Workbench for development purposes, do not execute this section.**
 
 Login to MySQL with sudo:
 `$ sudo mysql`
@@ -47,10 +46,11 @@ Login to MySQL with sudo:
 Change the root user to use a native password:
 `mysql> ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'password';`
 
-Edit the configuration file to change the binding from 127.0.0.1 to 0.0.0.0:
+Edit the configuration file to change the binding from `127.0.0.1` to `0.0.0.0`:
 `$ sudo sed -i 's/127.0.0.1/0.0.0.0/' /etc/mysql/mysql.conf.d/mysqld.cnf`
 
 Restart MySQL:
+
 `$ sudo systemctl restart mysql`
 
 Login to MySQL with the updated root account, and enter the password when prompted:
