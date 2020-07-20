@@ -347,7 +347,7 @@ DROP function IF EXISTS `firefly`.`adjustBrightnessLevels`;
 
 DELIMITER $$
 USE `firefly`$$
-CREATE DEFINER=`root`@`%` FUNCTION `adjustBrightnessLevels`(colorMinimum int, colorMaximum int, brightnessLevel int) RETURNS int
+CREATE FUNCTION `adjustBrightnessLevels`(colorMinimum int, colorMaximum int, brightnessLevel int) RETURNS int
     DETERMINISTIC
 BEGIN
 
@@ -395,7 +395,7 @@ DROP procedure IF EXISTS `firefly`.`deleteBreaker`;
 
 DELIMITER $$
 USE `firefly`$$
-CREATE DEFINER=`root`@`%` PROCEDURE `deleteBreaker`(IN _id int)
+CREATE PROCEDURE `deleteBreaker`(IN _id int)
 BEGIN
 
 DECLARE breakerCount int;
@@ -430,7 +430,7 @@ DROP procedure IF EXISTS `firefly`.`deleteBrightnessName`;
 
 DELIMITER $$
 USE `firefly`$$
-CREATE DEFINER=`root`@`%` PROCEDURE `deleteBrightnessName`(IN _id int)
+CREATE PROCEDURE `deleteBrightnessName`(IN _id int)
 BEGIN
 
 DELETE FROM brightnessNames WHERE id = _id;
@@ -448,7 +448,7 @@ DROP procedure IF EXISTS `firefly`.`deleteButtonColor`;
 
 DELIMITER $$
 USE `firefly`$$
-CREATE DEFINER=`root`@`%` PROCEDURE `deleteButtonColor`(IN _id int)
+CREATE PROCEDURE `deleteButtonColor`(IN _id int)
 BEGIN
 
 DECLARE buttonCount int;
@@ -483,7 +483,7 @@ DROP procedure IF EXISTS `firefly`.`deleteController`;
 
 DELIMITER $$
 USE `firefly`$$
-CREATE DEFINER=`root`@`%` PROCEDURE `deleteController`(
+CREATE PROCEDURE `deleteController`(
 IN _id int
 )
 BEGIN
@@ -527,7 +527,7 @@ DROP procedure IF EXISTS `firefly`.`deleteControllerPins`;
 
 DELIMITER $$
 USE `firefly`$$
-CREATE DEFINER=`root`@`%` PROCEDURE `deleteControllerPins`(IN _hwVersion tinyint, IN _pin tinyint)
+CREATE PROCEDURE `deleteControllerPins`(IN _hwVersion tinyint, IN _pin tinyint)
 BEGIN
 
 DECLARE inputCount int;
@@ -605,7 +605,7 @@ DROP procedure IF EXISTS `firefly`.`deleteInput`;
 
 DELIMITER $$
 USE `firefly`$$
-CREATE DEFINER=`root`@`%` PROCEDURE `deleteInput`(IN _id int)
+CREATE PROCEDURE `deleteInput`(IN _id int)
 BEGIN
 
 
@@ -640,7 +640,7 @@ DROP procedure IF EXISTS `firefly`.`deleteOutput`;
 
 DELIMITER $$
 USE `firefly`$$
-CREATE DEFINER=`root`@`%` PROCEDURE `deleteOutput`(IN _id int)
+CREATE PROCEDURE `deleteOutput`(IN _id int)
 BEGIN
 
 
@@ -675,7 +675,7 @@ DROP procedure IF EXISTS `firefly`.`deleteSetting`;
 
 DELIMITER $$
 USE `firefly`$$
-CREATE DEFINER=`root`@`%` PROCEDURE `deleteSetting`(IN _id int)
+CREATE PROCEDURE `deleteSetting`(IN _id int)
 BEGIN
 
 
@@ -695,7 +695,7 @@ DROP procedure IF EXISTS `firefly`.`deleteSwitch`;
 
 DELIMITER $$
 USE `firefly`$$
-CREATE DEFINER=`root`@`%` PROCEDURE `deleteSwitch`(IN _id int)
+CREATE PROCEDURE `deleteSwitch`(IN _id int)
 BEGIN
 
 DECLARE buttonCount int;
@@ -730,7 +730,7 @@ DROP procedure IF EXISTS `firefly`.`editAction`;
 
 DELIMITER $$
 USE `firefly`$$
-CREATE DEFINER=`root`@`%` PROCEDURE `editAction`(IN _id int, IN _inputId int, IN _outputId int, _actionType ENUM('INCREASE','DECREASE','TOGGLE'), OUT id_ int)
+CREATE PROCEDURE `editAction`(IN _id int, IN _inputId int, IN _outputId int, _actionType ENUM('INCREASE','DECREASE','TOGGLE'), OUT id_ int)
 BEGIN
 
 
@@ -807,7 +807,7 @@ DROP procedure IF EXISTS `firefly`.`editBreaker`;
 
 DELIMITER $$
 USE `firefly`$$
-CREATE DEFINER=`root`@`%` PROCEDURE `editBreaker`(IN _id int,
+CREATE PROCEDURE `editBreaker`(IN _id int,
 IN _friendlyName varchar(20),
 IN _amperage tinyint,
 OUT id_ INT)
@@ -841,7 +841,7 @@ DROP procedure IF EXISTS `firefly`.`editBrightnessName`;
 
 DELIMITER $$
 USE `firefly`$$
-CREATE DEFINER=`root`@`%` PROCEDURE `editBrightnessName`(IN _id int,
+CREATE PROCEDURE `editBrightnessName`(IN _id int,
 IN _name varchar(20),
 IN _brightness tinyint,
 OUT id_ int)
@@ -889,7 +889,7 @@ DROP procedure IF EXISTS `firefly`.`editButtonColor`;
 
 DELIMITER $$
 USE `firefly`$$
-CREATE DEFINER=`root`@`%` PROCEDURE `editButtonColor`(IN _id int,
+CREATE PROCEDURE `editButtonColor`(IN _id int,
 IN _color varchar(20),
 IN _hexValue char(7),
 IN _brightnessMinimum tinyint,
@@ -954,7 +954,7 @@ DROP procedure IF EXISTS `firefly`.`editController`;
 
 DELIMITER $$
 USE `firefly`$$
-CREATE DEFINER=`root`@`%` PROCEDURE `editController`(
+CREATE PROCEDURE `editController`(
 IN _id int,
 IN _macAddress varchar(17),
 IN _name varchar(20),
@@ -1021,7 +1021,7 @@ DROP procedure IF EXISTS `firefly`.`editControllerPins`;
 
 DELIMITER $$
 USE `firefly`$$
-CREATE DEFINER=`root`@`%` PROCEDURE `editControllerPins`(IN _id int,
+CREATE PROCEDURE `editControllerPins`(IN _id int,
 IN _hwVersion tinyint(1),
 IN _pin tinyint(1),
 IN _inputAllowed tinyint(1),
@@ -1061,7 +1061,7 @@ DROP procedure IF EXISTS `firefly`.`editControllerPorts`;
 
 DELIMITER $$
 USE `firefly`$$
-CREATE DEFINER=`root`@`%` PROCEDURE `editControllerPorts`(IN _id int, IN _hwVersion tinyint, IN _port tinyint, IN _inputAllowed tinyint, IN _outputAllowed tinyint, OUT id_ int)
+CREATE PROCEDURE `editControllerPorts`(IN _id int, IN _hwVersion tinyint, IN _port tinyint, IN _inputAllowed tinyint, IN _outputAllowed tinyint, OUT id_ int)
 BEGIN
 
 
@@ -1093,7 +1093,7 @@ DROP procedure IF EXISTS `firefly`.`editFirmware`;
 
 DELIMITER $$
 USE `firefly`$$
-CREATE DEFINER=`root`@`%` PROCEDURE `editFirmware`(IN _id int, IN _deviceType ENUM('CONTROLLER','CLIENT'), IN _version int, IN _url varchar(255), OUT id_ int)
+CREATE PROCEDURE `editFirmware`(IN _id int, IN _deviceType ENUM('CONTROLLER','CLIENT'), IN _version int, IN _url varchar(255), OUT id_ int)
 BEGIN
 
 
@@ -1127,7 +1127,7 @@ DROP procedure IF EXISTS `firefly`.`editInput`;
 
 DELIMITER $$
 USE `firefly`$$
-CREATE DEFINER=`root`@`%` PROCEDURE `editInput`(IN _id int,
+CREATE PROCEDURE `editInput`(IN _id int,
 IN _switchId int,
 IN _position tinyint,
 IN _pin tinyint,
@@ -1205,7 +1205,7 @@ DROP procedure IF EXISTS `firefly`.`editOutput`;
 
 DELIMITER $$
 USE `firefly`$$
-CREATE DEFINER=`root`@`%` PROCEDURE `editOutput`(
+CREATE PROCEDURE `editOutput`(
 IN _id int,
 IN _controllerId int,
 IN _controllerPort tinyint,
@@ -1274,7 +1274,7 @@ DROP procedure IF EXISTS `firefly`.`editSetting`;
 
 DELIMITER $$
 USE `firefly`$$
-CREATE DEFINER=`root`@`%` PROCEDURE `editSetting`(
+CREATE PROCEDURE `editSetting`(
 IN _id int,
 IN _name varchar(20),
 IN _value varchar(255),
@@ -1317,7 +1317,7 @@ DROP procedure IF EXISTS `firefly`.`editSwitch`;
 
 DELIMITER $$
 USE `firefly`$$
-CREATE DEFINER=`root`@`%` PROCEDURE `editSwitch`(
+CREATE PROCEDURE `editSwitch`(
 IN _id int,
 IN _controllerId int,
 IN _controllerPort int,
@@ -1401,6 +1401,38 @@ END$$
 DELIMITER ;
 
 -- -----------------------------------------------------
+-- procedure getHeartbeat
+-- -----------------------------------------------------
+
+USE `firefly`;
+DROP procedure IF EXISTS `firefly`.`getHeartbeat`;
+
+DELIMITER $$
+USE `firefly`$$
+CREATE PROCEDURE `getHeartbeat`(OUT timeUTC_ varchar(20))
+BEGIN
+
+DECLARE rowCount int;
+
+SELECT 
+    COUNT(*)
+INTO rowCount FROM
+    settings;
+
+IF rowCount > 0 THEN
+	SELECT now() AS timeUTC INTO timeUTC_;
+
+ELSE
+	SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Database Error.';
+    
+END IF;
+
+END$$
+
+DELIMITER ;
+
+
+-- -----------------------------------------------------
 -- function formatMacAddress
 -- -----------------------------------------------------
 
@@ -1409,7 +1441,7 @@ DROP function IF EXISTS `firefly`.`formatMacAddress`;
 
 DELIMITER $$
 USE `firefly`$$
-CREATE DEFINER=`root`@`%` FUNCTION `formatMacAddress`(macAddress bigint) RETURNS char(17) CHARSET utf8mb4
+CREATE FUNCTION `formatMacAddress`(macAddress bigint) RETURNS char(17) CHARSET utf8mb4
     DETERMINISTIC
 BEGIN
 	
@@ -1432,7 +1464,7 @@ DROP function IF EXISTS `firefly`.`getBootstrapURL`;
 
 DELIMITER $$
 USE `firefly`$$
-CREATE DEFINER=`root`@`%` FUNCTION `getBootstrapURL`(requestedMacAddress bigint) RETURNS varchar(255) CHARSET utf8mb4
+CREATE FUNCTION `getBootstrapURL`(requestedMacAddress bigint) RETURNS varchar(255) CHARSET utf8mb4
     DETERMINISTIC
 BEGIN
 DECLARE returnValue varchar(255);
@@ -1472,7 +1504,7 @@ DROP function IF EXISTS `firefly`.`getButtonColorId`;
 
 DELIMITER $$
 USE `firefly`$$
-CREATE DEFINER=`root`@`%` FUNCTION `getButtonColorId`(_colorName varchar(20)) RETURNS int
+CREATE FUNCTION `getButtonColorId`(_colorName varchar(20)) RETURNS int
     DETERMINISTIC
 BEGIN
 
@@ -1502,7 +1534,7 @@ DROP function IF EXISTS `firefly`.`getMQTTPassword`;
 
 DELIMITER $$
 USE `firefly`$$
-CREATE DEFINER=`root`@`%` FUNCTION `getMQTTPassword`(requestedMacAddress bigint) RETURNS varchar(20) CHARSET utf8mb4
+CREATE FUNCTION `getMQTTPassword`(requestedMacAddress bigint) RETURNS varchar(20) CHARSET utf8mb4
     DETERMINISTIC
 BEGIN
 DECLARE returnValue varchar(20);
@@ -1554,7 +1586,7 @@ DROP function IF EXISTS `firefly`.`getMQTTUsername`;
 
 DELIMITER $$
 USE `firefly`$$
-CREATE DEFINER=`root`@`%` FUNCTION `getMQTTUsername`(requestedMacAddress bigint) RETURNS varchar(20) CHARSET utf8mb4
+CREATE FUNCTION `getMQTTUsername`(requestedMacAddress bigint) RETURNS varchar(20) CHARSET utf8mb4
     DETERMINISTIC
 BEGIN
 DECLARE returnValue varchar(20);
@@ -1606,7 +1638,7 @@ DROP function IF EXISTS `firefly`.`getNextInputPin`;
 
 DELIMITER $$
 USE `firefly`$$
-CREATE DEFINER=`root`@`%` FUNCTION `getNextInputPin`(_controllerId tinyint) RETURNS tinyint
+CREATE FUNCTION `getNextInputPin`(_controllerId tinyint) RETURNS tinyint
     DETERMINISTIC
 BEGIN
 
@@ -1645,7 +1677,7 @@ DROP function IF EXISTS `firefly`.`getNextOutputPin`;
 
 DELIMITER $$
 USE `firefly`$$
-CREATE DEFINER=`root`@`%` FUNCTION `getNextOutputPin`(_controllerId tinyint, _outputType ENUM('BINARY','VARIABLE')) RETURNS tinyint
+CREATE FUNCTION `getNextOutputPin`(_controllerId tinyint, _outputType ENUM('BINARY','VARIABLE')) RETURNS tinyint
     DETERMINISTIC
 BEGIN
 
@@ -1699,7 +1731,7 @@ DROP function IF EXISTS `firefly`.`getNextPort`;
 
 DELIMITER $$
 USE `firefly`$$
-CREATE DEFINER=`root`@`%` FUNCTION `getNextPort`(_controllerId int, _portType ENUM('INPUT', 'OUTPUT')) RETURNS tinyint
+CREATE FUNCTION `getNextPort`(_controllerId int, _portType ENUM('INPUT', 'OUTPUT')) RETURNS tinyint
     DETERMINISTIC
 BEGIN
 
@@ -1753,7 +1785,7 @@ DROP function IF EXISTS `firefly`.`getSetting`;
 
 DELIMITER $$
 USE `firefly`$$
-CREATE DEFINER=`root`@`%` FUNCTION `getSetting`(requstedName varchar(20)) RETURNS varchar(255) CHARSET utf8mb4
+CREATE FUNCTION `getSetting`(requstedName varchar(20)) RETURNS varchar(255) CHARSET utf8mb4
     DETERMINISTIC
 BEGIN
 
@@ -1784,7 +1816,7 @@ DROP procedure IF EXISTS `firefly`.`incrementSwitchBootstrapCounter`;
 
 DELIMITER $$
 USE `firefly`$$
-CREATE DEFINER=`root`@`%` PROCEDURE `incrementSwitchBootstrapCounter`(IN _switchId int)
+CREATE PROCEDURE `incrementSwitchBootstrapCounter`(IN _switchId int)
 BEGIN
 
 
@@ -1801,7 +1833,7 @@ DELIMITER ;
 DROP TABLE IF EXISTS `firefly`.`getActionsJson`;
 DROP VIEW IF EXISTS `firefly`.`getActionsJson` ;
 USE `firefly`;
-CREATE  OR REPLACE ALGORITHM=UNDEFINED DEFINER=`root`@`%` SQL SECURITY DEFINER VIEW `firefly`.`getActionsJson` AS select json_arrayagg(json_object('output',`firefly`.`outputs`.`friendlyName`,'action',`firefly`.`actions`.`actionType`)) AS `json`,`firefly`.`actions`.`inputId` AS `inputId` from (`firefly`.`actions` join `firefly`.`outputs` on((`firefly`.`outputs`.`id` = `firefly`.`actions`.`outputId`))) group by `firefly`.`actions`.`inputId`;
+CREATE  OR REPLACE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `firefly`.`getActionsJson` AS select json_arrayagg(json_object('output',`firefly`.`outputs`.`friendlyName`,'action',`firefly`.`actions`.`actionType`)) AS `json`,`firefly`.`actions`.`inputId` AS `inputId` from (`firefly`.`actions` join `firefly`.`outputs` on((`firefly`.`outputs`.`id` = `firefly`.`actions`.`outputId`))) group by `firefly`.`actions`.`inputId`;
 
 -- -----------------------------------------------------
 -- View `firefly`.`getBreakers`
@@ -1809,7 +1841,7 @@ CREATE  OR REPLACE ALGORITHM=UNDEFINED DEFINER=`root`@`%` SQL SECURITY DEFINER V
 DROP TABLE IF EXISTS `firefly`.`getBreakers`;
 DROP VIEW IF EXISTS `firefly`.`getBreakers` ;
 USE `firefly`;
-CREATE  OR REPLACE ALGORITHM=UNDEFINED DEFINER=`root`@`%` SQL SECURITY DEFINER VIEW `firefly`.`getBreakers` AS select `firefly`.`breakers`.`id` AS `id`,`firefly`.`breakers`.`friendlyName` AS `friendlyName`,`firefly`.`breakers`.`amperage` AS `amperage`,json_object('id',`firefly`.`breakers`.`id`,'friendlyName',`firefly`.`breakers`.`friendlyName`,'amperage',`firefly`.`breakers`.`amperage`) AS `json` from `firefly`.`breakers`;
+CREATE  OR REPLACE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `firefly`.`getBreakers` AS select `firefly`.`breakers`.`id` AS `id`,`firefly`.`breakers`.`friendlyName` AS `friendlyName`,`firefly`.`breakers`.`amperage` AS `amperage`,json_object('id',`firefly`.`breakers`.`id`,'friendlyName',`firefly`.`breakers`.`friendlyName`,'amperage',`firefly`.`breakers`.`amperage`) AS `json` from `firefly`.`breakers`;
 
 -- -----------------------------------------------------
 -- View `firefly`.`getColorBrightnessNames`
@@ -1817,7 +1849,7 @@ CREATE  OR REPLACE ALGORITHM=UNDEFINED DEFINER=`root`@`%` SQL SECURITY DEFINER V
 DROP TABLE IF EXISTS `firefly`.`getColorBrightnessNames`;
 DROP VIEW IF EXISTS `firefly`.`getColorBrightnessNames` ;
 USE `firefly`;
-CREATE  OR REPLACE ALGORITHM=UNDEFINED DEFINER=`root`@`%` SQL SECURITY DEFINER VIEW `firefly`.`getColorBrightnessNames` AS select `firefly`.`buttonColors`.`id` AS `colorId`,json_object('color',`firefly`.`buttonColors`.`friendlyName`,'intensity',(select json_arrayagg(json_object('name',`firefly`.`brightnessNames`.`friendlyName`,'brightness',`ADJUSTBRIGHTNESSLEVELS`(`firefly`.`buttonColors`.`brightnessMinimum`,`firefly`.`buttonColors`.`brightnessMaximum`,`firefly`.`brightnessNames`.`brightnessValue`))) from `firefly`.`brightnessNames`)) AS `brightnessNames` from `firefly`.`buttonColors`;
+CREATE  OR REPLACE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `firefly`.`getColorBrightnessNames` AS select `firefly`.`buttonColors`.`id` AS `colorId`,json_object('color',`firefly`.`buttonColors`.`friendlyName`,'intensity',(select json_arrayagg(json_object('name',`firefly`.`brightnessNames`.`friendlyName`,'brightness',`ADJUSTBRIGHTNESSLEVELS`(`firefly`.`buttonColors`.`brightnessMinimum`,`firefly`.`buttonColors`.`brightnessMaximum`,`firefly`.`brightnessNames`.`brightnessValue`))) from `firefly`.`brightnessNames`)) AS `brightnessNames` from `firefly`.`buttonColors`;
 
 -- -----------------------------------------------------
 -- View `firefly`.`getControllerPinsUnused`
@@ -1825,7 +1857,7 @@ CREATE  OR REPLACE ALGORITHM=UNDEFINED DEFINER=`root`@`%` SQL SECURITY DEFINER V
 DROP TABLE IF EXISTS `firefly`.`getControllerPinsUnused`;
 DROP VIEW IF EXISTS `firefly`.`getControllerPinsUnused` ;
 USE `firefly`;
-CREATE  OR REPLACE ALGORITHM=UNDEFINED DEFINER=`root`@`%` SQL SECURITY DEFINER VIEW `firefly`.`getControllerPinsUnused` AS select `firefly`.`controllers`.`id` AS `controllerId`,`firefly`.`controllerPins`.`pin` AS `pin`,`firefly`.`controllerPins`.`inputAllowed` AS `inputAllowed`,`firefly`.`controllerPins`.`binaryOutputAllowed` AS `binaryOutputAllowed`,`firefly`.`controllerPins`.`variableOutputAllowed` AS `variableOutputAllowed` from ((`firefly`.`controllerPins` join `firefly`.`controllers` on((`firefly`.`controllerPins`.`hwVersion` = `firefly`.`controllers`.`hwVersion`))) left join `firefly`.`getControllerPinsUsed` on(((`firefly`.`controllers`.`id` = `getControllerPinsUsed`.`controllerId`) and (`getControllerPinsUsed`.`pin` = `firefly`.`controllerPins`.`pin`)))) where (`getControllerPinsUsed`.`pinType` is null) order by `firefly`.`controllers`.`id`,`firefly`.`controllerPins`.`pin`;
+CREATE  OR REPLACE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `firefly`.`getControllerPinsUnused` AS select `firefly`.`controllers`.`id` AS `controllerId`,`firefly`.`controllerPins`.`pin` AS `pin`,`firefly`.`controllerPins`.`inputAllowed` AS `inputAllowed`,`firefly`.`controllerPins`.`binaryOutputAllowed` AS `binaryOutputAllowed`,`firefly`.`controllerPins`.`variableOutputAllowed` AS `variableOutputAllowed` from ((`firefly`.`controllerPins` join `firefly`.`controllers` on((`firefly`.`controllerPins`.`hwVersion` = `firefly`.`controllers`.`hwVersion`))) left join `firefly`.`getControllerPinsUsed` on(((`firefly`.`controllers`.`id` = `getControllerPinsUsed`.`controllerId`) and (`getControllerPinsUsed`.`pin` = `firefly`.`controllerPins`.`pin`)))) where (`getControllerPinsUsed`.`pinType` is null) order by `firefly`.`controllers`.`id`,`firefly`.`controllerPins`.`pin`;
 
 -- -----------------------------------------------------
 -- View `firefly`.`getControllerPinsUsed`
@@ -1833,7 +1865,7 @@ CREATE  OR REPLACE ALGORITHM=UNDEFINED DEFINER=`root`@`%` SQL SECURITY DEFINER V
 DROP TABLE IF EXISTS `firefly`.`getControllerPinsUsed`;
 DROP VIEW IF EXISTS `firefly`.`getControllerPinsUsed` ;
 USE `firefly`;
-CREATE  OR REPLACE ALGORITHM=UNDEFINED DEFINER=`root`@`%` SQL SECURITY DEFINER VIEW `firefly`.`getControllerPinsUsed` AS select `usedPins`.`controllerId` AS `controllerId`,`usedPins`.`switchId` AS `switchId`,`usedPins`.`pin` AS `pin`,`usedPins`.`pinType` AS `pinType` from (select `firefly`.`switches`.`controllerId` AS `controllerId`,`firefly`.`inputs`.`switchId` AS `switchId`,`firefly`.`inputs`.`pin` AS `pin`,'INPUT' AS `pinType` from ((`firefly`.`inputs` join `firefly`.`switches` on((`firefly`.`inputs`.`switchId` = `firefly`.`switches`.`id`))) join `firefly`.`controllers` on((`firefly`.`switches`.`controllerId` = `firefly`.`controllers`.`id`))) union select `firefly`.`outputs`.`controllerId` AS `controllerId`,NULL AS `switchId`,`firefly`.`outputs`.`pin` AS `pin`,'OUTPUT' AS `pinType` from `firefly`.`outputs`) `usedPins` order by `usedPins`.`controllerId`,`usedPins`.`pin`;
+CREATE  OR REPLACE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `firefly`.`getControllerPinsUsed` AS select `usedPins`.`controllerId` AS `controllerId`,`usedPins`.`switchId` AS `switchId`,`usedPins`.`pin` AS `pin`,`usedPins`.`pinType` AS `pinType` from (select `firefly`.`switches`.`controllerId` AS `controllerId`,`firefly`.`inputs`.`switchId` AS `switchId`,`firefly`.`inputs`.`pin` AS `pin`,'INPUT' AS `pinType` from ((`firefly`.`inputs` join `firefly`.`switches` on((`firefly`.`inputs`.`switchId` = `firefly`.`switches`.`id`))) join `firefly`.`controllers` on((`firefly`.`switches`.`controllerId` = `firefly`.`controllers`.`id`))) union select `firefly`.`outputs`.`controllerId` AS `controllerId`,NULL AS `switchId`,`firefly`.`outputs`.`pin` AS `pin`,'OUTPUT' AS `pinType` from `firefly`.`outputs`) `usedPins` order by `usedPins`.`controllerId`,`usedPins`.`pin`;
 
 -- -----------------------------------------------------
 -- View `firefly`.`getControllerPortsUnused`
@@ -1841,7 +1873,7 @@ CREATE  OR REPLACE ALGORITHM=UNDEFINED DEFINER=`root`@`%` SQL SECURITY DEFINER V
 DROP TABLE IF EXISTS `firefly`.`getControllerPortsUnused`;
 DROP VIEW IF EXISTS `firefly`.`getControllerPortsUnused` ;
 USE `firefly`;
-CREATE  OR REPLACE ALGORITHM=UNDEFINED DEFINER=`root`@`%` SQL SECURITY DEFINER VIEW `firefly`.`getControllerPortsUnused` AS select `firefly`.`controllers`.`id` AS `controllerId`,`firefly`.`controllerPorts`.`port` AS `port`,`firefly`.`controllerPorts`.`inputAllowed` AS `inputAllowed`,`firefly`.`controllerPorts`.`outputAllowed` AS `outputAllowed` from ((`firefly`.`controllerPorts` join `firefly`.`controllers` on((`firefly`.`controllers`.`hwVersion` = `firefly`.`controllerPorts`.`hwVersion`))) left join `firefly`.`getControllerPortsUsed` on(((`getControllerPortsUsed`.`controllerId` = `firefly`.`controllers`.`id`) and (`getControllerPortsUsed`.`port` = `firefly`.`controllerPorts`.`port`)))) where (`getControllerPortsUsed`.`portType` is null);
+CREATE  OR REPLACE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `firefly`.`getControllerPortsUnused` AS select `firefly`.`controllers`.`id` AS `controllerId`,`firefly`.`controllerPorts`.`port` AS `port`,`firefly`.`controllerPorts`.`inputAllowed` AS `inputAllowed`,`firefly`.`controllerPorts`.`outputAllowed` AS `outputAllowed` from ((`firefly`.`controllerPorts` join `firefly`.`controllers` on((`firefly`.`controllers`.`hwVersion` = `firefly`.`controllerPorts`.`hwVersion`))) left join `firefly`.`getControllerPortsUsed` on(((`getControllerPortsUsed`.`controllerId` = `firefly`.`controllers`.`id`) and (`getControllerPortsUsed`.`port` = `firefly`.`controllerPorts`.`port`)))) where (`getControllerPortsUsed`.`portType` is null);
 
 -- -----------------------------------------------------
 -- View `firefly`.`getControllerPortsUsed`
@@ -1849,7 +1881,7 @@ CREATE  OR REPLACE ALGORITHM=UNDEFINED DEFINER=`root`@`%` SQL SECURITY DEFINER V
 DROP TABLE IF EXISTS `firefly`.`getControllerPortsUsed`;
 DROP VIEW IF EXISTS `firefly`.`getControllerPortsUsed` ;
 USE `firefly`;
-CREATE  OR REPLACE ALGORITHM=UNDEFINED DEFINER=`root`@`%` SQL SECURITY DEFINER VIEW `firefly`.`getControllerPortsUsed` AS select `usedPorts`.`controllerId` AS `controllerId`,`usedPorts`.`id` AS `id`,`usedPorts`.`port` AS `port`,`usedPorts`.`portType` AS `portType` from (select `firefly`.`switches`.`controllerId` AS `controllerId`,`firefly`.`switches`.`id` AS `id`,`firefly`.`switches`.`controllerPort` AS `port`,'INPUT' AS `portType` from `firefly`.`switches` union select `firefly`.`outputs`.`controllerId` AS `controllerId`,`firefly`.`outputs`.`id` AS `id`,`firefly`.`outputs`.`controllerPort` AS `port`,'OUTPUT' AS `portType` from `firefly`.`outputs`) `usedPorts`;
+CREATE  OR REPLACE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `firefly`.`getControllerPortsUsed` AS select `usedPorts`.`controllerId` AS `controllerId`,`usedPorts`.`id` AS `id`,`usedPorts`.`port` AS `port`,`usedPorts`.`portType` AS `portType` from (select `firefly`.`switches`.`controllerId` AS `controllerId`,`firefly`.`switches`.`id` AS `id`,`firefly`.`switches`.`controllerPort` AS `port`,'INPUT' AS `portType` from `firefly`.`switches` union select `firefly`.`outputs`.`controllerId` AS `controllerId`,`firefly`.`outputs`.`id` AS `id`,`firefly`.`outputs`.`controllerPort` AS `port`,'OUTPUT' AS `portType` from `firefly`.`outputs`) `usedPorts`;
 
 -- -----------------------------------------------------
 -- View `firefly`.`getControllers`
@@ -1857,7 +1889,7 @@ CREATE  OR REPLACE ALGORITHM=UNDEFINED DEFINER=`root`@`%` SQL SECURITY DEFINER V
 DROP TABLE IF EXISTS `firefly`.`getControllers`;
 DROP VIEW IF EXISTS `firefly`.`getControllers` ;
 USE `firefly`;
-CREATE  OR REPLACE ALGORITHM=UNDEFINED DEFINER=`root`@`%` SQL SECURITY DEFINER VIEW `firefly`.`getControllers` AS select `firefly`.`controllers`.`id` AS `id`,`FORMATMACADDRESS`(`firefly`.`controllers`.`macAddress`) AS `macAddress`,`firefly`.`controllers`.`friendlyName` AS `friendlyName`,inet_ntoa(`firefly`.`controllers`.`ipAddress`) AS `ipAddress`,inet_ntoa(`firefly`.`controllers`.`subnet`) AS `subnet`,inet_ntoa(`firefly`.`controllers`.`dns`) AS `dns`,inet_ntoa(`firefly`.`controllers`.`gateway`) AS `gateway`,json_object('friendlyName',`firefly`.`controllers`.`friendlyName`,'network',json_object('macAddress',`FORMATMACADDRESS`(`firefly`.`controllers`.`macAddress`),'ipAddress',inet_ntoa(`firefly`.`controllers`.`ipAddress`),'subnet',inet_ntoa(`firefly`.`controllers`.`subnet`),'dns',inet_ntoa(`firefly`.`controllers`.`dns`),'gateway',inet_ntoa(`firefly`.`controllers`.`gateway`)),'mqtt',json_object('serverName',`GETSETTING`('mqttServer'),'port',cast(`GETSETTING`('mqttPort') as unsigned),'username',`GETMQTTUSERNAME`(`firefly`.`controllers`.`macAddress`),'password',`GETMQTTPASSWORD`(`firefly`.`controllers`.`macAddress`),'topics',json_object('client',`GETSETTING`('clientTopic'),'control',`GETSETTING`('controlTopic'),'event',`GETSETTING`('eventTopic')))) AS `json` from `firefly`.`controllers`;
+CREATE  OR REPLACE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `firefly`.`getControllers` AS select `firefly`.`controllers`.`id` AS `id`,`FORMATMACADDRESS`(`firefly`.`controllers`.`macAddress`) AS `macAddress`,`firefly`.`controllers`.`friendlyName` AS `friendlyName`,inet_ntoa(`firefly`.`controllers`.`ipAddress`) AS `ipAddress`,inet_ntoa(`firefly`.`controllers`.`subnet`) AS `subnet`,inet_ntoa(`firefly`.`controllers`.`dns`) AS `dns`,inet_ntoa(`firefly`.`controllers`.`gateway`) AS `gateway`,json_object('friendlyName',`firefly`.`controllers`.`friendlyName`,'network',json_object('macAddress',`FORMATMACADDRESS`(`firefly`.`controllers`.`macAddress`),'ipAddress',inet_ntoa(`firefly`.`controllers`.`ipAddress`),'subnet',inet_ntoa(`firefly`.`controllers`.`subnet`),'dns',inet_ntoa(`firefly`.`controllers`.`dns`),'gateway',inet_ntoa(`firefly`.`controllers`.`gateway`)),'mqtt',json_object('serverName',`GETSETTING`('mqttServer'),'port',cast(`GETSETTING`('mqttPort') as unsigned),'username',`GETMQTTUSERNAME`(`firefly`.`controllers`.`macAddress`),'password',`GETMQTTPASSWORD`(`firefly`.`controllers`.`macAddress`),'topics',json_object('client',`GETSETTING`('clientTopic'),'control',`GETSETTING`('controlTopic'),'event',`GETSETTING`('eventTopic')))) AS `json` from `firefly`.`controllers`;
 
 -- -----------------------------------------------------
 -- View `firefly`.`getInputs`
@@ -1865,7 +1897,7 @@ CREATE  OR REPLACE ALGORITHM=UNDEFINED DEFINER=`root`@`%` SQL SECURITY DEFINER V
 DROP TABLE IF EXISTS `firefly`.`getInputs`;
 DROP VIEW IF EXISTS `firefly`.`getInputs` ;
 USE `firefly`;
-CREATE  OR REPLACE ALGORITHM=UNDEFINED DEFINER=`root`@`%` SQL SECURITY DEFINER VIEW `firefly`.`getInputs` AS select `firefly`.`switches`.`controllerId` AS `controllerId`,concat(`firefly`.`switches`.`friendlyName`,`firefly`.`inputs`.`friendlyName`) AS `name`,`firefly`.`inputs`.`pin` AS `pin`,`firefly`.`inputs`.`circuitType` AS `circuitType`,if(`firefly`.`inputs`.`broadcastOnChange`,'TRUE','FALSE') AS `broadcastOnStateChange`,if(`firefly`.`inputs`.`enabled`,'TRUE','FALSE') AS `enabled`,`getActionsJson`.`json` AS `outputs`,json_object('name',concat(`firefly`.`switches`.`friendlyName`,`firefly`.`inputs`.`friendlyName`),'pin',`firefly`.`inputs`.`pin`,'circuitType',`firefly`.`inputs`.`circuitType`,'broadcastOnStateChange',((0 <> `firefly`.`inputs`.`broadcastOnChange`) is true),'enabled',((0 <> `firefly`.`inputs`.`enabled`) is true),'outputs',`getActionsJson`.`json`) AS `json` from ((`firefly`.`inputs` join `firefly`.`switches` on((`firefly`.`inputs`.`switchId` = `firefly`.`switches`.`id`))) join `firefly`.`getActionsJson` on((`getActionsJson`.`inputId` = `firefly`.`inputs`.`id`)));
+CREATE  OR REPLACE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `firefly`.`getInputs` AS select `firefly`.`switches`.`controllerId` AS `controllerId`,concat(`firefly`.`switches`.`friendlyName`,`firefly`.`inputs`.`friendlyName`) AS `name`,`firefly`.`inputs`.`pin` AS `pin`,`firefly`.`inputs`.`circuitType` AS `circuitType`,if(`firefly`.`inputs`.`broadcastOnChange`,'TRUE','FALSE') AS `broadcastOnStateChange`,if(`firefly`.`inputs`.`enabled`,'TRUE','FALSE') AS `enabled`,`getActionsJson`.`json` AS `outputs`,json_object('name',concat(`firefly`.`switches`.`friendlyName`,`firefly`.`inputs`.`friendlyName`),'pin',`firefly`.`inputs`.`pin`,'circuitType',`firefly`.`inputs`.`circuitType`,'broadcastOnStateChange',((0 <> `firefly`.`inputs`.`broadcastOnChange`) is true),'enabled',((0 <> `firefly`.`inputs`.`enabled`) is true),'outputs',`getActionsJson`.`json`) AS `json` from ((`firefly`.`inputs` join `firefly`.`switches` on((`firefly`.`inputs`.`switchId` = `firefly`.`switches`.`id`))) join `firefly`.`getActionsJson` on((`getActionsJson`.`inputId` = `firefly`.`inputs`.`id`)));
 
 -- -----------------------------------------------------
 -- View `firefly`.`getOutputs`
@@ -1873,7 +1905,7 @@ CREATE  OR REPLACE ALGORITHM=UNDEFINED DEFINER=`root`@`%` SQL SECURITY DEFINER V
 DROP TABLE IF EXISTS `firefly`.`getOutputs`;
 DROP VIEW IF EXISTS `firefly`.`getOutputs` ;
 USE `firefly`;
-CREATE  OR REPLACE ALGORITHM=UNDEFINED DEFINER=`root`@`%` SQL SECURITY DEFINER VIEW `firefly`.`getOutputs` AS select `firefly`.`outputs`.`id` AS `outputId`,`firefly`.`outputs`.`controllerId` AS `controllerId`,`firefly`.`outputs`.`friendlyName` AS `outputName`,`firefly`.`outputs`.`outputType` AS `outputType`,`firefly`.`outputs`.`pin` AS `pin`,`firefly`.`outputs`.`controllerPort` AS `controllerPort`,if((`firefly`.`outputs`.`outputType` = 'BINARY'),1,2) AS `position`,if(`firefly`.`outputs`.`enabled`,'TRUE','FALSE') AS `enabled`,`firefly`.`outputs`.`amperage` AS `amperage`,`firefly`.`outputs`.`breakerId` AS `breakerId`,json_object('name',`firefly`.`outputs`.`friendlyName`,'outputType',`firefly`.`outputs`.`outputType`,'pin',`firefly`.`outputs`.`pin`,'enabled',((0 <> `firefly`.`outputs`.`enabled`) is true),'amperage',`firefly`.`outputs`.`amperage`,'breakerId',`firefly`.`outputs`.`breakerId`) AS `json` from `firefly`.`outputs`;
+CREATE  OR REPLACE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `firefly`.`getOutputs` AS select `firefly`.`outputs`.`id` AS `outputId`,`firefly`.`outputs`.`controllerId` AS `controllerId`,`firefly`.`outputs`.`friendlyName` AS `outputName`,`firefly`.`outputs`.`outputType` AS `outputType`,`firefly`.`outputs`.`pin` AS `pin`,`firefly`.`outputs`.`controllerPort` AS `controllerPort`,if((`firefly`.`outputs`.`outputType` = 'BINARY'),1,2) AS `position`,if(`firefly`.`outputs`.`enabled`,'TRUE','FALSE') AS `enabled`,`firefly`.`outputs`.`amperage` AS `amperage`,`firefly`.`outputs`.`breakerId` AS `breakerId`,json_object('name',`firefly`.`outputs`.`friendlyName`,'outputType',`firefly`.`outputs`.`outputType`,'pin',`firefly`.`outputs`.`pin`,'enabled',((0 <> `firefly`.`outputs`.`enabled`) is true),'amperage',`firefly`.`outputs`.`amperage`,'breakerId',`firefly`.`outputs`.`breakerId`) AS `json` from `firefly`.`outputs`;
 
 -- -----------------------------------------------------
 -- View `firefly`.`getSwitchButtons`
@@ -1881,7 +1913,7 @@ CREATE  OR REPLACE ALGORITHM=UNDEFINED DEFINER=`root`@`%` SQL SECURITY DEFINER V
 DROP TABLE IF EXISTS `firefly`.`getSwitchButtons`;
 DROP VIEW IF EXISTS `firefly`.`getSwitchButtons` ;
 USE `firefly`;
-CREATE  OR REPLACE ALGORITHM=UNDEFINED DEFINER=`root`@`%` SQL SECURITY DEFINER VIEW `firefly`.`getSwitchButtons` AS select `firefly`.`inputs`.`switchId` AS `switchId`,json_arrayagg(json_object('name',`firefly`.`inputs`.`friendlyName`,'port',(case when (`firefly`.`inputs`.`position` = 1) then 'A' when (`firefly`.`inputs`.`position` = 2) then 'B' when (`firefly`.`inputs`.`position` = 3) then 'C' when (`firefly`.`inputs`.`position` = 4) then 'D' when (`firefly`.`inputs`.`position` = 5) then 'E' when (`firefly`.`inputs`.`position` = 6) then 'F' end),'led',`getColorBrightnessNames`.`brightnessNames`)) AS `json` from (((`firefly`.`inputs` join `firefly`.`buttonColors` on((`firefly`.`buttonColors`.`id` = `firefly`.`inputs`.`colorId`))) join `firefly`.`getColorBrightnessNames` on((`firefly`.`inputs`.`colorId` = `getColorBrightnessNames`.`colorId`))) join `firefly`.`switches` on((`firefly`.`inputs`.`switchId` = `firefly`.`switches`.`id`))) group by `firefly`.`inputs`.`switchId`;
+CREATE  OR REPLACE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `firefly`.`getSwitchButtons` AS select `firefly`.`inputs`.`switchId` AS `switchId`,json_arrayagg(json_object('name',`firefly`.`inputs`.`friendlyName`,'port',(case when (`firefly`.`inputs`.`position` = 1) then 'A' when (`firefly`.`inputs`.`position` = 2) then 'B' when (`firefly`.`inputs`.`position` = 3) then 'C' when (`firefly`.`inputs`.`position` = 4) then 'D' when (`firefly`.`inputs`.`position` = 5) then 'E' when (`firefly`.`inputs`.`position` = 6) then 'F' end),'led',`getColorBrightnessNames`.`brightnessNames`)) AS `json` from (((`firefly`.`inputs` join `firefly`.`buttonColors` on((`firefly`.`buttonColors`.`id` = `firefly`.`inputs`.`colorId`))) join `firefly`.`getColorBrightnessNames` on((`firefly`.`inputs`.`colorId` = `getColorBrightnessNames`.`colorId`))) join `firefly`.`switches` on((`firefly`.`inputs`.`switchId` = `firefly`.`switches`.`id`))) group by `firefly`.`inputs`.`switchId`;
 
 -- -----------------------------------------------------
 -- View `firefly`.`getSwitches`
@@ -1889,7 +1921,7 @@ CREATE  OR REPLACE ALGORITHM=UNDEFINED DEFINER=`root`@`%` SQL SECURITY DEFINER V
 DROP TABLE IF EXISTS `firefly`.`getSwitches`;
 DROP VIEW IF EXISTS `firefly`.`getSwitches` ;
 USE `firefly`;
-CREATE  OR REPLACE ALGORITHM=UNDEFINED DEFINER=`root`@`%` SQL SECURITY DEFINER VIEW `firefly`.`getSwitches` AS select `firefly`.`switches`.`id` AS `switchId`,`FORMATMACADDRESS`(`firefly`.`switches`.`macAddress`) AS `macAddress`,hex(`firefly`.`switches`.`macAddress`) AS `deviceName`,`firefly`.`firmware`.`version` AS `firmwareVersion`,`firefly`.`firmware`.`url` AS `firmwareURL`,`firefly`.`switches`.`bootstrapCounter` AS `bootstrapVersion`,`firefly`.`switches`.`friendlyName` AS `switchName`,json_object('version',`firefly`.`switches`.`bootstrapCounter`,'name',`firefly`.`switches`.`friendlyName`,'bootstrap',json_object('url',`GETBOOTSTRAPURL`(`firefly`.`switches`.`macAddress`),'refreshMilliseconds',cast(`GETSETTING`('bootstrapRefreshMs') as unsigned)),'firmware',json_object('url',`firefly`.`firmware`.`url`,'refreshMilliseconds',cast(`GETSETTING`('firmwareRefreshMs') as unsigned)),'network',json_object('ssid',`GETSETTING`('wifiSSID'),'key',`GETSETTING`('wifiKey')),'mqtt',json_object('serverName',`GETSETTING`('mqttServer'),'port',`GETSETTING`('mqttPort'),'username',`GETMQTTUSERNAME`(`firefly`.`switches`.`macAddress`),'password',`GETMQTTPASSWORD`(`firefly`.`switches`.`macAddress`),'topics',json_object('control',`GETSETTING`('controlTopic'),'event',`GETSETTING`('eventTopic'),'client',`GETSETTING`('clientTopic'))),'buttons',`getSwitchButtons`.`json`) AS `json` from ((`firefly`.`switches` join `firefly`.`firmware` on((`firefly`.`switches`.`firmwareId` = `firefly`.`firmware`.`id`))) join `firefly`.`getSwitchButtons` on((`getSwitchButtons`.`switchId` = `firefly`.`switches`.`id`)));
+CREATE  OR REPLACE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `firefly`.`getSwitches` AS select `firefly`.`switches`.`id` AS `switchId`,`FORMATMACADDRESS`(`firefly`.`switches`.`macAddress`) AS `macAddress`,hex(`firefly`.`switches`.`macAddress`) AS `deviceName`,`firefly`.`firmware`.`version` AS `firmwareVersion`,`firefly`.`firmware`.`url` AS `firmwareURL`,`firefly`.`switches`.`bootstrapCounter` AS `bootstrapVersion`,`firefly`.`switches`.`friendlyName` AS `switchName`,json_object('version',`firefly`.`switches`.`bootstrapCounter`,'name',`firefly`.`switches`.`friendlyName`,'bootstrap',json_object('url',`GETBOOTSTRAPURL`(`firefly`.`switches`.`macAddress`),'refreshMilliseconds',cast(`GETSETTING`('bootstrapRefreshMs') as unsigned)),'firmware',json_object('url',`firefly`.`firmware`.`url`,'refreshMilliseconds',cast(`GETSETTING`('firmwareRefreshMs') as unsigned)),'network',json_object('ssid',`GETSETTING`('wifiSSID'),'key',`GETSETTING`('wifiKey')),'mqtt',json_object('serverName',`GETSETTING`('mqttServer'),'port',`GETSETTING`('mqttPort'),'username',`GETMQTTUSERNAME`(`firefly`.`switches`.`macAddress`),'password',`GETMQTTPASSWORD`(`firefly`.`switches`.`macAddress`),'topics',json_object('control',`GETSETTING`('controlTopic'),'event',`GETSETTING`('eventTopic'),'client',`GETSETTING`('clientTopic'))),'buttons',`getSwitchButtons`.`json`) AS `json` from ((`firefly`.`switches` join `firefly`.`firmware` on((`firefly`.`switches`.`firmwareId` = `firefly`.`firmware`.`id`))) join `firefly`.`getSwitchButtons` on((`getSwitchButtons`.`switchId` = `firefly`.`switches`.`id`)));
 
 SET SQL_MODE=@OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
