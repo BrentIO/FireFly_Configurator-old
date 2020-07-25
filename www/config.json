@@ -2,5 +2,7 @@
     "server": "localhost",
     "database": "firefly",
     "username": "firefly",
-    "password": "firefly"
+    "password": "firefly",
+    "guiPassword" : "password",
+    "x-api-key" : "5d95bb51-64b1-4269-b812-2e20e59cb3c5"
 }

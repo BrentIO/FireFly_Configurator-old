@@ -1,15 +1,37 @@
 <?php 
 
-/*
-A simple RESTful webservices base class
-Use this as a template and build upon it
-Based on https://phppot.com/php/php-restful-web-service/
-*/
+	require_once('getConfig.php');
+
+	/*
+	A simple RESTful webservices base class
+	Use this as a template and build upon it
+	Based on https://phppot.com/php/php-restful-web-service/
+	*/
 
 	class SimpleRest {
 
 		private $httpVersion = "HTTP/1.1";
 		private $contentType = "application/json";
+
+		function __construct() {
+
+			#Ensure the key is correct
+			$headers = apache_request_headers();
+
+			if(array_key_exists('x-api-key', $headers)){
+
+				if($headers['x-api-key'] != getConfig("x-api-key")){
+					$this->setHttpHeaders(401);
+					exit();
+				}
+
+			}else{
+					$this->setHttpHeaders(401);
+					exit();
+			}
+		}
+
+
 
 		public function setHttpHeaders($statusCode){
 			

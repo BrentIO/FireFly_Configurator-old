@@ -1,9 +1,9 @@
 <?php
-    ini_set('display_errors', 'On');
-
+   
+    require_once('getConfig.php');
     require_once('simpleRest.php');
     require_once('database.php');
-
+    
     $database = new database();
     $simpleRest = new simpleRest();
 
