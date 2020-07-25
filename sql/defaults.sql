@@ -13,18 +13,18 @@ CALL editSetting(NULL, 'bootstrapRefreshMs', 3600000, @responseCode);
 CALL editSetting(NULL, 'firmwareRefreshMs', 3600000, @responseCode);
 
 /* Create the button colors */
-CALL editButtonColor(NULL, 'Blue', '#034efc', 0, 100, @responseCode);
-CALL editButtonColor(NULL, 'White', '#ffffff', 0, 100, @responseCode);
-CALL editButtonColor(NULL, 'Green', '#488a20', 0,  100, @responseCode);
-CALL editButtonColor(NULL, 'Red', '#a82727', 0,  100, @responseCode);
-CALL editButtonColor(NULL, 'Amber', '#c79112', 0, 100, @responseCode);
-CALL editButtonColor(NULL, 'None', '#000000', 0, 100, @responseCode);
+CALL editButtonColor(NULL, 'Blue', 'Blue', '#034efc', 0, 100, @responseCode);
+CALL editButtonColor(NULL, 'White', 'White', '#ffffff', 0, 100, @responseCode);
+CALL editButtonColor(NULL, 'Green', 'Green', '#488a20', 0,  100, @responseCode);
+CALL editButtonColor(NULL, 'Red', 'Red', '#a82727', 0,  100, @responseCode);
+CALL editButtonColor(NULL, 'Amber', 'Amber', '#c79112', 0, 100, @responseCode);
+CALL editButtonColor(NULL, 'None', 'None', '#000000', 0, 100, @responseCode);
 
 /* Create brightness names */
-CALL editBrightnessName(NULL, 'Off', 0, @responseCode);
-CALL editBrightnessName(NULL, 'Bright', 100, @responseCode);
-CALL editBrightnessName(NULL, 'Dim', 30, @responseCode);
-CALL editBrightnessName(NULL, 'Default', 80, @responseCode);
+CALL editBrightnessName(NULL, 'Off', 'Off', 0, @responseCode);
+CALL editBrightnessName(NULL, 'Bright', 'Bright', 100, @responseCode);
+CALL editBrightnessName(NULL, 'Dim', 'Dim', 30, @responseCode);
+CALL editBrightnessName(NULL, 'Default', 'Default', 80, @responseCode);
 
 /* Create the controller pins */
 CALL editControllerPins(NULL, 2, 2, true, true, true, @responseCode);

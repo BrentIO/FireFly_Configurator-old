@@ -25,13 +25,14 @@ DROP TABLE IF EXISTS `firefly`.`buttonColors` ;
 
 CREATE TABLE IF NOT EXISTS `firefly`.`buttonColors` (
   `id` INT NOT NULL AUTO_INCREMENT,
-  `friendlyName` VARCHAR(20) NOT NULL,
+  `name` VARCHAR(20) NOT NULL,
+  `displayName` VARCHAR(20) NULL DEFAULT NULL,
   `hexValue` CHAR(6) NOT NULL,
   `brightnessMinimum` TINYINT NOT NULL DEFAULT '0',
   `brightnessMaximum` TINYINT NOT NULL DEFAULT '100',
   PRIMARY KEY (`id`),
   UNIQUE INDEX `id_UNIQUE` (`id` ASC) VISIBLE,
-  UNIQUE INDEX `friendlyName_UNIQUE` (`friendlyName` ASC) VISIBLE)
+  UNIQUE INDEX `name_UNIQUE` (`name` ASC) VISIBLE)
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_0900_ai_ci;
@@ -49,7 +50,8 @@ CREATE TABLE IF NOT EXISTS `firefly`.`switches` (
   `macAddress` BIGINT UNSIGNED NULL DEFAULT NULL,
   `hwVersion` TINYINT(1) NOT NULL,
   `firmwareId` INT NULL DEFAULT NULL,
-  `friendlyName` VARCHAR(20) NOT NULL,
+  `name` VARCHAR(20) NOT NULL,
+  `displayName` VARCHAR(20) NULL DEFAULT NULL,
   `mqttUsername` VARCHAR(20) NULL DEFAULT NULL,
   `mqttPassword` VARCHAR(255) NULL DEFAULT NULL,
   `bootstrapURL` VARCHAR(255) NULL DEFAULT NULL,
@@ -75,7 +77,8 @@ CREATE TABLE IF NOT EXISTS `firefly`.`inputs` (
   `pin` TINYINT UNSIGNED NULL DEFAULT NULL,
   `colorId` INT NOT NULL,
   `circuitType` ENUM('NORMALLY_OPEN', 'NORMALLY_CLOSED') NOT NULL,
-  `friendlyName` VARCHAR(20) NOT NULL,
+  `name` VARCHAR(20) NOT NULL,
+  `displayName` VARCHAR(20) NULL DEFAULT NULL,
   `broadcastOnChange` TINYINT UNSIGNED NOT NULL DEFAULT '1',
   `enabled` TINYINT UNSIGNED NOT NULL DEFAULT '1',
   PRIMARY KEY (`id`),
@@ -101,7 +104,8 @@ DROP TABLE IF EXISTS `firefly`.`controllers` ;
 CREATE TABLE IF NOT EXISTS `firefly`.`controllers` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `macAddress` BIGINT UNSIGNED NOT NULL,
-  `friendlyName` VARCHAR(20) NOT NULL,
+  `name` VARCHAR(20) NOT NULL,
+  `displayName` VARCHAR(20) NULL DEFAULT NULL,
   `ipAddress` INT UNSIGNED NOT NULL,
   `subnet` INT UNSIGNED NOT NULL,
   `dns` INT UNSIGNED NOT NULL,
@@ -127,14 +131,15 @@ CREATE TABLE IF NOT EXISTS `firefly`.`outputs` (
   `controllerId` INT NULL DEFAULT NULL,
   `controllerPort` TINYINT UNSIGNED NULL DEFAULT NULL,
   `pin` TINYINT UNSIGNED NULL DEFAULT NULL,
-  `friendlyName` VARCHAR(20) NULL DEFAULT NULL,
+  `name` VARCHAR(20) NOT NULL,
+  `displayName` VARCHAR(20) NULL DEFAULT NULL,
   `outputType` ENUM('BINARY', 'VARIABLE') NULL DEFAULT NULL,
   `enabled` TINYINT UNSIGNED NOT NULL DEFAULT '1',
   `amperage` TINYINT UNSIGNED NULL DEFAULT '0',
   `breakerId` INT NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE INDEX `id_UNIQUE` (`id` ASC) VISIBLE,
-  UNIQUE INDEX `uniqueRow` (`controllerId` ASC, `controllerPort` ASC, `pin` ASC, `friendlyName` ASC) VISIBLE,
+  UNIQUE INDEX `uniqueRow` (`controllerId` ASC, `controllerPort` ASC, `pin` ASC, `name` ASC) VISIBLE,
   INDEX `controllerId_idx` (`controllerId` ASC) VISIBLE,
   CONSTRAINT `controllerId`
     FOREIGN KEY (`controllerId`)
@@ -177,10 +182,11 @@ DROP TABLE IF EXISTS `firefly`.`breakers` ;
 
 CREATE TABLE IF NOT EXISTS `firefly`.`breakers` (
   `id` INT NOT NULL,
-  `friendlyName` VARCHAR(20) NOT NULL,
+  `name` VARCHAR(20) NOT NULL,
+  `displayName` VARCHAR(20) NULL DEFAULT NULL,
   `amperage` TINYINT UNSIGNED NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
-  UNIQUE INDEX `friendlyName_UNIQUE` (`friendlyName` ASC) VISIBLE)
+  UNIQUE INDEX `name_UNIQUE` (`name` ASC) VISIBLE)
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_0900_ai_ci;
@@ -193,11 +199,12 @@ DROP TABLE IF EXISTS `firefly`.`brightnessNames` ;
 
 CREATE TABLE IF NOT EXISTS `firefly`.`brightnessNames` (
   `id` INT NOT NULL AUTO_INCREMENT,
-  `friendlyName` VARCHAR(20) NOT NULL,
+  `name` VARCHAR(20) NOT NULL,
+  `displayName` VARCHAR(20) NULL DEFAULT NULL,
   `brightnessValue` TINYINT NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   UNIQUE INDEX `id_UNIQUE` (`id` ASC) VISIBLE,
-  UNIQUE INDEX `friendlyName_UNIQUE` (`friendlyName` ASC) VISIBLE)
+  UNIQUE INDEX `name_UNIQUE` (`name` ASC) VISIBLE)
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_0900_ai_ci;
@@ -267,11 +274,11 @@ DROP TABLE IF EXISTS `firefly`.`settings` ;
 
 CREATE TABLE IF NOT EXISTS `firefly`.`settings` (
   `id` INT NOT NULL AUTO_INCREMENT,
-  `settingName` VARCHAR(20) NOT NULL,
-  `settingValue` VARCHAR(255) NOT NULL,
+  `name` VARCHAR(20) NOT NULL,
+  `value` VARCHAR(255) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE INDEX `id_UNIQUE` (`id` ASC) VISIBLE,
-  UNIQUE INDEX `settingName_UNIQUE` (`settingName` ASC) VISIBLE)
+  UNIQUE INDEX `settingName_UNIQUE` (`name` ASC) VISIBLE)
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_0900_ai_ci;
@@ -286,7 +293,7 @@ CREATE TABLE IF NOT EXISTS `firefly`.`getActionsJson` (`json` INT, `inputId` INT
 -- -----------------------------------------------------
 -- Placeholder table for view `firefly`.`getBreakers`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `firefly`.`getBreakers` (`id` INT, `friendlyName` INT, `amperage` INT, `json` INT);
+CREATE TABLE IF NOT EXISTS `firefly`.`getBreakers` (`id` INT, `name` INT, `displayName` INT, `amperage` INT, `json` INT);
 
 -- -----------------------------------------------------
 -- Placeholder table for view `firefly`.`getColorBrightnessNames`
@@ -316,17 +323,17 @@ CREATE TABLE IF NOT EXISTS `firefly`.`getControllerPortsUsed` (`controllerId` IN
 -- -----------------------------------------------------
 -- Placeholder table for view `firefly`.`getControllers`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `firefly`.`getControllers` (`id` INT, `macAddress` INT, `friendlyName` INT, `ipAddress` INT, `subnet` INT, `dns` INT, `gateway` INT, `json` INT);
+CREATE TABLE IF NOT EXISTS `firefly`.`getControllers` (`id` INT, `macAddress` INT, `name` INT, `displayName` INT, `ipAddress` INT, `subnet` INT, `dns` INT, `gateway` INT, `json` INT);
 
 -- -----------------------------------------------------
 -- Placeholder table for view `firefly`.`getInputs`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `firefly`.`getInputs` (`controllerId` INT, `name` INT, `pin` INT, `circuitType` INT, `broadcastOnStateChange` INT, `enabled` INT, `outputs` INT, `json` INT);
+CREATE TABLE IF NOT EXISTS `firefly`.`getInputs` (`controllerId` INT, `name` INT, `displayName` INT, `pin` INT, `circuitType` INT, `broadcastOnStateChange` INT, `enabled` INT, `outputs` INT, `json` INT);
 
 -- -----------------------------------------------------
 -- Placeholder table for view `firefly`.`getOutputs`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `firefly`.`getOutputs` (`outputId` INT, `controllerId` INT, `outputName` INT, `outputType` INT, `pin` INT, `controllerPort` INT, `position` INT, `enabled` INT, `amperage` INT, `breakerId` INT, `json` INT);
+CREATE TABLE IF NOT EXISTS `firefly`.`getOutputs` (`outputId` INT, `controllerId` INT, `name` INT, `displayName` INT, `outputType` INT, `pin` INT, `controllerPort` INT, `position` INT, `enabled` INT, `amperage` INT, `breakerId` INT, `json` INT);
 
 -- -----------------------------------------------------
 -- Placeholder table for view `firefly`.`getSwitchButtons`
@@ -336,7 +343,7 @@ CREATE TABLE IF NOT EXISTS `firefly`.`getSwitchButtons` (`switchId` INT, `json` 
 -- -----------------------------------------------------
 -- Placeholder table for view `firefly`.`getSwitches`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `firefly`.`getSwitches` (`switchId` INT, `macAddress` INT, `deviceName` INT, `firmwareVersion` INT, `firmwareURL` INT, `bootstrapVersion` INT, `switchName` INT, `json` INT);
+CREATE TABLE IF NOT EXISTS `firefly`.`getSwitches` (`switchId` INT, `macAddress` INT, `deviceName` INT, `firmwareVersion` INT, `firmwareURL` INT, `bootstrapVersion` INT, `name` INT, `displayName` INT, `json` INT);
 
 -- -----------------------------------------------------
 -- function adjustBrightnessLevels
@@ -808,17 +815,19 @@ DROP procedure IF EXISTS `firefly`.`editBreaker`;
 DELIMITER $$
 USE `firefly`$$
 CREATE PROCEDURE `editBreaker`(IN _id int,
-IN _friendlyName varchar(20),
+IN _name varchar(20),
+IN _displayName varchar(20),
 IN _amperage tinyint,
 OUT id_ INT)
 BEGIN
 
-SET _friendlyName = TRIM(_friendlyName);
+SET _name = TRIM(_name);
+SET _displayName = TRIM(_displayName);
 
-INSERT INTO breakers (id, friendlyName, amperage)
-VALUES (_id, _friendlyName, IFNULL(_amperage, 0))
+INSERT INTO breakers (id, name, displayName, amperage)
+VALUES (_id, _name, _displayName, IFNULL(_amperage, 0))
 ON DUPLICATE KEY UPDATE
-	friendlyName = _friendlyName,
+	name = _name,
 	amperage = IFNULL(_amperage, 0);
 
 SELECT 
@@ -826,7 +835,7 @@ SELECT
 INTO id_ FROM
     breakers
 WHERE
-    friendlyName = _friendlyName;
+    name = _name;
 
 END$$
 
@@ -843,15 +852,13 @@ DELIMITER $$
 USE `firefly`$$
 CREATE PROCEDURE `editBrightnessName`(IN _id int,
 IN _name varchar(20),
+IN _displayName varchar(20),
 IN _brightness tinyint,
 OUT id_ int)
 BEGIN
 
-
-
-
+SET _displayName = TRIM(_displayName);
 SET _name = UPPER(trim(_name));
-
 
 IF _brightness < 0 THEN
 	SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Brightness must be >=0.';
@@ -862,11 +869,12 @@ IF _brightness > 100 THEN
 END IF;
 
 INSERT INTO brightnessNames
-	(id, friendlyName, brightnessValue)
+	(id, name, displayName, brightnessValue)
 VALUES
-	(_id, _name, _brightness)
+	(_id, _name, _displayName, _brightness)
 ON DUPLICATE KEY UPDATE
-	friendlyName = _name,
+	name = _name,
+    displayName = _displayName,
 	brightnessValue = _brightness;
 
 SELECT 
@@ -874,7 +882,7 @@ SELECT
 INTO id_ FROM
     brightnessNames
 WHERE
-    friendlyName = _name;
+    name = _name;
 
 END$$
 
@@ -890,17 +898,16 @@ DROP procedure IF EXISTS `firefly`.`editButtonColor`;
 DELIMITER $$
 USE `firefly`$$
 CREATE PROCEDURE `editButtonColor`(IN _id int,
-IN _color varchar(20),
+IN _name varchar(20),
+IN _displayName varchar(20),
 IN _hexValue char(7),
 IN _brightnessMinimum tinyint,
 IN _brightnessMaximum tinyint,
 OUT id_ int)
 BEGIN
 
-
-
-
-SET _color = UPPER(trim(_color));
+SET _name = UPPER(trim(_name));
+SET _displayName = trim(_displayName);
 SET _hexValue = UPPER(TRIM(REPLACE(_hexValue, '#','')));
 
 
@@ -925,11 +932,12 @@ IF _brightnessMinimum > _brightnessMaximum THEN
 END IF;
 
 INSERT INTO buttonColors
-	(id, friendlyName, hexValue, brightnessMinimum, brightnessMaximum)
+	(id, name, displayName, hexValue, brightnessMinimum, brightnessMaximum)
 VALUES
-	(_id, _color, _hexValue, _brightnessMinimum, _brightnessMaximum)
+	(_id, _name, _displayName, _hexValue, _brightnessMinimum, _brightnessMaximum)
 ON DUPLICATE KEY UPDATE
-	friendlyName = _color,
+	name = _name,
+    displayName = _displayName,
     hexValue = _hexValue,
 	brightnessMinimum = _brightnessMinimum,
 	brightnessMaximum = _brightnessMaximum;
@@ -939,7 +947,7 @@ SELECT
 INTO id_ FROM
     buttonColors
 WHERE
-    friendlyName = _color;
+    name = _name;
 
 END$$
 
@@ -958,6 +966,7 @@ CREATE PROCEDURE `editController`(
 IN _id int,
 IN _macAddress varchar(17),
 IN _name varchar(20),
+IN _displayName varchar(20),
 IN _ipAddress varchar(15),
 IN _subnet varchar(15),
 IN _dns varchar(15),
@@ -971,6 +980,7 @@ BEGIN
 
 
 SET _name = trim(_name);
+SET _displayName = trim(_displayName);
 SET _mqttUsername = trim(_mqttUsername);
 SET _mqttPassword = trim(_mqttPassword);
 SET _macAddress = trim(REPLACE(_macAddress, ':',''));
@@ -987,12 +997,13 @@ END IF;
 
 
 INSERT INTO controllers
-	(id, macAddress, friendlyName, ipAddress, subnet, dns, gateway, mqttUsername, mqttPassword, hwVersion)
+	(id, macAddress, name, displayName, ipAddress, subnet, dns, gateway, mqttUsername, mqttPassword, hwVersion)
 VALUES
-	(_id, CONV(_macAddress,16,10), _name, INET_ATON(_ipAddress), INET_ATON(_subnet), INET_ATON(_dns), INET_ATON(_gateway), _mqttUsername, _mqttPassword, _hwVersion)
+	(_id, CONV(_macAddress,16,10), _name, _displayName, INET_ATON(_ipAddress), INET_ATON(_subnet), INET_ATON(_dns), INET_ATON(_gateway), _mqttUsername, _mqttPassword, _hwVersion)
 ON DUPLICATE KEY UPDATE
 	macAddress = CONV(_macAddress,16,10),
-    friendlyName = _name,
+    name = _name,
+    displayName = _displayName,
     ipAddress = INET_ATON(_ipAddress),
     subnet = INET_ATON(_subnet),
     dns = INET_ATON(_dns),
@@ -1134,16 +1145,15 @@ IN _pin tinyint,
 IN _colorId int,
 IN _circuitType ENUM('NORMALLY_OPEN','NORMALLY_CLOSED'),
 IN _name varchar(20),
+IN _displayName varchar(20),
 IN _broadcastOnChange tinyint,
 IN _enabled tinyint,
 OUT id_ int
 )
 BEGIN
 
-
-
-
 SET _name = trim(_name);
+SET _displayName = trim(_displayName);
 
 
 INSERT INTO inputs (
@@ -1153,7 +1163,8 @@ INSERT INTO inputs (
 	pin,
 	colorId, 
 	circuitType,
-	friendlyName,
+	name,
+    displayName,
 	broadcastOnChange,
 	enabled)
 VALUES(
@@ -1164,6 +1175,7 @@ VALUES(
 	_colorId,
 	_circuitType,
 	_name,
+    _displayName,
 	_broadcastOnChange,
 	true)
 ON DUPLICATE KEY UPDATE
@@ -1172,7 +1184,8 @@ ON DUPLICATE KEY UPDATE
 	pin = _pin,
 	colorId = _colorId,
 	circuitType = _circuitType,
-	friendlyName = _name,
+	name = _name,
+    displayName = _displayName,
 	broadcastOnChange = _broadcastOnChange,
 	enabled = _enabled;
 
@@ -1186,7 +1199,7 @@ WHERE
         AND pin = _pin
         AND colorId = _colorId
         AND circuitType = _circuitType
-        AND friendlyName = _name
+        AND name = _name
         AND broadcastOnChange = _broadcastOnChange;
         
 
@@ -1211,6 +1224,7 @@ IN _controllerId int,
 IN _controllerPort tinyint,
 IN _pin tinyint,
 IN _name varchar(20),
+IN _displayName varchar(20),
 IN _outputType ENUM('BINARY','VARIABLE'),
 IN _enabled tinyint,
 IN _amperage tinyint,
@@ -1219,17 +1233,19 @@ OUT id_ int
 )
 BEGIN
 
+SET _displayName = trim(_displayName);
 SET _name = trim(_name);
 
 INSERT INTO outputs
-	(id, controllerId, controllerPort, pin, friendlyName, outputType, enabled, amperage, breakerId)
+	(id, controllerId, controllerPort, pin, name, displayName, outputType, enabled, amperage, breakerId)
 VALUES
-	(_id, _controllerId, _controllerPort, _pin, _name, _outputType, true, IFNULL(_amperage, 0), breakerId)
+	(_id, _controllerId, _controllerPort, _pin, _name, _displayName, _outputType, true, IFNULL(_amperage, 0), breakerId)
 ON DUPLICATE KEY UPDATE
 	controllerId = _controllerId,
     controllerPort = _controllerPort,
     pin = _pin, 
-    friendlyName = _name,
+    name = _name,
+    displayName = _displayName,
     outputType = _outputType,
     enabled = _enabled,
     amperage = IFNULL(_amperage, 0),
@@ -1244,7 +1260,7 @@ WHERE
         AND controllerPort = _controllerPort
         AND pin = _pin
         AND outputType = _outputType
-        AND friendlyName = _name;
+        AND name = _name;
     
 
 IF _outputType = 'VARIABLE' THEN
@@ -1290,19 +1306,19 @@ SET _value = trim(_value);
 
 
 INSERT INTO settings
-	(settingName, settingValue)
+	(name, value)
 VALUES 
 	(_name, _value)
 ON DUPLICATE KEY UPDATE
-	settingName = _name,
-	settingValue = _value;
+	name = _name,
+	value = _value;
     
 SELECT 
     id
 INTO id_ FROM
     settings
 WHERE
-    settingName = _name;
+    name = _name;
 
 END$$
 
@@ -1324,6 +1340,7 @@ IN _controllerPort int,
 IN _macAddress varchar(17),
 IN _hwVersion tinyint,
 IN _name varchar(20),
+IN _displayName varchar(20),
 IN _mqttUsername varchar(20),
 IN _mqttPassword varchar(255),
 IN _bootstrapURL varchar(255),
@@ -1334,10 +1351,8 @@ BEGIN
 
 DECLARE _firmwareId_ int;
 
-
-
-
 SET _name = trim(_name);
+SET _displayName = trim(_displayName);
 SET _mqttUsername = trim(_mqttUsername);
 SET _mqttPassword = trim(_mqttPassword);
 SET _macAddress = trim(REPLACE(_macAddress, ':',''));
@@ -1372,15 +1387,16 @@ END IF;
 
 
 INSERT INTO switches
-	(id, controllerId, controllerPort, macAddress, hwVersion, friendlyName, firmwareId)
+	(id, controllerId, controllerPort, macAddress, hwVersion, name, displayName, firmwareId)
 VALUES
-	(_id, _controllerId, _controllerPort, CONV(_macAddress,16,10), _hwVersion, _name, _firmwareId)
+	(_id, _controllerId, _controllerPort, CONV(_macAddress,16,10), _hwVersion, _name, _displayName, _firmwareId)
 ON DUPLICATE KEY UPDATE
 	controllerId = _controllerId,
     controllerPort = _controllerPort,
     macAddress = CONV(_macAddress,16,10),
     hwVersion = _hwVersion,
-	friendlyName = _name,
+	name = _name,
+    displayName = _displayName,
 	mqttUsername = _mqttUsername,
 	mqttPassword = _mqttPassword,
     bootstrapURL = _bootstrapURL,
@@ -1399,38 +1415,6 @@ CALL incrementSwitchBootstrapCounter(id_);
 END$$
 
 DELIMITER ;
-
--- -----------------------------------------------------
--- procedure getHeartbeat
--- -----------------------------------------------------
-
-USE `firefly`;
-DROP procedure IF EXISTS `firefly`.`getHeartbeat`;
-
-DELIMITER $$
-USE `firefly`$$
-CREATE PROCEDURE `getHeartbeat`(OUT timeUTC_ varchar(20))
-BEGIN
-
-DECLARE rowCount int;
-
-SELECT 
-    COUNT(*)
-INTO rowCount FROM
-    settings;
-
-IF rowCount > 0 THEN
-	SELECT now() AS timeUTC INTO timeUTC_;
-
-ELSE
-	SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Database Error.';
-    
-END IF;
-
-END$$
-
-DELIMITER ;
-
 
 -- -----------------------------------------------------
 -- function formatMacAddress
@@ -1518,9 +1502,40 @@ SELECT
 INTO returnValue FROM
     buttonColors
 WHERE
-    friendlyName = _colorName;
+    name = _colorName;
 
 Return returnValue;
+END$$
+
+DELIMITER ;
+
+-- -----------------------------------------------------
+-- procedure getHeartbeat
+-- -----------------------------------------------------
+
+USE `firefly`;
+DROP procedure IF EXISTS `firefly`.`getHeartbeat`;
+
+DELIMITER $$
+USE `firefly`$$
+CREATE DEFINER=`remote`@`%` PROCEDURE `getHeartbeat`(OUT timeUTC_ varchar(20))
+BEGIN
+
+DECLARE rowCount int;
+
+SELECT 
+    COUNT(*)
+INTO rowCount FROM
+    settings;
+
+IF rowCount > 0 THEN
+	SELECT now() AS timeUTC INTO timeUTC_;
+
+ELSE
+	SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Database Error.';
+    
+END IF;
+
 END$$
 
 DELIMITER ;
@@ -1561,7 +1576,7 @@ END IF;
 
 IF isnull(returnValue) THEN
 	SELECT
-		settingValue
+		value
     INTO
 		returnValue
     FROM
@@ -1613,7 +1628,7 @@ END IF;
 
 IF isnull(returnValue) THEN
 	SELECT
-		settingValue
+		value
     INTO
 		returnValue
     FROM
@@ -1797,11 +1812,11 @@ IF requstedName = 'mqttUsername' OR requstedName = 'mqttPassword' THEN
 END IF;
 
 RETURN  (SELECT
-    settingValue
+    value
 FROM
     settings
 WHERE
-    settingName = requstedName); 
+    name = requstedName); 
     
 END$$
 
@@ -1833,7 +1848,7 @@ DELIMITER ;
 DROP TABLE IF EXISTS `firefly`.`getActionsJson`;
 DROP VIEW IF EXISTS `firefly`.`getActionsJson` ;
 USE `firefly`;
-CREATE  OR REPLACE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `firefly`.`getActionsJson` AS select json_arrayagg(json_object('output',`firefly`.`outputs`.`friendlyName`,'action',`firefly`.`actions`.`actionType`)) AS `json`,`firefly`.`actions`.`inputId` AS `inputId` from (`firefly`.`actions` join `firefly`.`outputs` on((`firefly`.`outputs`.`id` = `firefly`.`actions`.`outputId`))) group by `firefly`.`actions`.`inputId`;
+CREATE  OR REPLACE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `firefly`.`getActionsJson` AS select json_arrayagg(json_object('output',`firefly`.`outputs`.`name`,'action',`firefly`.`actions`.`actionType`)) AS `json`,`firefly`.`actions`.`inputId` AS `inputId` from (`firefly`.`actions` join `firefly`.`outputs` on((`firefly`.`outputs`.`id` = `firefly`.`actions`.`outputId`))) group by `firefly`.`actions`.`inputId`;
 
 -- -----------------------------------------------------
 -- View `firefly`.`getBreakers`
@@ -1841,7 +1856,7 @@ CREATE  OR REPLACE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `firefly`.`getA
 DROP TABLE IF EXISTS `firefly`.`getBreakers`;
 DROP VIEW IF EXISTS `firefly`.`getBreakers` ;
 USE `firefly`;
-CREATE  OR REPLACE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `firefly`.`getBreakers` AS select `firefly`.`breakers`.`id` AS `id`,`firefly`.`breakers`.`friendlyName` AS `friendlyName`,`firefly`.`breakers`.`amperage` AS `amperage`,json_object('id',`firefly`.`breakers`.`id`,'friendlyName',`firefly`.`breakers`.`friendlyName`,'amperage',`firefly`.`breakers`.`amperage`) AS `json` from `firefly`.`breakers`;
+CREATE  OR REPLACE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `firefly`.`getBreakers` AS select `firefly`.`breakers`.`id` AS `id`,`firefly`.`breakers`.`name` AS `name`,`firefly`.`breakers`.`displayName` AS `displayName`,`firefly`.`breakers`.`amperage` AS `amperage`,json_object('id',`firefly`.`breakers`.`id`,'name',`firefly`.`breakers`.`name`,'displayName',`firefly`.`breakers`.`displayName`,'amperage',`firefly`.`breakers`.`amperage`) AS `json` from `firefly`.`breakers`;
 
 -- -----------------------------------------------------
 -- View `firefly`.`getColorBrightnessNames`
@@ -1849,7 +1864,7 @@ CREATE  OR REPLACE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `firefly`.`getB
 DROP TABLE IF EXISTS `firefly`.`getColorBrightnessNames`;
 DROP VIEW IF EXISTS `firefly`.`getColorBrightnessNames` ;
 USE `firefly`;
-CREATE  OR REPLACE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `firefly`.`getColorBrightnessNames` AS select `firefly`.`buttonColors`.`id` AS `colorId`,json_object('color',`firefly`.`buttonColors`.`friendlyName`,'intensity',(select json_arrayagg(json_object('name',`firefly`.`brightnessNames`.`friendlyName`,'brightness',`ADJUSTBRIGHTNESSLEVELS`(`firefly`.`buttonColors`.`brightnessMinimum`,`firefly`.`buttonColors`.`brightnessMaximum`,`firefly`.`brightnessNames`.`brightnessValue`))) from `firefly`.`brightnessNames`)) AS `brightnessNames` from `firefly`.`buttonColors`;
+CREATE  OR REPLACE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `firefly`.`getColorBrightnessNames` AS select `firefly`.`buttonColors`.`id` AS `colorId`,json_object('color',`firefly`.`buttonColors`.`name`,'displayName',`firefly`.`buttonColors`.`displayName`,'intensity',(select json_arrayagg(json_object('name',`firefly`.`brightnessNames`.`name`,'displayName',`firefly`.`brightnessNames`.`displayName`,'brightness',`ADJUSTBRIGHTNESSLEVELS`(`firefly`.`buttonColors`.`brightnessMinimum`,`firefly`.`buttonColors`.`brightnessMaximum`,`firefly`.`brightnessNames`.`brightnessValue`))) from `firefly`.`brightnessNames`)) AS `brightnessNames` from `firefly`.`buttonColors`;
 
 -- -----------------------------------------------------
 -- View `firefly`.`getControllerPinsUnused`
@@ -1889,7 +1904,7 @@ CREATE  OR REPLACE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `firefly`.`getC
 DROP TABLE IF EXISTS `firefly`.`getControllers`;
 DROP VIEW IF EXISTS `firefly`.`getControllers` ;
 USE `firefly`;
-CREATE  OR REPLACE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `firefly`.`getControllers` AS select `firefly`.`controllers`.`id` AS `id`,`FORMATMACADDRESS`(`firefly`.`controllers`.`macAddress`) AS `macAddress`,`firefly`.`controllers`.`friendlyName` AS `friendlyName`,inet_ntoa(`firefly`.`controllers`.`ipAddress`) AS `ipAddress`,inet_ntoa(`firefly`.`controllers`.`subnet`) AS `subnet`,inet_ntoa(`firefly`.`controllers`.`dns`) AS `dns`,inet_ntoa(`firefly`.`controllers`.`gateway`) AS `gateway`,json_object('friendlyName',`firefly`.`controllers`.`friendlyName`,'network',json_object('macAddress',`FORMATMACADDRESS`(`firefly`.`controllers`.`macAddress`),'ipAddress',inet_ntoa(`firefly`.`controllers`.`ipAddress`),'subnet',inet_ntoa(`firefly`.`controllers`.`subnet`),'dns',inet_ntoa(`firefly`.`controllers`.`dns`),'gateway',inet_ntoa(`firefly`.`controllers`.`gateway`)),'mqtt',json_object('serverName',`GETSETTING`('mqttServer'),'port',cast(`GETSETTING`('mqttPort') as unsigned),'username',`GETMQTTUSERNAME`(`firefly`.`controllers`.`macAddress`),'password',`GETMQTTPASSWORD`(`firefly`.`controllers`.`macAddress`),'topics',json_object('client',`GETSETTING`('clientTopic'),'control',`GETSETTING`('controlTopic'),'event',`GETSETTING`('eventTopic')))) AS `json` from `firefly`.`controllers`;
+CREATE  OR REPLACE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `firefly`.`getControllers` AS select `firefly`.`controllers`.`id` AS `id`,`FORMATMACADDRESS`(`firefly`.`controllers`.`macAddress`) AS `macAddress`,`firefly`.`controllers`.`name` AS `name`,`firefly`.`controllers`.`displayName` AS `displayName`,inet_ntoa(`firefly`.`controllers`.`ipAddress`) AS `ipAddress`,inet_ntoa(`firefly`.`controllers`.`subnet`) AS `subnet`,inet_ntoa(`firefly`.`controllers`.`dns`) AS `dns`,inet_ntoa(`firefly`.`controllers`.`gateway`) AS `gateway`,json_object('name',`firefly`.`controllers`.`name`,'displayName',`firefly`.`controllers`.`displayName`,'network',json_object('macAddress',`FORMATMACADDRESS`(`firefly`.`controllers`.`macAddress`),'ipAddress',inet_ntoa(`firefly`.`controllers`.`ipAddress`),'subnet',inet_ntoa(`firefly`.`controllers`.`subnet`),'dns',inet_ntoa(`firefly`.`controllers`.`dns`),'gateway',inet_ntoa(`firefly`.`controllers`.`gateway`)),'mqtt',json_object('serverName',`GETSETTING`('mqttServer'),'port',cast(`GETSETTING`('mqttPort') as unsigned),'username',`GETMQTTUSERNAME`(`firefly`.`controllers`.`macAddress`),'password',`GETMQTTPASSWORD`(`firefly`.`controllers`.`macAddress`),'topics',json_object('client',`GETSETTING`('clientTopic'),'control',`GETSETTING`('controlTopic'),'event',`GETSETTING`('eventTopic')))) AS `json` from `firefly`.`controllers`;
 
 -- -----------------------------------------------------
 -- View `firefly`.`getInputs`
@@ -1897,7 +1912,7 @@ CREATE  OR REPLACE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `firefly`.`getC
 DROP TABLE IF EXISTS `firefly`.`getInputs`;
 DROP VIEW IF EXISTS `firefly`.`getInputs` ;
 USE `firefly`;
-CREATE  OR REPLACE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `firefly`.`getInputs` AS select `firefly`.`switches`.`controllerId` AS `controllerId`,concat(`firefly`.`switches`.`friendlyName`,`firefly`.`inputs`.`friendlyName`) AS `name`,`firefly`.`inputs`.`pin` AS `pin`,`firefly`.`inputs`.`circuitType` AS `circuitType`,if(`firefly`.`inputs`.`broadcastOnChange`,'TRUE','FALSE') AS `broadcastOnStateChange`,if(`firefly`.`inputs`.`enabled`,'TRUE','FALSE') AS `enabled`,`getActionsJson`.`json` AS `outputs`,json_object('name',concat(`firefly`.`switches`.`friendlyName`,`firefly`.`inputs`.`friendlyName`),'pin',`firefly`.`inputs`.`pin`,'circuitType',`firefly`.`inputs`.`circuitType`,'broadcastOnStateChange',((0 <> `firefly`.`inputs`.`broadcastOnChange`) is true),'enabled',((0 <> `firefly`.`inputs`.`enabled`) is true),'outputs',`getActionsJson`.`json`) AS `json` from ((`firefly`.`inputs` join `firefly`.`switches` on((`firefly`.`inputs`.`switchId` = `firefly`.`switches`.`id`))) join `firefly`.`getActionsJson` on((`getActionsJson`.`inputId` = `firefly`.`inputs`.`id`)));
+CREATE  OR REPLACE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `firefly`.`getInputs` AS select `firefly`.`switches`.`controllerId` AS `controllerId`,concat(`firefly`.`switches`.`name`,`firefly`.`inputs`.`name`) AS `name`,`firefly`.`inputs`.`displayName` AS `displayName`,`firefly`.`inputs`.`pin` AS `pin`,`firefly`.`inputs`.`circuitType` AS `circuitType`,if(`firefly`.`inputs`.`broadcastOnChange`,'TRUE','FALSE') AS `broadcastOnStateChange`,if(`firefly`.`inputs`.`enabled`,'TRUE','FALSE') AS `enabled`,`getActionsJson`.`json` AS `outputs`,json_object('name',concat(`firefly`.`switches`.`name`,`firefly`.`inputs`.`name`),'displayName',`firefly`.`inputs`.`displayName`,'pin',`firefly`.`inputs`.`pin`,'circuitType',`firefly`.`inputs`.`circuitType`,'broadcastOnStateChange',((0 <> `firefly`.`inputs`.`broadcastOnChange`) is true),'enabled',((0 <> `firefly`.`inputs`.`enabled`) is true),'outputs',`getActionsJson`.`json`) AS `json` from ((`firefly`.`inputs` join `firefly`.`switches` on((`firefly`.`inputs`.`switchId` = `firefly`.`switches`.`id`))) join `firefly`.`getActionsJson` on((`getActionsJson`.`inputId` = `firefly`.`inputs`.`id`)));
 
 -- -----------------------------------------------------
 -- View `firefly`.`getOutputs`
@@ -1905,7 +1920,7 @@ CREATE  OR REPLACE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `firefly`.`getI
 DROP TABLE IF EXISTS `firefly`.`getOutputs`;
 DROP VIEW IF EXISTS `firefly`.`getOutputs` ;
 USE `firefly`;
-CREATE  OR REPLACE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `firefly`.`getOutputs` AS select `firefly`.`outputs`.`id` AS `outputId`,`firefly`.`outputs`.`controllerId` AS `controllerId`,`firefly`.`outputs`.`friendlyName` AS `outputName`,`firefly`.`outputs`.`outputType` AS `outputType`,`firefly`.`outputs`.`pin` AS `pin`,`firefly`.`outputs`.`controllerPort` AS `controllerPort`,if((`firefly`.`outputs`.`outputType` = 'BINARY'),1,2) AS `position`,if(`firefly`.`outputs`.`enabled`,'TRUE','FALSE') AS `enabled`,`firefly`.`outputs`.`amperage` AS `amperage`,`firefly`.`outputs`.`breakerId` AS `breakerId`,json_object('name',`firefly`.`outputs`.`friendlyName`,'outputType',`firefly`.`outputs`.`outputType`,'pin',`firefly`.`outputs`.`pin`,'enabled',((0 <> `firefly`.`outputs`.`enabled`) is true),'amperage',`firefly`.`outputs`.`amperage`,'breakerId',`firefly`.`outputs`.`breakerId`) AS `json` from `firefly`.`outputs`;
+CREATE  OR REPLACE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `firefly`.`getOutputs` AS select `firefly`.`outputs`.`id` AS `outputId`,`firefly`.`outputs`.`controllerId` AS `controllerId`,`firefly`.`outputs`.`name` AS `name`,`firefly`.`outputs`.`displayName` AS `displayName`,`firefly`.`outputs`.`outputType` AS `outputType`,`firefly`.`outputs`.`pin` AS `pin`,`firefly`.`outputs`.`controllerPort` AS `controllerPort`,if((`firefly`.`outputs`.`outputType` = 'BINARY'),1,2) AS `position`,if(`firefly`.`outputs`.`enabled`,'TRUE','FALSE') AS `enabled`,`firefly`.`outputs`.`amperage` AS `amperage`,`firefly`.`outputs`.`breakerId` AS `breakerId`,json_object('name',`firefly`.`outputs`.`name`,'displayName',`firefly`.`outputs`.`displayName`,'outputType',`firefly`.`outputs`.`outputType`,'pin',`firefly`.`outputs`.`pin`,'enabled',((0 <> `firefly`.`outputs`.`enabled`) is true),'amperage',`firefly`.`outputs`.`amperage`,'breakerId',`firefly`.`outputs`.`breakerId`) AS `json` from `firefly`.`outputs`;
 
 -- -----------------------------------------------------
 -- View `firefly`.`getSwitchButtons`
@@ -1913,7 +1928,7 @@ CREATE  OR REPLACE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `firefly`.`getO
 DROP TABLE IF EXISTS `firefly`.`getSwitchButtons`;
 DROP VIEW IF EXISTS `firefly`.`getSwitchButtons` ;
 USE `firefly`;
-CREATE  OR REPLACE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `firefly`.`getSwitchButtons` AS select `firefly`.`inputs`.`switchId` AS `switchId`,json_arrayagg(json_object('name',`firefly`.`inputs`.`friendlyName`,'port',(case when (`firefly`.`inputs`.`position` = 1) then 'A' when (`firefly`.`inputs`.`position` = 2) then 'B' when (`firefly`.`inputs`.`position` = 3) then 'C' when (`firefly`.`inputs`.`position` = 4) then 'D' when (`firefly`.`inputs`.`position` = 5) then 'E' when (`firefly`.`inputs`.`position` = 6) then 'F' end),'led',`getColorBrightnessNames`.`brightnessNames`)) AS `json` from (((`firefly`.`inputs` join `firefly`.`buttonColors` on((`firefly`.`buttonColors`.`id` = `firefly`.`inputs`.`colorId`))) join `firefly`.`getColorBrightnessNames` on((`firefly`.`inputs`.`colorId` = `getColorBrightnessNames`.`colorId`))) join `firefly`.`switches` on((`firefly`.`inputs`.`switchId` = `firefly`.`switches`.`id`))) group by `firefly`.`inputs`.`switchId`;
+CREATE  OR REPLACE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `firefly`.`getSwitchButtons` AS select `firefly`.`inputs`.`switchId` AS `switchId`,json_arrayagg(json_object('name',`firefly`.`inputs`.`name`,'port',(case when (`firefly`.`inputs`.`position` = 1) then 'A' when (`firefly`.`inputs`.`position` = 2) then 'B' when (`firefly`.`inputs`.`position` = 3) then 'C' when (`firefly`.`inputs`.`position` = 4) then 'D' when (`firefly`.`inputs`.`position` = 5) then 'E' when (`firefly`.`inputs`.`position` = 6) then 'F' end),'led',`getColorBrightnessNames`.`brightnessNames`)) AS `json` from (((`firefly`.`inputs` join `firefly`.`buttonColors` on((`firefly`.`buttonColors`.`id` = `firefly`.`inputs`.`colorId`))) join `firefly`.`getColorBrightnessNames` on((`firefly`.`inputs`.`colorId` = `getColorBrightnessNames`.`colorId`))) join `firefly`.`switches` on((`firefly`.`inputs`.`switchId` = `firefly`.`switches`.`id`))) group by `firefly`.`inputs`.`switchId`;
 
 -- -----------------------------------------------------
 -- View `firefly`.`getSwitches`
@@ -1921,8 +1936,9 @@ CREATE  OR REPLACE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `firefly`.`getS
 DROP TABLE IF EXISTS `firefly`.`getSwitches`;
 DROP VIEW IF EXISTS `firefly`.`getSwitches` ;
 USE `firefly`;
-CREATE  OR REPLACE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `firefly`.`getSwitches` AS select `firefly`.`switches`.`id` AS `switchId`,`FORMATMACADDRESS`(`firefly`.`switches`.`macAddress`) AS `macAddress`,hex(`firefly`.`switches`.`macAddress`) AS `deviceName`,`firefly`.`firmware`.`version` AS `firmwareVersion`,`firefly`.`firmware`.`url` AS `firmwareURL`,`firefly`.`switches`.`bootstrapCounter` AS `bootstrapVersion`,`firefly`.`switches`.`friendlyName` AS `switchName`,json_object('version',`firefly`.`switches`.`bootstrapCounter`,'name',`firefly`.`switches`.`friendlyName`,'bootstrap',json_object('url',`GETBOOTSTRAPURL`(`firefly`.`switches`.`macAddress`),'refreshMilliseconds',cast(`GETSETTING`('bootstrapRefreshMs') as unsigned)),'firmware',json_object('url',`firefly`.`firmware`.`url`,'refreshMilliseconds',cast(`GETSETTING`('firmwareRefreshMs') as unsigned)),'network',json_object('ssid',`GETSETTING`('wifiSSID'),'key',`GETSETTING`('wifiKey')),'mqtt',json_object('serverName',`GETSETTING`('mqttServer'),'port',`GETSETTING`('mqttPort'),'username',`GETMQTTUSERNAME`(`firefly`.`switches`.`macAddress`),'password',`GETMQTTPASSWORD`(`firefly`.`switches`.`macAddress`),'topics',json_object('control',`GETSETTING`('controlTopic'),'event',`GETSETTING`('eventTopic'),'client',`GETSETTING`('clientTopic'))),'buttons',`getSwitchButtons`.`json`) AS `json` from ((`firefly`.`switches` join `firefly`.`firmware` on((`firefly`.`switches`.`firmwareId` = `firefly`.`firmware`.`id`))) join `firefly`.`getSwitchButtons` on((`getSwitchButtons`.`switchId` = `firefly`.`switches`.`id`)));
+CREATE  OR REPLACE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `firefly`.`getSwitches` AS select `firefly`.`switches`.`id` AS `switchId`,`FORMATMACADDRESS`(`firefly`.`switches`.`macAddress`) AS `macAddress`,hex(`firefly`.`switches`.`macAddress`) AS `deviceName`,`firefly`.`firmware`.`version` AS `firmwareVersion`,`firefly`.`firmware`.`url` AS `firmwareURL`,`firefly`.`switches`.`bootstrapCounter` AS `bootstrapVersion`,`firefly`.`switches`.`name` AS `name`,`firefly`.`switches`.`name` AS `displayName`,json_object('version',`firefly`.`switches`.`bootstrapCounter`,'name',`firefly`.`switches`.`name`,'displayName',`firefly`.`switches`.`displayName`,'bootstrap',json_object('url',`GETBOOTSTRAPURL`(`firefly`.`switches`.`macAddress`),'refreshMilliseconds',cast(`GETSETTING`('bootstrapRefreshMs') as unsigned)),'firmware',json_object('url',`firefly`.`firmware`.`url`,'refreshMilliseconds',cast(`GETSETTING`('firmwareRefreshMs') as unsigned)),'network',json_object('ssid',`GETSETTING`('wifiSSID'),'key',`GETSETTING`('wifiKey')),'mqtt',json_object('serverName',`GETSETTING`('mqttServer'),'port',`GETSETTING`('mqttPort'),'username',`GETMQTTUSERNAME`(`firefly`.`switches`.`macAddress`),'password',`GETMQTTPASSWORD`(`firefly`.`switches`.`macAddress`),'topics',json_object('control',`GETSETTING`('controlTopic'),'event',`GETSETTING`('eventTopic'),'client',`GETSETTING`('clientTopic'))),'buttons',`getSwitchButtons`.`json`) AS `json` from ((`firefly`.`switches` join `firefly`.`firmware` on((`firefly`.`switches`.`firmwareId` = `firefly`.`firmware`.`id`))) join `firefly`.`getSwitchButtons` on((`getSwitchButtons`.`switchId` = `firefly`.`switches`.`id`)));
 
 SET SQL_MODE=@OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
+
