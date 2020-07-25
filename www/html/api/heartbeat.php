@@ -5,7 +5,7 @@
     require_once('database.php');
     
     $database = new database();
-    $simpleRest = new simpleRest();
+    $simpleRest = new simpleRest(false);
 
     $procCall = $database->callProcedure("CALL getHeartbeat(@response)");
 

@@ -13,21 +13,25 @@
 		private $httpVersion = "HTTP/1.1";
 		private $contentType = "application/json";
 
-		function __construct() {
+		function __construct($AuthRequired = True) {
 
-			#Ensure the key is correct
-			$headers = apache_request_headers();
+			#Optionally do not require authorization
+			if($AuthRequired != False){
 
-			if(array_key_exists('x-api-key', $headers)){
+				#Ensure the key is correct
+				$headers = apache_request_headers();
 
-				if($headers['x-api-key'] != getConfig("x-api-key")){
-					$this->setHttpHeaders(401);
-					exit();
+				if(array_key_exists('x-api-key', $headers)){
+
+					if($headers['x-api-key'] != getConfig("x-api-key")){
+						$this->setHttpHeaders(401);
+						exit();
+					}
+
+				}else{
+						$this->setHttpHeaders(401);
+						exit();
 				}
-
-			}else{
-					$this->setHttpHeaders(401);
-					exit();
 			}
 		}
 
