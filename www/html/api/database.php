@@ -11,7 +11,7 @@
 
         function __construct(){
 
-            $this->conn = mysqli_connect(getConfig('server'), getConfig('username'), getConfig("password"), getConfig("database"));
+            $this->conn = mysqli_connect(getConfig('sqlServer'), getConfig('sqlUsername'), getConfig("sqlPassword"), getConfig("database"));
 
         }
 
