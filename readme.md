@@ -31,7 +31,9 @@ MySQL will prompt for various input to secure the MySQL server.  Recommended set
 > Press y|Y for Yes, any other key for No: `N`
 
 > Please set the password for root here.
+>
 > **This is the new root password, not the firefly password.  Do not lose this password.**
+>
 > New password:
 
 > Remove anonymous users? (Press y|Y for Yes, any other key for No) : `Y`
