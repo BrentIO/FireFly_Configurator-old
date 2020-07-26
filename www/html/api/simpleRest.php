@@ -44,6 +44,21 @@
 			header($this->httpVersion. " ". $statusCode ." ". $statusMessage);		
 			header("Content-Type:". $this->contentType);
 		}
+
+		public function setErrorMessage($message = NULL){
+
+			if($message == ""){
+				$message = NULL;
+			}
+
+			if($message != NULL){
+
+				$errorObject = new stdClass();
+				$errorObject->error = $message;
+				print(json_encode($errorObject));
+
+			}
+		}
 		
 		public function getHttpStatusMessage($statusCode){
 			$httpStatus = array(
@@ -81,7 +96,8 @@
 				414 => 'Request-URI Too Long',  
 				415 => 'Unsupported Media Type',  
 				416 => 'Requested Range Not Satisfiable',  
-				417 => 'Expectation Failed',  
+				417 => 'Expectation Failed',
+				418 => 'I\'m a Teapot',
 				500 => 'Internal Server Error',  
 				501 => 'Not Implemented',  
 				502 => 'Bad Gateway',  
