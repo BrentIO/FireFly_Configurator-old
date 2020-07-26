@@ -181,7 +181,7 @@ COLLATE = utf8mb4_0900_ai_ci;
 DROP TABLE IF EXISTS `firefly`.`breakers` ;
 
 CREATE TABLE IF NOT EXISTS `firefly`.`breakers` (
-  `id` INT NOT NULL,
+  `id` INT NOT NULL AUTO_INCREMENT,
   `name` VARCHAR(20) NOT NULL,
   `displayName` VARCHAR(20) NULL DEFAULT NULL,
   `amperage` TINYINT UNSIGNED NOT NULL DEFAULT '0',
@@ -817,8 +817,7 @@ USE `firefly`$$
 CREATE PROCEDURE `editBreaker`(IN _id int,
 IN _name varchar(20),
 IN _displayName varchar(20),
-IN _amperage tinyint,
-OUT id_ INT)
+IN _amperage tinyint)
 BEGIN
 
 SET _name = TRIM(_name);
@@ -829,13 +828,6 @@ VALUES (_id, _name, _displayName, IFNULL(_amperage, 0))
 ON DUPLICATE KEY UPDATE
 	name = _name,
 	amperage = IFNULL(_amperage, 0);
-
-SELECT 
-    id
-INTO id_ FROM
-    breakers
-WHERE
-    name = _name;
 
 END$$
 
@@ -853,8 +845,7 @@ USE `firefly`$$
 CREATE PROCEDURE `editBrightnessName`(IN _id int,
 IN _name varchar(20),
 IN _displayName varchar(20),
-IN _brightness tinyint,
-OUT id_ int)
+IN _brightness tinyint)
 BEGIN
 
 SET _displayName = TRIM(_displayName);
@@ -877,13 +868,6 @@ ON DUPLICATE KEY UPDATE
     displayName = _displayName,
 	brightnessValue = _brightness;
 
-SELECT 
-    id
-INTO id_ FROM
-    brightnessNames
-WHERE
-    name = _name;
-
 END$$
 
 DELIMITER ;
@@ -902,8 +886,7 @@ IN _name varchar(20),
 IN _displayName varchar(20),
 IN _hexValue char(7),
 IN _brightnessMinimum tinyint,
-IN _brightnessMaximum tinyint,
-OUT id_ int)
+IN _brightnessMaximum tinyint)
 BEGIN
 
 SET _name = UPPER(trim(_name));
@@ -942,13 +925,6 @@ ON DUPLICATE KEY UPDATE
 	brightnessMinimum = _brightnessMinimum,
 	brightnessMaximum = _brightnessMaximum;
 
-SELECT 
-    id
-INTO id_ FROM
-    buttonColors
-WHERE
-    name = _name;
-
 END$$
 
 DELIMITER ;
@@ -973,9 +949,7 @@ IN _dns varchar(15),
 IN _gateway varchar(15),
 IN _mqttUsername varchar(20),
 IN _mqttPassword varchar(255),
-IN _hwVersion tinyint(1),
-OUT id_ int
-)
+IN _hwVersion tinyint(1))
 BEGIN
 
 
@@ -1011,14 +985,6 @@ ON DUPLICATE KEY UPDATE
     mqttUsername = _mqttUsername,
     mqttPassword = _mqttPassword,
     hwVersion = _hwVersion;
-
-SELECT 
-    id
-INTO id_ FROM
-    controllers
-WHERE
-    macAddress = CONV(_macAddress, 16, 10);
-
 END$$
 
 DELIMITER ;
@@ -1037,9 +1003,7 @@ IN _hwVersion tinyint(1),
 IN _pin tinyint(1),
 IN _inputAllowed tinyint(1),
 IN _binaryOutputAllowed tinyint(1),
-IN _variableOutputAllowed tinyint(1),
-OUT id_ int
-)
+IN _variableOutputAllowed tinyint(1))
 BEGIN
 
 
@@ -1052,13 +1016,6 @@ ON DUPLICATE KEY UPDATE
     binaryOutputAllowed = _binaryOutputAllowed, 
     variableOutputAllowed = _variableOutputAllowed;
     
-SELECT 
-    id
-INTO id_ FROM
-    controllerPins
-WHERE
-    hwVersion = _hwVersion
-        AND pin = _pin;
 END$$
 
 DELIMITER ;
@@ -1072,24 +1029,18 @@ DROP procedure IF EXISTS `firefly`.`editControllerPorts`;
 
 DELIMITER $$
 USE `firefly`$$
-CREATE PROCEDURE `editControllerPorts`(IN _id int, IN _hwVersion tinyint, IN _port tinyint, IN _inputAllowed tinyint, IN _outputAllowed tinyint, OUT id_ int)
+CREATE PROCEDURE `editControllerPorts`(IN _id int, 
+IN _hwVersion tinyint, 
+IN _port tinyint, 
+IN _inputAllowed tinyint, 
+IN _outputAllowed tinyint)
 BEGIN
-
-
-
 
 INSERT INTO controllerPorts(id, hwVersion, port, inputAllowed, outputAllowed)
 VALUES (_id, _hwVersion, _port, _inputAllowed, _outputAllowed)
 ON DUPLICATE KEY UPDATE
 	inputAllowed = _inputAllowed,
 	outputAllowed = _outputAllowed;
-
-SELECT 
-    id
-INTO id_ FROM
-    controllerPorts
-WHERE
-    hwVersion = _hwVersion AND port = _port;
 
 END$$
 
@@ -1104,9 +1055,11 @@ DROP procedure IF EXISTS `firefly`.`editFirmware`;
 
 DELIMITER $$
 USE `firefly`$$
-CREATE PROCEDURE `editFirmware`(IN _id int, IN _deviceType ENUM('CONTROLLER','CLIENT'), IN _version int, IN _url varchar(255), OUT id_ int)
+CREATE PROCEDURE `editFirmware`(IN _id int, 
+IN _deviceType ENUM('CONTROLLER','CLIENT'), 
+IN _version int, 
+IN _url varchar(255))
 BEGIN
-
 
 SET _url = trim(_url);
 
@@ -1117,14 +1070,6 @@ ON DUPLICATE KEY UPDATE
     version = _version,
     url = _url;
     
-SELECT 
-    id
-INTO id_ FROM
-    firmware
-WHERE
-    deviceType = _deviceType
-        AND version = _version;
-
 END$$
 
 DELIMITER ;
@@ -1147,9 +1092,7 @@ IN _circuitType ENUM('NORMALLY_OPEN','NORMALLY_CLOSED'),
 IN _name varchar(20),
 IN _displayName varchar(20),
 IN _broadcastOnChange tinyint,
-IN _enabled tinyint,
-OUT id_ int
-)
+IN _enabled tinyint)
 BEGIN
 
 SET _name = trim(_name);
@@ -1188,21 +1131,7 @@ ON DUPLICATE KEY UPDATE
     displayName = _displayName,
 	broadcastOnChange = _broadcastOnChange,
 	enabled = _enabled;
-
-SELECT 
-    id
-INTO id_ FROM
-    inputs
-WHERE
-    switchId = _switchId
-        AND position = _position
-        AND pin = _pin
-        AND colorId = _colorId
-        AND circuitType = _circuitType
-        AND name = _name
-        AND broadcastOnChange = _broadcastOnChange;
-        
-
+      
 CALL incrementSwitchBootstrapCounter(id_);
 
 END$$
@@ -1228,11 +1157,10 @@ IN _displayName varchar(20),
 IN _outputType ENUM('BINARY','VARIABLE'),
 IN _enabled tinyint,
 IN _amperage tinyint,
-IN _breakerId int,
-OUT id_ int
-)
+IN _breakerId int)
 BEGIN
 
+DECLARE id_ int;
 SET _displayName = trim(_displayName);
 SET _name = trim(_name);
 
@@ -1293,8 +1221,7 @@ USE `firefly`$$
 CREATE PROCEDURE `editSetting`(
 IN _id int,
 IN _name varchar(20),
-IN _value varchar(255),
-OUT id_ int
+IN _value varchar(255)
 )
 BEGIN
 
@@ -1313,13 +1240,6 @@ ON DUPLICATE KEY UPDATE
 	name = _name,
 	value = _value;
     
-SELECT 
-    id
-INTO id_ FROM
-    settings
-WHERE
-    name = _name;
-
 END$$
 
 DELIMITER ;
@@ -1344,8 +1264,7 @@ IN _displayName varchar(20),
 IN _mqttUsername varchar(20),
 IN _mqttPassword varchar(255),
 IN _bootstrapURL varchar(255),
-IN _firmwareId int,
-OUT id_ int
+IN _firmwareId int
 )
 BEGIN
 
@@ -1402,13 +1321,7 @@ ON DUPLICATE KEY UPDATE
     bootstrapURL = _bootstrapURL,
     firmwareId = _firmwareId;
 
-SELECT 
-    id
-INTO id_ FROM
-    switches
-WHERE
-    macAddress = CONV(_macAddress, 16, 10);
-    
+   
 
 CALL incrementSwitchBootstrapCounter(id_);
 
@@ -1518,7 +1431,7 @@ DROP procedure IF EXISTS `firefly`.`getHeartbeat`;
 
 DELIMITER $$
 USE `firefly`$$
-CREATE DEFINER=`remote`@`%` PROCEDURE `getHeartbeat`(OUT timeUTC_ varchar(20))
+CREATE PROCEDURE `getHeartbeat`()
 BEGIN
 
 DECLARE rowCount int;
@@ -1529,7 +1442,8 @@ INTO rowCount FROM
     settings;
 
 IF rowCount > 0 THEN
-	SELECT now() AS timeUTC INTO timeUTC_;
+	#Do nothing
+    SELECT 'OK';
 
 ELSE
 	SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Database Error.';
@@ -1834,8 +1748,6 @@ USE `firefly`$$
 CREATE PROCEDURE `incrementSwitchBootstrapCounter`(IN _switchId int)
 BEGIN
 
-
-
 UPDATE switches SET bootstrapCounter = bootstrapCounter + 1 WHERE id = _switchId;
 
 END$$
@@ -1941,4 +1853,3 @@ CREATE  OR REPLACE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `firefly`.`getS
 SET SQL_MODE=@OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
-
