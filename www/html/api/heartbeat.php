@@ -3,29 +3,45 @@
     require_once('getConfig.php');
     require_once('simpleRest.php');
     require_once('database.php');
-    
-    $database = new database();
+
+    //Do not require authentication for this page
     $simpleRest = new simpleRest(false);
+    
+    try{
 
-    $procCall = $database->callProcedure("CALL getHeartbeat(@response)");
-
-    //Check to make sure the procedure was successful
-    if($procCall == true)
-    {
+        $database = new database();
+    
+        //Always assume success
         $simpleRest->setHttpHeaders(200);
 
-        //Get the response back from the getHeartbeat SP
-        $heartbeat = $database->query("SELECT 'ok' AS 'status', @response AS timeUTC;");
-        
-        //Output the time and status
-        print($heartbeat);
+        $procCall = $database->callProcedure("CALL getHeartbeat()");
 
-    }else{
+        //Check to make sure the procedure was successful
+        if($procCall == true)
+        {
+            $response = new stdClass();
+            $response -> time = date('c', time());
+            $response -> status = "ok";
+            
+            //Output the time
+            print(json_encode($response));
 
-        $simpleRest->setHttpHeaders(500);
+        }else{
 
-        //The procedure call had a failure (wrong name or no rows in the settings table?), so return that the system is unhealthy
-        print('{"status":"failed"}');
-        
+            throw new Exception(NULL, 500);
+            
+        }
+    }
+    catch (Exception $e){
+
+        //Set the error message to be returned to the user
+        $simpleRest->setErrorMessage($e->getMessage());
+
+        //Set the HTTP response code appropriately
+        if($e->getCode() != 0){
+            $simpleRest->setHttpHeaders($e->getCode());
+        }else{
+            $simpleRest->setHttpHeaders(500);
+        }
     }
 ?>
