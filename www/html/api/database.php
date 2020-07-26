@@ -8,18 +8,25 @@
 
         private $dsn;
         private $conn;
+        public $rowsAffected;
+        public $id;
 
         function __construct(){
 
             $this->conn = mysqli_connect(getConfig('sqlServer'), getConfig('sqlUsername'), getConfig("sqlPassword"), getConfig("database"));
 
+            if($this->conn == False){
+                throw new Exception("Database unavailable", 503);
+            }
         }
 
 
         function __destruct(){
 
-            //Clean up the connection
-            mysqli_close($this->conn);
+            //Clean up the connection if it was successully opened
+            if($this->conn != False){
+                mysqli_close($this->conn);
+            }
         }
 
 
@@ -29,7 +36,7 @@
         }
 
 
-        public function query($sql, $includeColumnName = true, $encodeToJson = true){
+        public function query($sql, $includeColumnName = false, $encodeToJson = false){
 
             /* Queries the data from SQL and returns a JSON object (if only one entry) or array (if multiple entries) */
 
@@ -51,6 +58,9 @@
                         return json_encode($r[0], JSON_UNESCAPED_SLASHES);
                     }else{
 
+                        //Get the number of affected rows
+                        $this->rowsAffected = mysqli_affected_rows($this->conn);
+
                         //Row data must already include JSON, just send it as-is
                         return $r[0];
                     }
@@ -62,6 +72,9 @@
                     $r = mysqli_fetch_object($result);
 
                     $rows[] = $r;
+
+                    //Get the number of affected rows
+                    $this->rowsAffected = mysqli_affected_rows($this->conn);
 
                     //We at least a field and a value, they must always be encoded
                     return json_encode($r, JSON_UNESCAPED_SLASHES);
@@ -96,42 +109,52 @@
 
                 }
 
+                //Get the number of affected rows
+                $this->rowsAffected = mysqli_affected_rows($this->conn);
+
                 return json_encode($rows);
                 
             }
         }
 
 
-        public function callProcedure($sql, $variables = NULL){
+        public function callProcedure($sql, $varTypes = NULL, $variables = NULL){
+ 
+            $prepare = mysqli_prepare($this->conn, $sql);
 
-            try {
+            if($varTypes != NULL){
 
-                $prepare = mysqli_prepare($this->conn, $sql);
+                mysqli_stmt_bind_param($prepare, $varTypes, ...$variables);
+            }
 
-                //Make sure the variables is an array and not null
-                if(is_array($variables)){
+            if($prepare == false){
 
-                    //For each parameter passed as key=>value, append it to the request
-                    foreach($variables as $key => $value){
-                        mysqli_stmt_bind_param($prepare, $key, $value);
-                    }
+                if(getConfig('debugMode')){
+                    throw new Exception (mysqli_error($this->conn));
                 }
-            
-                if($prepare == false){
-                    throw new Exception ('Query invalid');
-                }
+                    throw new Exception ("Database request failed");
                 
-                //Returns true if the statement was successful
-                return mysqli_stmt_execute($prepare);
+            }
+            
+            //Execute the statement
+            mysqli_stmt_execute($prepare);
+
+            //Get the number of affected rows
+            $this->rowsAffected = mysqli_affected_rows($this->conn);
+            $this->id = mysqli_insert_id($this->conn);
+
+            if($varTypes != NULL){
+
+                //Get the ID of the record inserted
+                $result = mysqli_query($this->conn, "SELECT LAST_INSERT_ID();");
+                $r = mysqli_fetch_row($result);
+
+                $this->id = $r[0];
 
             }
 
-            catch (Exception $e){
-                //Return false
-                return false;
-
-            }
-
+            return true;
+            
         }
     }
 
