@@ -1,13 +1,16 @@
 <?php
 
-    //Comment out this line for production
-    ini_set('display_errors', 'On');
+    //Enable additional data for debugging
+    if(getConfig("debugMode")){
 
-    $config = array();
+        ini_set('display_errors', 'On');
 
+    }
+
+    
     function getConfig($key){
 
-        global $config;
+        $config = array();
         
         if(count($config) == 0){
 
