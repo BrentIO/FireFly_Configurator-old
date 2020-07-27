@@ -7,6 +7,8 @@
     $simpleRest = new simpleRest();
     $breaker = new breaker();
 
+    $_GET_lower = array_change_key_case($_GET, CASE_LOWER);
+
     try {
 
         $database = new database();
@@ -15,24 +17,24 @@
         $simpleRest->setHttpHeaders(200);
 
         #Retrieve the data from the query string
-        if(isset($_GET['id']) && $_GET['id'] != "" && is_numeric($_GET['id']) == True){
+        if(isset($_GET_lower['id']) && $_GET_lower['id'] != "" && is_numeric($_GET_lower['id']) == True){
 
-            $breaker->id = $_GET['id'];
+            $breaker->id = $_GET_lower['id'];
 
         }else{
             $breaker->id = NULL;
         }
 
-        if(isset($_GET['name'])){
-            $breaker->name = $_GET['name'];
+        if(isset($_GET_lower['name'])){
+            $breaker->name = $_GET_lower['name'];
         }
 
-        if(isset($_GET['displayName'])){
-            $breaker->displayName = $_GET['displayName'];
+        if(isset($_GET_lower['displayname'])){
+            $breaker->displayName = $_GET_lower['displayname'];
         }
 
-        if(isset($_GET['amperage'])){
-            $breaker->amperage = intval($_GET['amperage']);
+        if(isset($_GET_lower['amperage'])){
+            $breaker->amperage = intval($_GET_lower['amperage']);
         }
 
         switch(strtolower($_SERVER['REQUEST_METHOD'])){
@@ -47,7 +49,7 @@
 
             case "get":
 
-                #See if the user is attempting to get one or many ID's
+                //See if the user is attempting to get one or many ID's
                 if($breaker->id != NULL){
 
                     #Get the specific ID requested
@@ -109,10 +111,9 @@
         function __construct(){
 
             $this->id = NULL;
-            $this->name = "";
-            $this->displayName = "";
-            $this->amperage = 0;
-
+            $this->name = NULL;
+            $this->displayName = NULL;
+            $this->amperage = NULL;
         }
 
         function list(){
@@ -120,32 +121,27 @@
             global $database;
             global $simpleRest;
 
-            $breakerResponse = $database->query("SELECT json FROM getBreakers;", false, false);
+            $response = $database->query("SELECT json FROM getBreakers;");
 
-            if(is_array($breakerResponse) == False){
+            if(is_array($response) == False){
                 
-                ////The response from the database is <= 1 row, convert it to an array
-                if($breakerResponse == "[]"){
+                //The response from the database is <= 1 row, convert it to an array
+                if($response == "[]"){
 
                     //Empty array
-                    $breakerResponse = array();
+                    $response = array();
                 }
                 else{
                     
                     //Temporary variable that will contain a single object of data
-                    $tmpArray[0] = json_decode($breakerResponse);                   
-                    $breakerResponse =  array();
-                    $breakerResponse = $tmpArray;
+                    $tmpArray[0] = json_decode($response);                   
+                    $response =  array();
+                    $response = $tmpArray;
                 }
             }
 
-            if($breakerResponse){           
-                return(json_encode($breakerResponse));
-        
-            }else{
-                return(json_encode($breakerResponse));
+            return(json_encode($response));
 
-            }
         }
     
         function get(){
@@ -155,15 +151,15 @@
 
             if($this->id){
 
-                $breakerResponse = $database->query("SELECT json FROM getBreakers WHERE id = " . $this->id . ";");
+                $response = $database->query("SELECT json FROM getBreakers WHERE id = " . $this->id . ";");
             }elseif($this->name != ""){
 
-                $breakerResponse = $database->query("SELECT json FROM getBreakers WHERE name = '" . $this->name . "';");
+                $response = $database->query("SELECT json FROM getBreakers WHERE name = '" . $this->name . "';");
             }
 
-            if(is_array(json_decode($breakerResponse)) == False){
+            if(is_array(json_decode($response)) == False){
                        
-                return($breakerResponse);
+                return($response);
         
             }else{
                 throw new Exception(NULL, 404);
