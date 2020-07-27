@@ -131,13 +131,23 @@
 
                 if(getConfig('debugMode')){
                     throw new Exception (mysqli_error($this->conn));
-                }
+                }else{
                     throw new Exception ("Database request failed");
-                
+                }                
             }
             
             //Execute the statement
             mysqli_stmt_execute($prepare);
+
+            if(mysqli_error($this->conn)){
+
+                if(getConfig('debugMode')){
+                    throw new Exception (mysqli_error($this->conn));
+                }else{
+                    throw new Exception ("Database request failed");
+                }  
+
+            }
 
             //Get the number of affected rows
             $this->rowsAffected = mysqli_affected_rows($this->conn);
