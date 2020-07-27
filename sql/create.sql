@@ -296,6 +296,11 @@ CREATE TABLE IF NOT EXISTS `firefly`.`getActionsJson` (`json` INT, `inputId` INT
 CREATE TABLE IF NOT EXISTS `firefly`.`getBreakers` (`id` INT, `name` INT, `displayName` INT, `amperage` INT, `json` INT);
 
 -- -----------------------------------------------------
+-- Placeholder table for view `firefly`.`getButtonColors`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `firefly`.`getButtonColors` (`id` INT, `name` INT, `json` INT);
+
+-- -----------------------------------------------------
 -- Placeholder table for view `firefly`.`getColorBrightnessNames`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `firefly`.`getColorBrightnessNames` (`colorId` INT, `brightnessNames` INT);
@@ -463,7 +468,7 @@ DECLARE buttonCount int;
 SELECT 
     COUNT(*)
 INTO buttonCount FROM
-    buttons
+    inputs
 WHERE
     colorId = _id;
 
@@ -892,7 +897,6 @@ BEGIN
 SET _name = UPPER(trim(_name));
 SET _displayName = trim(_displayName);
 SET _hexValue = UPPER(TRIM(REPLACE(_hexValue, '#','')));
-
 
 IF _brightnessMinimum < 0 THEN
 	SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Minimum brightness must be >=0.';
@@ -1771,12 +1775,20 @@ USE `firefly`;
 CREATE  OR REPLACE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `firefly`.`getBreakers` AS select `firefly`.`breakers`.`id` AS `id`,`firefly`.`breakers`.`name` AS `name`,`firefly`.`breakers`.`displayName` AS `displayName`,`firefly`.`breakers`.`amperage` AS `amperage`,json_object('id',`firefly`.`breakers`.`id`,'name',`firefly`.`breakers`.`name`,'displayName',`firefly`.`breakers`.`displayName`,'amperage',`firefly`.`breakers`.`amperage`) AS `json` from `firefly`.`breakers`;
 
 -- -----------------------------------------------------
+-- View `firefly`.`getButtonColors`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `firefly`.`getButtonColors`;
+DROP VIEW IF EXISTS `firefly`.`getButtonColors` ;
+USE `firefly`;
+CREATE  OR REPLACE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `firefly`.`getButtonColors` AS select `firefly`.`buttonColors`.`id` AS `id`,`firefly`.`buttonColors`.`name` AS `name`,json_object('id',`firefly`.`buttonColors`.`id`,'name',`firefly`.`buttonColors`.`name`,'displayName',`firefly`.`buttonColors`.`displayName`,'hexValue',concat('#',`firefly`.`buttonColors`.`hexValue`),'brightnessMinimum',`firefly`.`buttonColors`.`brightnessMinimum`,'brightnessMaximum',`firefly`.`buttonColors`.`brightnessMaximum`) AS `json` from `firefly`.`buttonColors`;
+
+-- -----------------------------------------------------
 -- View `firefly`.`getColorBrightnessNames`
 -- -----------------------------------------------------
 DROP TABLE IF EXISTS `firefly`.`getColorBrightnessNames`;
 DROP VIEW IF EXISTS `firefly`.`getColorBrightnessNames` ;
 USE `firefly`;
-CREATE  OR REPLACE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `firefly`.`getColorBrightnessNames` AS select `firefly`.`buttonColors`.`id` AS `colorId`,json_object('color',`firefly`.`buttonColors`.`name`,'displayName',`firefly`.`buttonColors`.`displayName`,'intensity',(select json_arrayagg(json_object('name',`firefly`.`brightnessNames`.`name`,'displayName',`firefly`.`brightnessNames`.`displayName`,'brightness',`ADJUSTBRIGHTNESSLEVELS`(`firefly`.`buttonColors`.`brightnessMinimum`,`firefly`.`buttonColors`.`brightnessMaximum`,`firefly`.`brightnessNames`.`brightnessValue`))) from `firefly`.`brightnessNames`)) AS `brightnessNames` from `firefly`.`buttonColors`;
+CREATE  OR REPLACE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `firefly`.`getColorBrightnessNames` AS select `firefly`.`buttonColors`.`id` AS `colorId`,json_object('colorId',`firefly`.`buttonColors`.`id`,'color',`firefly`.`buttonColors`.`name`,'displayName',`firefly`.`buttonColors`.`displayName`,'intensity',(select json_arrayagg(json_object('brightnessId',`firefly`.`brightnessNames`.`id`,'name',`firefly`.`brightnessNames`.`name`,'displayName',`firefly`.`brightnessNames`.`displayName`,'brightness',`ADJUSTBRIGHTNESSLEVELS`(`firefly`.`buttonColors`.`brightnessMinimum`,`firefly`.`buttonColors`.`brightnessMaximum`,`firefly`.`brightnessNames`.`brightnessValue`))) from `firefly`.`brightnessNames`)) AS `brightnessNames` from `firefly`.`buttonColors`;
 
 -- -----------------------------------------------------
 -- View `firefly`.`getControllerPinsUnused`
