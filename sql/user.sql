@@ -15,6 +15,7 @@ GRANT SELECT ON firefly.getOutputs TO 'firefly'@'localhost';
 GRANT SELECT ON firefly.getSwitchButtons TO 'firefly'@'localhost';
 GRANT SELECT ON firefly.getSwitches TO 'firefly'@'localhost';
 GRANT SELECT ON firefly.getBreakers TO 'firefly'@'localhost';
+GRANT SELECT ON firefly.getButtonColors TO 'firefly'@'localhost';
 
 /* Grant permissions to the stored procedures */ 
 GRANT EXECUTE ON PROCEDURE firefly.deleteBreaker TO 'firefly'@'localhost';
@@ -40,6 +41,7 @@ GRANT EXECUTE ON PROCEDURE firefly.editSetting TO 'firefly'@'localhost';
 GRANT EXECUTE ON PROCEDURE firefly.editSwitch TO 'firefly'@'localhost';
 GRANT EXECUTE ON PROCEDURE firefly.getHeartbeat TO 'firefly'@'localhost';
 GRANT EXECUTE ON PROCEDURE firefly.incrementSwitchBootstrapCounter TO 'firefly'@'localhost';
+
 
 
 /* Grant permissions to the functions */ 
