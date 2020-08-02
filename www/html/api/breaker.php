@@ -54,8 +54,23 @@
 
             case "post":
 
+                $breaker->id = NULL;
+
                 $breaker->edit();
 
+                print($breaker->get());                       
+
+            break;
+
+            case "patch":
+
+                //Make sure we have an ID to edit
+                if($breaker->id == NULL || $breaker->id == 0){
+                    throw new Exception("No ID specified for patching", 400);
+                }
+
+                $breaker->edit();
+                
                 print($breaker->get());                       
 
             break;
@@ -80,8 +95,8 @@
             case "delete":
 
                 //Make sure we have an ID to delete
-                if($breaker->id == NULL){
-                    throw new Exception("No ID specified in query string for deletion", 400);
+                if($breaker->id == NULL || $breaker->id == 0){
+                    throw new Exception("No ID specified for deletion", 400);
                 }
 
                 //Check to make sure the procedure was successful
@@ -146,9 +161,11 @@
             global $database;
             global $simpleRest;
 
-            if($this->id){
-
+            if($this->id != NULL){
                 $response = $database->query("SELECT json FROM getBreakers WHERE id = " . $this->id . ";");
+
+            }elseif($this->name != ""){
+                $response = $database->query("SELECT json FROM getBreakers WHERE name = '" . $this->name . "';");
             }
 
             if(is_array(json_decode($response)) == False){

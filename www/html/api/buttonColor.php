@@ -25,13 +25,17 @@
             throw new Exception("Invalid body", 400);
         }
 
-        #Retrieve the data from the query string
+        //Populate the breaker object with a preferene for the URL rather than the payload
         if(isset($_GET_lower['id']) && $_GET_lower['id'] != "" && is_numeric($_GET_lower['id']) == True){
 
             $buttonColor->id = intval($_GET_lower['id']);
 
         }else{
-            $buttonColor->id = $data['id'];
+
+            if(isset($data['id'])){
+                $buttonColor->id = $data['id'];
+            }   
+
         }
 
         //Populate the object from the payload of the body
@@ -59,10 +63,25 @@
 
             case "post":
 
+                $buttonColor->id = NULL;
+
                 $buttonColor->edit();
 
-                print($buttonColor->get());                       
+                print($buttonColor->get());        
 
+            break;
+
+            case "patch":
+
+                //Make sure we have an ID to edit
+                if($buttonColor->id == NULL || $buttonColor->id == 0){
+                    throw new Exception("No ID specified for patching", 400);
+                }
+
+                $buttonColor->edit();
+
+                print($buttonColor->get());      
+                
             break;
 
             case "get":
@@ -72,7 +91,6 @@
 
                     #Get the specific ID requested
                     print($buttonColor->get());
-
 
                 }else{
                     //The user wants a list
@@ -86,7 +104,7 @@
 
                 //Make sure we have an ID to delete
                 if($buttonColor->id == NULL){
-                    throw new Exception("No ID specified in query string for deletion", 400);
+                    throw new Exception("No ID specified for deletion", 400);
                 }
 
                 //Check to make sure the procedure was successful
@@ -158,10 +176,12 @@
             global $simpleRest;
 
             if($this->id){
-
                 $response = $database->query("SELECT json FROM getButtonColors WHERE id = " . $this->id . ";");
-            }
 
+            }elseif($this->name != ""){
+                $response = $database->query("SELECT json FROM getButtonColors WHERE name = '" . $this->name . "';");
+            }
+            #var_dump($response);
             if(is_array(json_decode($response)) == False){
                        
                 return($response);
