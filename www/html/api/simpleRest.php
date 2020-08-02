@@ -19,10 +19,10 @@
 			if($AuthRequired != False){
 
 				#Ensure the key is correct
-				$headers = apache_request_headers();
+				$headers = array_change_key_case(apache_request_headers(), CASE_LOWER);
 
-				if(array_key_exists('x-api-key', $headers)){
-
+				if(isset($headers['x-api-key'])){
+					
 					if($headers['x-api-key'] != getConfig("x-api-key")){
 						$this->setHttpHeaders(401);
 						exit();
@@ -35,14 +35,13 @@
 			}
 		}
 
-
-
 		public function setHttpHeaders($statusCode){
 			
 			$statusMessage = $this -> getHttpStatusMessage($statusCode);
-			
-			header($this->httpVersion. " ". $statusCode ." ". $statusMessage);		
+
+			header($this->httpVersion. " ". $statusCode ." ". $statusMessage);
 			header("Content-Type:". $this->contentType);
+						
 		}
 
 		public function setErrorMessage($message = NULL){
