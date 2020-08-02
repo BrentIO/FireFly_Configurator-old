@@ -1,0 +1,9 @@
+RewriteEngine On
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+
+RewriteRule "^/?heartbeat$" "heartbeat.php" [PT]
+RewriteRule "^/?breaker/([^/]+)" "breaker.php?id=$1" [PT]
+RewriteRule "^/?breaker$" "breaker.php" [PT]
+RewriteRule "^/?buttonColor/([^/]+)" "buttonColor.php?id=$1" [PT]
+RewriteRule "^/?buttonColor$" "buttonColor.php" [PT]

@@ -44,6 +44,31 @@ MySQL will prompt for various input to secure the MySQL server.  Recommended set
 
 > Reload privilege tables now? (Press y|Y for Yes, any other key for No) : `Y`
 
+## Apache Configuration
+Apache requires configuration for the default website to allow the .htaccess file to rewrite REST-style paths.
+
+Edit the configuration file
+`$ sudo nano /etc/apache2/sites-available/000-default.conf`
+
+Scroll to the bottom and add this additional parameter within the \<VirtualHost> entry
+```    
+<VirtualHost *:80>
+
+    ...
+
+    <Directory /var/www/html>
+        Options Indexes FollowSymLinks
+        AllowOverride All
+        Require all granted
+    </Directory>
+
+    ...
+
+</VirtualHost>
+```
+
+When complete, restart Apache
+`$ sudo systemctl restart apache2`
 
 ### For development access only
 
