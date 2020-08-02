@@ -832,6 +832,7 @@ INSERT INTO breakers (id, name, displayName, amperage)
 VALUES (_id, _name, _displayName, IFNULL(_amperage, 0))
 ON DUPLICATE KEY UPDATE
 	name = _name,
+    displayName = _displayName,
 	amperage = IFNULL(_amperage, 0);
 
 END$$
