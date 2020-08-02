@@ -6,7 +6,7 @@
 
     $simpleRest = new simpleRest();
     $breaker = new breaker();
-
+    
     $_GET_lower = array_change_key_case($_GET, CASE_LOWER);
 
     try {
@@ -16,27 +16,40 @@
         //Always assume success
         $simpleRest->setHttpHeaders(200);
 
-        #Retrieve the data from the query string
+        //Get the body contents
+        $data = json_decode(file_get_contents('php://input'), true);
+
+        //If there is JSON in the body, make sure it is valid
+        if (json_last_error() !== JSON_ERROR_NONE && strlen(file_get_contents('php://input'))>0) {
+
+            throw new Exception("Invalid body", 400);
+        }
+
+        //Populate the breaker object with a preferene for the URL rather than the payload
         if(isset($_GET_lower['id']) && $_GET_lower['id'] != "" && is_numeric($_GET_lower['id']) == True){
 
-            $breaker->id = $_GET_lower['id'];
+            $breaker->id = intval($_GET_lower['id']);
 
         }else{
-            $breaker->id = NULL;
+
+            if(isset($data['id'])){
+                $breaker->id = $data['id'];
+            }           
         }
 
-        if(isset($_GET_lower['name'])){
-            $breaker->name = $_GET_lower['name'];
+        //Populate the object from the payload of the body
+        if(isset($data['name'])){
+            $breaker->name = $data['name'];
         }
 
-        if(isset($_GET_lower['displayname'])){
-            $breaker->displayName = $_GET_lower['displayname'];
+        if(isset($data['displayName'])){
+            $breaker->displayName = $data['displayName'];
         }
 
-        if(isset($_GET_lower['amperage'])){
-            $breaker->amperage = intval($_GET_lower['amperage']);
+        if(isset($data['amperage'])){
+            $breaker->amperage = intval($data['amperage']);
         }
-
+  
         switch(strtolower($_SERVER['REQUEST_METHOD'])){
 
             case "post":
@@ -123,25 +136,9 @@
 
             $response = $database->query("SELECT json FROM getBreakers;");
 
-            if(is_array($response) == False){
-                
-                //The response from the database is <= 1 row, convert it to an array
-                if($response == "[]"){
-
-                    //Empty array
-                    $response = array();
-                }
-                else{
-                    
-                    //Temporary variable that will contain a single object of data
-                    $tmpArray[0] = json_decode($response);                   
-                    $response =  array();
-                    $response = $tmpArray;
-                }
-            }
-
-            return(json_encode($response));
-
+            //Return the list from SQL
+            return($response);
+            
         }
     
         function get(){
@@ -152,9 +149,6 @@
             if($this->id){
 
                 $response = $database->query("SELECT json FROM getBreakers WHERE id = " . $this->id . ";");
-            }elseif($this->name != ""){
-
-                $response = $database->query("SELECT json FROM getBreakers WHERE name = '" . $this->name . "';");
             }
 
             if(is_array(json_decode($response)) == False){

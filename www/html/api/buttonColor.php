@@ -16,33 +16,43 @@
         //Always assume success
         $simpleRest->setHttpHeaders(200);
 
+        //Get the body contents
+        $data = json_decode(file_get_contents('php://input'), true);
+
+        //If there is JSON in the body, make sure it is valid
+        if (json_last_error() !== JSON_ERROR_NONE && strlen(file_get_contents('php://input'))>0) {
+
+            throw new Exception("Invalid body", 400);
+        }
+
         #Retrieve the data from the query string
         if(isset($_GET_lower['id']) && $_GET_lower['id'] != "" && is_numeric($_GET_lower['id']) == True){
 
-            $buttonColor->id = $_GET_lower['id'];
+            $buttonColor->id = intval($_GET_lower['id']);
 
         }else{
-            $buttonColor->id = NULL;
+            $buttonColor->id = $data['id'];
         }
 
-        if(isset($_GET_lower['name'])){
-            $buttonColor->name = $_GET_lower['name'];
+        //Populate the object from the payload of the body
+        if(isset($data['name'])){
+            $buttonColor->name = $data['name'];
         }
 
-        if(isset($_GET_lower['displayname'])){
-            $buttonColor->displayName = $_GET_lower['displayname'];
+        if(isset($data['displayName'])){
+            $buttonColor->displayName = $data['displayName'];
         }
 
-        if(isset($_GET_lower['hexvalue'])){
-            $buttonColor->hexValue = $_GET_lower['hexvalue'];
+        if(isset($data['hexValue'])){
+            $buttonColor->hexValue = $data['hexValue'];
         }
 
-        if(isset($_GET_lower['brightnessminimum'])){
-            $buttonColor->hexValue = $_GET_lower['brightnessminimum'];
+        if(isset($data['brightnessMinimum'])){
+            $buttonColor->brightnessMinimum = intval($data['brightnessMinimum']);
         }
 
-        if(isset($_GET_lower['brightnessmaximum'])){
-            $buttonColor->hexValue = $_GET_lower['brightnessmaximum'];
+        if(isset($data['brightnessMaximum'])){
+            $buttonColor->brightnessMaximum = intval($data['brightnessMaximum']);
         }
 
         switch(strtolower($_SERVER['REQUEST_METHOD'])){
@@ -137,24 +147,8 @@
 
             $response = $database->query("SELECT json FROM getButtonColors;");
 
-            if(is_array($response) == False){
-                
-                //The response from the database is <= 1 row, convert it to an array
-                if($response == "[]"){
-
-                    //Empty array
-                    $response = array();
-                }
-                else{
-                    
-                    //Temporary variable that will contain a single object of data
-                    $tmpArray[0] = json_decode($response);                   
-                    $response =  array();
-                    $response = $tmpArray;
-                }
-            }
-
-            return(json_encode($response));
+            //Return the list from SQL
+            return($response);
 
         }
     
@@ -163,14 +157,9 @@
             global $database;
             global $simpleRest;
 
-            $response = NULL;
-
             if($this->id){
 
                 $response = $database->query("SELECT json FROM getButtonColors WHERE id = " . $this->id . ";");
-            }elseif($this->name != ""){
-
-                $response = $database->query("SELECT json FROM getButtonColors WHERE name = '" . $this->name . "';");
             }
 
             if(is_array(json_decode($response)) == False){
