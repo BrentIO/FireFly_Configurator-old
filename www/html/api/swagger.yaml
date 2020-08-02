@@ -1,4 +1,5 @@
 swagger: "2.0"
+
 info:
   description: "This document explains available operations for the FireFly Configurator API."
   version: "1.0"
@@ -6,8 +7,11 @@ info:
   license:
     name: "For licensing, see the repo on GitHub."
     url: "https://github.com/BrentIO/FireFly_Configurator/"
+
 host: "10.1.1.87"
+
 basePath: "/api"
+
 tags:
 - name: "System Health"
   description: "Performs a health check on the HTTP and database servers"
@@ -23,9 +27,13 @@ tags:
   description: "Retrieves, edits, and deletes outputs from the controller"
 - name: "Actions"
   description: "Retrieves, edits, and deletes actions an Input has on an Output"
+
 schemes:
 - "http"
+
 paths:
+
+  #Heartbeat
   /heartbeat:
     get:
       tags:
@@ -47,6 +55,8 @@ paths:
           schema:
             $ref: "#/definitions/Error"
       security: []
+  
+  #Circuit Breakers
   /breaker:
     get:
       tags:
@@ -66,6 +76,8 @@ paths:
               $ref: "#/definitions/Breaker"
         400:
           description: "Bad Request"
+          schema:
+            $ref: "#/definitions/Error"
         401:
           description: "Unauthorized"
         500:
@@ -75,8 +87,28 @@ paths:
       - "Circuit Breaker"
       produces:
       - "application/json"
+      consumes:
+      - "application/json"
       description: "Creates a new circuit breaker" 
       operationId: createBreaker
+      parameters:
+        - in: body
+          name: breaker
+          description: "The circuit breaker to create"
+          schema:
+            type: object
+            required:
+              - name
+            properties:
+              name:
+                type: string
+                description: "Unique name of the circuit breaker"
+              displayName:
+                type: string
+                description: "A descriptive display name of the circuit breaker"
+              amperage:
+                type: integer
+                description: "The amperage of the circuit breaker"
       security: 
         - ApiKeyAuth: [] 
       responses:
@@ -88,6 +120,8 @@ paths:
               $ref: "#/definitions/Breaker"
         400:
           description: "Bad Request"
+          schema:
+            $ref: "#/definitions/Error"
         401:
           description: "Unauthorized"
         500:
@@ -99,14 +133,14 @@ paths:
       - "Circuit Breaker"
       produces:
       - "application/json"
-      description: "Retrieves a breaker by ID" 
+      description: "Retrieves a circuit breaker by ID" 
       operationId: getBreakerById
       security: 
         - ApiKeyAuth: [] 
       parameters:
       - name: "id"
         in: "path"
-        description: "ID of the breaker to return"
+        description: "ID of the circuit breaker to return"
         required: true
         type: "integer"
         format: "int32"
@@ -117,56 +151,315 @@ paths:
             $ref: "#/definitions/Breaker"
         400:
           description: "Bad Request"
+          schema:
+            $ref: "#/definitions/Error"
         401:
           description: "Unauthorized"
         404:
           description: "Not Found"
-        405:
-          description: "Method Not Allowed"
+          schema:
+            $ref: "#/definitions/Error"
         500:
           description: "Internal Server Error"
-    post:
+    patch:
       tags:
       - "Circuit Breaker"
       produces:
       - "application/json"
-      description: "Creates a new or edits an existing circuit breaker" 
+      description: "Edits an existing circuit breaker" 
       operationId: editBreaker
       security: 
         - ApiKeyAuth: [] 
       parameters:
       - name: "id"
         in: "path"
-        description: "ID of the breaker to return"
+        description: "ID of the breaker to edit"
+        required: true
+        type: "integer"
+        format: "int32"
+      - in: body
+        name: breaker
+        description: "The circuit breaker to create"
+        schema:
+          type: object
+          required:
+            - name
+          properties:
+            name:
+              type: string
+              description: "Unique name of the circuit breaker"
+            displayName:
+              type: string
+              description: "A descriptive display name of the circuit breaker"
+            amperage:
+              type: integer
+              description: "The amperage of the circuit breaker"
+      responses:
+        200:
+          description: "Success"
+          schema:
+            $ref: "#/definitions/Breaker"
+        400:
+          description: "Bad Request"
+          schema:
+            $ref: "#/definitions/Error"
+        401:
+          description: "Unauthorized"
+        404:
+          description: "Not Found"
+          schema:
+            $ref: "#/definitions/Error"
+        500:
+          description: "Internal Server Error"
+    
+    delete:
+      tags:
+      - "Circuit Breaker"
+      produces:
+      - "application/json"
+      description: "Deletes an existing circuit breaker" 
+      operationId: deleteBreaker
+      security: 
+        - ApiKeyAuth: [] 
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "ID of the circuit breaker to delete"
         required: true
         type: "integer"
         format: "int32"
       responses:
         200:
           description: "Success"
-          schema:
-            type: array
-            items:
-              $ref: "#/definitions/Breaker"
         400:
           description: "Bad Request"
+          schema:
+            $ref: "#/definitions/Error"
         401:
           description: "Unauthorized"
         404:
           description: "Not Found"
-        405:
-          description: "Method Not Allowed"
+          schema:
+            $ref: "#/definitions/Error"
         500:
           description: "Internal Server Error"
- 
-    
+  
+  /buttonColor:
+    get:
+      tags:
+      - "Switches"
+      produces:
+      - "application/json"
+      description: "Retrieves a list of all defined button LED colors" 
+      operationId: listButtonColor
+      security: 
+        - ApiKeyAuth: [] 
+      responses:
+        200:
+          description: "Success"
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/ButtonLEDColor"
+        400:
+          description: "Bad Request"
+          schema:
+            $ref: "#/definitions/Error"
+        401:
+          description: "Unauthorized"
+        500:
+          description: "Internal Server Error"
+    post:
+      tags:
+      - "Switches"
+      produces:
+      - "application/json"
+      consumes:
+      - "application/json"
+      description: "Creates a new button LED color" 
+      operationId: createButtonColor
+      parameters:
+        - in: body
+          name: buttonLEDColor
+          description: "The button LED color to create"
+          schema:
+            type: object
+            required:
+              - name
+            properties:
+              name:
+                type: string
+                description: "Unique name of the button LED color"
+              displayName:
+                type: string
+                description: "A descriptive display name of the button LED color"
+              hexValue:
+                type: string
+                description: "The button LED color in hex (#XXXXXX), hash sign optional"
+              brightnessMinimum:
+                type: integer
+                minimum: 0
+                maximum: 100
+                description: "The minimum brightness this LED can be set"
+              brightnessMaximum:
+                type: integer
+                minimum: 0
+                maximum: 100
+                description: "The maximum brightness this LED can be set"
+      security: 
+        - ApiKeyAuth: [] 
+      responses:
+        200:
+          description: "Success"
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/ButtonLEDColor"
+        400:
+          description: "Bad Request"
+          schema:
+            $ref: "#/definitions/Error"
+        401:
+          description: "Unauthorized"
+        500:
+          description: "Internal Server Error"
+
+  /buttonColor/{id}:
+    get:
+      tags:
+      - "Switches"
+      produces:
+      - "application/json"
+      description: "Retrieves a button LED color by ID" 
+      operationId: getButtonLEDColorByID
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "ID of the button LED color to return"
+        required: true
+        type: "integer"
+        format: "int32"
+      security: 
+        - ApiKeyAuth: [] 
+      responses:
+        200:
+          description: "Success"
+          schema:
+            $ref: "#/definitions/ButtonLEDColor"
+        400:
+          description: "Bad Request"
+          schema:
+            $ref: "#/definitions/Error"
+        401:
+          description: "Unauthorized"
+        500:
+          description: "Internal Server Error"
+    patch:
+      tags:
+      - "Switches"
+      produces:
+      - "application/json"
+      consumes:
+      - "application/json"
+      description: "Edits an existing button LED color" 
+      operationId: editButtonColor
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "ID of the button LED color to return"
+        required: true
+        type: "integer"
+        format: "int32"
+      - in: body
+        name: buttonLEDColor
+        description: "The button LED color to edit"
+        schema:
+          type: object
+          required:
+            - name
+          properties:
+            name:
+              type: string
+              description: "Unique name of the button LED color"
+            displayName:
+              type: string
+              description: "A descriptive display name of the button LED color"
+            hexValue:
+              type: string
+              description: "The button LED color in hex (#XXXXXX), hash sign optional"
+            brightnessMinimum:
+              type: integer
+              minimum: 0
+              maximum: 100
+              description: "The minimum brightness this LED can be set"
+            brightnessMaximum:
+              type: integer
+              minimum: 0
+              maximum: 100
+              description: "The maximum brightness this LED can be set"
+      security: 
+        - ApiKeyAuth: [] 
+      responses:
+        200:
+          description: "Success"
+          schema:
+            $ref: "#/definitions/ButtonLEDColor"
+        400:
+          description: "Bad Request"
+          schema:
+            $ref: "#/definitions/Error"
+        401:
+          description: "Unauthorized"
+        500:
+          description: "Internal Server Error"
+    delete:
+      tags:
+      - "Switches"
+      produces:
+      - "application/json"
+      description: "Deletes existing button LED color" 
+      operationId: deleteButtonColor
+      security: 
+        - ApiKeyAuth: [] 
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "ID of the button LED color to delete"
+        required: true
+        type: "integer"
+        format: "int32"
+      responses:
+        200:
+          description: "Success"
+        400:
+          description: "Bad Request"
+          schema:
+            $ref: "#/definitions/Error"
+        401:
+          description: "Unauthorized"
+        404:
+          description: "Not Found"
+          schema:
+            $ref: "#/definitions/Error"
+        500:
+          description: "Internal Server Error"
+
+#Security
 securityDefinitions:
   ApiKeyAuth:
       type: apiKey
       in: header
       name: x-api-key
 
+#Defined Objects
 definitions:
+  Error:
+    type: "object"
+    properties:
+      error:
+        type: "string"
+        description: "Additional data about the given error"
+  
   Heartbeat:
     type: "object"
     properties:
@@ -177,27 +470,23 @@ definitions:
       status:
         type: "string"
         description: "Will always return \"ok\" on success"
-  Error:
-    type: "object"
-    properties:
-      error:
-        type: "string"
-        description: "Additional data about the given error"
+    
   Breaker:
     type: "object"
     properties:
       id:
         type: "integer"
-        description: "Unique ID of the breaker"
+        description: "Unique ID of the circuit breaker"
       name:
         type: string
-        description: "Unique name of the breaker"
+        description: "Unique name of the circuit breaker"
       displayName:
         type: string
-        description: "A descriptive display name of the breaker"
+        description: "A descriptive display name of the circuit breaker"
       amperage:
         type: integer
-        description: "The amperage of the breaker"
+        description: "The amperage of the circuit breaker"
+  
   ButtonLEDColor:
     type: object
     properties:
