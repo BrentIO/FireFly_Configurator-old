@@ -1393,7 +1393,7 @@ IF isnull(returnValue) THEN
     FROM
 		settings
     WHERE
-		settingName = 'BootstrapURL';
+		name = 'BootstrapURL';
     
 END IF;
 
@@ -1506,7 +1506,7 @@ IF isnull(returnValue) THEN
     FROM
 		settings
     WHERE
-		settingName = 'MQTTPassword';
+		name = 'MQTTPassword';
     
 END IF;
 
@@ -1558,7 +1558,7 @@ IF isnull(returnValue) THEN
     FROM
 		settings
     WHERE
-		settingName = 'MQTTUsername';
+		name = 'MQTTUsername';
     
 END IF;
 
