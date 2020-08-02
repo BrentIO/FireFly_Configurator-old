@@ -296,6 +296,11 @@ CREATE TABLE IF NOT EXISTS `firefly`.`getActionsJson` (`json` INT, `inputId` INT
 CREATE TABLE IF NOT EXISTS `firefly`.`getBreakers` (`id` INT, `name` INT, `displayName` INT, `amperage` INT, `json` INT);
 
 -- -----------------------------------------------------
+-- Placeholder table for view `firefly`.`getBrightnessNames`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `firefly`.`getBrightnessNames` (`id` INT, `name` INT, `displayName` INT, `brightnessValue` INT, `json` INT);
+
+-- -----------------------------------------------------
 -- Placeholder table for view `firefly`.`getButtonColors`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `firefly`.`getButtonColors` (`id` INT, `name` INT, `json` INT);
@@ -1774,6 +1779,14 @@ DROP TABLE IF EXISTS `firefly`.`getBreakers`;
 DROP VIEW IF EXISTS `firefly`.`getBreakers` ;
 USE `firefly`;
 CREATE  OR REPLACE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `firefly`.`getBreakers` AS select `firefly`.`breakers`.`id` AS `id`,`firefly`.`breakers`.`name` AS `name`,`firefly`.`breakers`.`displayName` AS `displayName`,`firefly`.`breakers`.`amperage` AS `amperage`,json_object('id',`firefly`.`breakers`.`id`,'name',`firefly`.`breakers`.`name`,'displayName',`firefly`.`breakers`.`displayName`,'amperage',`firefly`.`breakers`.`amperage`) AS `json` from `firefly`.`breakers`;
+
+-- -----------------------------------------------------
+-- View `firefly`.`getBrightnessNames`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `firefly`.`getBrightnessNames`;
+DROP VIEW IF EXISTS `firefly`.`getBrightnessNames` ;
+USE `firefly`;
+CREATE  OR REPLACE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `firefly`.`getBrightnessNames` AS select `firefly`.`brightnessNames`.`id` AS `id`,`firefly`.`brightnessNames`.`name` AS `name`,`firefly`.`brightnessNames`.`displayName` AS `displayName`,`firefly`.`brightnessNames`.`brightnessValue` AS `brightnessValue`,json_object('id',`firefly`.`brightnessNames`.`id`,'name',`firefly`.`brightnessNames`.`name`,'displayName',`firefly`.`brightnessNames`.`displayName`,'brightnessValue',`firefly`.`brightnessNames`.`brightnessValue`) AS `json` from `firefly`.`brightnessNames`;
 
 -- -----------------------------------------------------
 -- View `firefly`.`getButtonColors`
