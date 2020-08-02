@@ -313,7 +313,7 @@ CREATE TABLE IF NOT EXISTS `firefly`.`getColorBrightnessNames` (`colorId` INT, `
 -- -----------------------------------------------------
 -- Placeholder table for view `firefly`.`getControllerPinsUnused`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `firefly`.`getControllerPinsUnused` (`controllerId` INT, `pin` INT, `inputAllowed` INT, `binaryOutputAllowed` INT, `variableOutputAllowed` INT);
+CREATE TABLE IF NOT EXISTS `firefly`.`getControllerPinsUnused` (`controllerId` INT, `pin` INT, `inputAllowed` INT, `binaryOutputAllowed` INT, `variableOutputAllowed` INT, `json` INT);
 
 -- -----------------------------------------------------
 -- Placeholder table for view `firefly`.`getControllerPinsUsed`
@@ -323,7 +323,7 @@ CREATE TABLE IF NOT EXISTS `firefly`.`getControllerPinsUsed` (`controllerId` INT
 -- -----------------------------------------------------
 -- Placeholder table for view `firefly`.`getControllerPortsUnused`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `firefly`.`getControllerPortsUnused` (`controllerId` INT, `port` INT, `inputAllowed` INT, `outputAllowed` INT);
+CREATE TABLE IF NOT EXISTS `firefly`.`getControllerPortsUnused` (`controllerId` INT, `port` INT, `inputAllowed` INT, `outputAllowed` INT, `json` INT);
 
 -- -----------------------------------------------------
 -- Placeholder table for view `firefly`.`getControllerPortsUsed`
@@ -1810,7 +1810,7 @@ CREATE  OR REPLACE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `firefly`.`getC
 DROP TABLE IF EXISTS `firefly`.`getControllerPinsUnused`;
 DROP VIEW IF EXISTS `firefly`.`getControllerPinsUnused` ;
 USE `firefly`;
-CREATE  OR REPLACE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `firefly`.`getControllerPinsUnused` AS select `firefly`.`controllers`.`id` AS `controllerId`,`firefly`.`controllerPins`.`pin` AS `pin`,`firefly`.`controllerPins`.`inputAllowed` AS `inputAllowed`,`firefly`.`controllerPins`.`binaryOutputAllowed` AS `binaryOutputAllowed`,`firefly`.`controllerPins`.`variableOutputAllowed` AS `variableOutputAllowed` from ((`firefly`.`controllerPins` join `firefly`.`controllers` on((`firefly`.`controllerPins`.`hwVersion` = `firefly`.`controllers`.`hwVersion`))) left join `firefly`.`getControllerPinsUsed` on(((`firefly`.`controllers`.`id` = `getControllerPinsUsed`.`controllerId`) and (`getControllerPinsUsed`.`pin` = `firefly`.`controllerPins`.`pin`)))) where (`getControllerPinsUsed`.`pinType` is null) order by `firefly`.`controllers`.`id`,`firefly`.`controllerPins`.`pin`;
+CREATE  OR REPLACE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `firefly`.`getControllerPinsUnused` AS select `controllers`.`id` AS `controllerId`,`controllerPins`.`pin` AS `pin`,`controllerPins`.`inputAllowed` AS `inputAllowed`,`controllerPins`.`binaryOutputAllowed` AS `binaryOutputAllowed`,`controllerPins`.`variableOutputAllowed` AS `variableOutputAllowed`,json_object('controllerId',`controllers`.`id`,'pin',`controllerPins`.`pin`,'inputAllowed',if((`controllerPins`.`inputAllowed` = '1'),cast(true as json),cast(false as json)),'binaryOutputAllowed',if((`controllerPins`.`binaryOutputAllowed` = '1'),cast(true as json),cast(false as json)),'variableOutputAllowed',if((`controllerPins`.`variableOutputAllowed` = '1'),cast(true as json),cast(false as json))) AS `json` from ((`controllerPins` join `controllers` on((`controllerPins`.`hwVersion` = `controllers`.`hwVersion`))) left join `getControllerPinsUsed` on(((`controllers`.`id` = `getControllerPinsUsed`.`controllerId`) and (`getControllerPinsUsed`.`pin` = `controllerPins`.`pin`)))) where (`getControllerPinsUsed`.`pinType` is null) order by `controllers`.`id`,`controllerPins`.`pin`;
 
 -- -----------------------------------------------------
 -- View `firefly`.`getControllerPinsUsed`
@@ -1826,7 +1826,7 @@ CREATE  OR REPLACE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `firefly`.`getC
 DROP TABLE IF EXISTS `firefly`.`getControllerPortsUnused`;
 DROP VIEW IF EXISTS `firefly`.`getControllerPortsUnused` ;
 USE `firefly`;
-CREATE  OR REPLACE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `firefly`.`getControllerPortsUnused` AS select `firefly`.`controllers`.`id` AS `controllerId`,`firefly`.`controllerPorts`.`port` AS `port`,`firefly`.`controllerPorts`.`inputAllowed` AS `inputAllowed`,`firefly`.`controllerPorts`.`outputAllowed` AS `outputAllowed` from ((`firefly`.`controllerPorts` join `firefly`.`controllers` on((`firefly`.`controllers`.`hwVersion` = `firefly`.`controllerPorts`.`hwVersion`))) left join `firefly`.`getControllerPortsUsed` on(((`getControllerPortsUsed`.`controllerId` = `firefly`.`controllers`.`id`) and (`getControllerPortsUsed`.`port` = `firefly`.`controllerPorts`.`port`)))) where (`getControllerPortsUsed`.`portType` is null);
+CREATE  OR REPLACE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `firefly`.`getControllerPortsUnused` AS select `controllers`.`id` AS `controllerId`,`controllerPorts`.`port` AS `port`,`controllerPorts`.`inputAllowed` AS `inputAllowed`,`controllerPorts`.`outputAllowed` AS `outputAllowed`,json_object('controllerId',`controllers`.`id`,'port',`controllerPorts`.`port`,'inputAllowed',if((`controllerPorts`.`inputAllowed` = '1'),cast(true as json),cast(false as json)),'outputAllowed',if((`controllerPorts`.`outputAllowed` = '1'),cast(true as json),cast(false as json))) AS `json` from ((`controllerPorts` join `controllers` on((`controllers`.`hwVersion` = `controllerPorts`.`hwVersion`))) left join `getControllerPortsUsed` on(((`getControllerPortsUsed`.`controllerId` = `controllers`.`id`) and (`getControllerPortsUsed`.`port` = `controllerPorts`.`port`)))) where (`getControllerPortsUsed`.`portType` is null);
 
 -- -----------------------------------------------------
 -- View `firefly`.`getControllerPortsUsed`
