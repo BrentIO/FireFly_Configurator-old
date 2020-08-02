@@ -6,7 +6,7 @@
 
     //Do not require authentication for this page
     $simpleRest = new simpleRest(false);
-    
+
     try{
 
         $database = new database();
@@ -41,7 +41,7 @@
         if($e->getCode() != 0){
             $simpleRest->setHttpHeaders($e->getCode());
         }else{
-            $simpleRest->setHttpHeaders(500);
+            $simpleRest->setHttpHeaders(503);
         }
     }
 ?>
