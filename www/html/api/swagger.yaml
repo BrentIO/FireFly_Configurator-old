@@ -15,7 +15,7 @@ basePath: "/api"
 tags:
 - name: "System Health"
   description: "Performs a health check on the HTTP and database servers"
-- name: "Circuit Breaker"
+- name: "Circuit Breakers"
   description: "Retrieves, edits, and deletes a circuit breaker"
 - name: "Controllers"
   description: "Retrieves, edits, and deletes attributes for a controller"
@@ -62,7 +62,7 @@ paths:
   /breaker:
     get:
       tags:
-      - "Circuit Breaker"
+      - "Circuit Breakers"
       produces:
       - "application/json"
       description: "Retrieves a list of all circuit breakers" 
@@ -86,7 +86,7 @@ paths:
           description: "Internal Server Error"
     post:
       tags:
-      - "Circuit Breaker"
+      - "Circuit Breakers"
       produces:
       - "application/json"
       consumes:
@@ -132,7 +132,7 @@ paths:
   /breaker/{id}:
     get:
       tags:
-      - "Circuit Breaker"
+      - "Circuit Breakers"
       produces:
       - "application/json"
       description: "Retrieves a circuit breaker by ID" 
@@ -165,7 +165,7 @@ paths:
           description: "Internal Server Error"
     patch:
       tags:
-      - "Circuit Breaker"
+      - "Circuit Breakers"
       produces:
       - "application/json"
       description: "Edits an existing circuit breaker" 
@@ -216,7 +216,7 @@ paths:
     
     delete:
       tags:
-      - "Circuit Breaker"
+      - "Circuit Breakers"
       produces:
       - "application/json"
       description: "Deletes an existing circuit breaker" 
@@ -246,6 +246,7 @@ paths:
         500:
           description: "Internal Server Error"
   
+  #Switches        
   /buttonColor:
     get:
       tags:
@@ -525,7 +526,6 @@ paths:
         500:
           description: "Internal Server Error"
 
-
   /brightnessName/{id}:
     get:
       tags:
@@ -563,12 +563,12 @@ paths:
       - "application/json"
       consumes:
       - "application/json"
-      description: "Creates a new named button LED brightness level" 
+      description: "Edits an existing named button LED brightness level" 
       operationId: editBrightnessName
       parameters:
         - name: "id"
           in: "path"
-          description: "ID of the named button LED brightness to return"
+          description: "ID of the named button LED brightness to edit"
           required: true
           type: "integer"
           format: "int32"
@@ -641,6 +641,270 @@ paths:
         500:
           description: "Internal Server Error"
 
+  #Controller
+  /controller:
+    get:
+      tags:
+      - "Controllers"
+      produces:
+      - "application/json"
+      description: "Retrieves a list of all controllers" 
+      operationId: listControllers
+      security: 
+        - ApiKeyAuth: [] 
+      responses:
+        200:
+          description: "Success"
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/Controller"
+        400:
+          description: "Bad Request"
+          schema:
+            $ref: "#/definitions/Error"
+        401:
+          description: "Unauthorized"
+        500:
+          description: "Internal Server Error"
+    post:
+      tags:
+      - "Controllers"
+      produces:
+      - "application/json"
+      consumes:
+      - "application/json"
+      description: "Creates a new controller" 
+      operationId: createController
+      parameters:
+        - in: body
+          name: controller
+          description: "The controller to create"
+          schema:
+            type: object
+            required:
+              - id
+              - macAddress
+              - hwVersion
+            properties:
+              name:
+                type: string
+                description: "Name of the controller"
+              displayName:
+                type: string
+                description: "A descriptive display name of the controller"
+              macAddress:
+                type: string
+                description: "Unique MAC hardware address of the controller"
+              ipAddress:
+                type: string
+                description: "IP address of the controller"
+              subnet:
+                type: string
+                description: "Subnet mask of the controller"
+              dns:
+                type: string
+                description: "IP address of the DNS server"
+              gateway:
+                type: string
+                description: "IP address of the network gateway"
+              mqttUsername:
+                type: string
+                description: "Override of the default MQTT username"
+              mqttPassword:
+                type: string
+                description: "Override of the default MQTT password"
+              hwVersion:
+                type: integer
+                description: "Hardware version"
+                enum:
+                  - 2
+
+      security: 
+        - ApiKeyAuth: [] 
+      responses:
+        200:
+          description: "Success"
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/ButtonLEDColor"
+        400:
+          description: "Bad Request"
+          schema:
+            $ref: "#/definitions/Error"
+        401:
+          description: "Unauthorized"
+        500:
+          description: "Internal Server Error"
+
+  /controller/{id}:
+    get:
+      tags:
+      - "Controllers"
+      produces:
+      - "application/json"
+      description: "Retrieves a controller by ID" 
+      operationId: getControllerByID
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "ID of the controller to return"
+        required: true
+        type: "integer"
+        format: "int32"
+      security: 
+        - ApiKeyAuth: [] 
+      responses:
+        200:
+          description: "Success"
+          schema:
+              $ref: "#/definitions/Controller"
+        400:
+          description: "Bad Request"
+          schema:
+            $ref: "#/definitions/Error"
+        401:
+          description: "Unauthorized"
+        500:
+          description: "Internal Server Error"
+    patch:
+      tags:
+      - "Controllers"
+      produces:
+      - "application/json"
+      consumes:
+      - "application/json"
+      description: "Edits an existing controller by ID" 
+      operationId: editController
+      parameters:
+        - name: "id"
+          in: "path"
+          description: "ID of the controller to edit"
+          required: true
+          type: "integer"
+          format: "int32"
+        - in: body
+          name: controller
+          description: "The controller to edit"
+          schema:
+            type: object
+            required:
+              - id
+              - macAddress
+              - hwVersion
+            properties:
+              name:
+                type: string
+                description: "Name of the controller"
+              displayName:
+                type: string
+                description: "A descriptive display name of the controller"
+              macAddress:
+                type: string
+                description: "Unique MAC hardware address of the controller"
+              ipAddress:
+                type: string
+                description: "IP address of the controller"
+              subnet:
+                type: string
+                description: "Subnet mask of the controller"
+              dns:
+                type: string
+                description: "IP address of the DNS server"
+              gateway:
+                type: string
+                description: "IP address of the network gateway"
+              mqttUsername:
+                type: string
+                description: "Override of the default MQTT username"
+              mqttPassword:
+                type: string
+                description: "Override of the default MQTT password"
+              hwVersion:
+                type: integer
+                description: "Hardware version"
+                enum:
+                  - 2
+      security: 
+        - ApiKeyAuth: [] 
+      responses:
+        200:
+          description: "Success"
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/Controller"
+        400:
+          description: "Bad Request"
+          schema:
+            $ref: "#/definitions/Error"
+        401:
+          description: "Unauthorized"
+        500:
+          description: "Internal Server Error"
+    delete:
+      tags:
+      - "Controllers"
+      produces:
+      - "application/json"
+      description: "Deletes a controller by ID" 
+      operationId: deleteController
+      security: 
+        - ApiKeyAuth: [] 
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "ID of the controller to delete"
+        required: true
+        type: "integer"
+        format: "int32"
+      responses:
+        200:
+          description: "Success"
+        400:
+          description: "Bad Request"
+          schema:
+            $ref: "#/definitions/Error"
+        401:
+          description: "Unauthorized"
+        404:
+          description: "Not Found"
+          schema:
+            $ref: "#/definitions/Error"
+        500:
+          description: "Internal Server Error"
+
+  /controller/devicename/{deviceName}:
+    get:
+      tags:
+      - "Controllers"
+      produces:
+      - "application/json"
+      description: "Retrieves a controller by device name" 
+      operationId: getControllerNameByDeviceName
+      parameters:
+      - name: "deviceName"
+        in: "path"
+        description: "The device name (MAC Address) of the controller to retrieve"
+        required: true
+        type: "string"
+      security: 
+        - ApiKeyAuth: [] 
+      responses:
+        200:
+          description: "Success"
+          schema:
+              $ref: "#/definitions/Controller"
+        400:
+          description: "Bad Request"
+          schema:
+            $ref: "#/definitions/Error"
+        401:
+          description: "Unauthorized"
+        500:
+          description: "Internal Server Error"
+
 
 
 #Security
@@ -672,6 +936,9 @@ definitions:
     
   Breaker:
     type: "object"
+    required:
+      - id
+      - name
     properties:
       id:
         type: "integer"
@@ -688,6 +955,9 @@ definitions:
   
   ButtonLEDColor:
     type: object
+    required:
+      - id
+      - name
     properties:
       id:
         type: integer
@@ -714,6 +984,9 @@ definitions:
 
   BrightnessName:
     type: object
+    required:
+      - id
+      - name
     properties:
       id:
         type: integer
@@ -729,3 +1002,46 @@ definitions:
         minimum: 0
         maximum: 100
         description: "The value this brightness name represents"
+
+  Controller:
+    type: object
+    required:
+      - id
+      - macAddress
+      - hwVersion
+    properties:
+      id:
+        type: integer
+        description: "Unique ID of the controller"
+      name:
+        type: string
+        description: "Name of the controller"
+      displayName:
+        type: string
+        description: "A descriptive display name of the controller"
+      macAddress:
+        type: string
+        description: "Unique MAC hardware address of the controller"
+      ipAddress:
+        type: string
+        description: "IP address of the controller"
+      subnet:
+        type: string
+        description: "Subnet mask of the controller"
+      dns:
+        type: string
+        description: "IP address of the DNS server"
+      gateway:
+        type: string
+        description: "IP address of the network gateway"
+      mqttUsername:
+        type: string
+        description: "Override of the default MQTT username"
+      mqttPassword:
+        type: string
+        description: "Override of the default MQTT password"
+      hwVersion:
+        type: integer
+        description: "Hardware version"
+        enum:
+          - 2
