@@ -275,6 +275,7 @@ DROP TABLE IF EXISTS `firefly`.`settings` ;
 CREATE TABLE IF NOT EXISTS `firefly`.`settings` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `name` VARCHAR(20) NOT NULL,
+  `displayName` varchar(40) DEFAULT NULL,
   `value` VARCHAR(255) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE INDEX `id_UNIQUE` (`id` ASC) VISIBLE,
@@ -1231,23 +1232,22 @@ USE `firefly`$$
 CREATE PROCEDURE `editSetting`(
 IN _id int,
 IN _name varchar(20),
+IN _displayName varchar(40),
 IN _value varchar(255)
 )
 BEGIN
 
-
-
-
 SET _name = trim(_name);
+SET _displayName = trim(_displayName);
 SET _value = trim(_value);
 
-
 INSERT INTO settings
-	(name, value)
+	(name, displayName, value)
 VALUES 
-	(_name, _value)
+	(_name, _displayName, _value)
 ON DUPLICATE KEY UPDATE
 	name = _name,
+    displayName = _displayName,
 	value = _value;
     
 END$$

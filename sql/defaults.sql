@@ -1,16 +1,16 @@
 /* Create the necessary settings */
-CALL editSetting(NULL, 'mqttServer', 'my.mqttserver.com');
-CALL editSetting(NULL, 'mqttPort', '1883');
-CALL editSetting(NULL, 'mqttUsername', '$DEVICENAME$');
-CALL editSetting(NULL, 'mqttPassword', '$DEVICENAME$');
-CALL editSetting(NULL, 'clientTopic', 'myhouse/client/$DEVICENAME$');
-CALL editSetting(NULL, 'controlTopic', 'myhouse/control/');
-CALL editSetting(NULL, 'eventTopic', 'myhouse/button/');
-CALL editSetting(NULL, 'wifiSSID', 'myWiFiSSID');
-CALL editSetting(NULL, 'wifiKey', 'myWiFiPassword');
-CALL editSetting(NULL, 'bootstrapURL', 'http://myBootstrapServer.com/$DEVICENAME$');
-CALL editSetting(NULL, 'bootstrapRefreshMs', 3600000);
-CALL editSetting(NULL, 'firmwareRefreshMs', 3600000);
+CALL editSetting(NULL, 'mqttServer', 'MQTT Server Name', 'my.mqttserver.com');
+CALL editSetting(NULL, 'mqttPort', 'MQTT Server Port', '1883');
+CALL editSetting(NULL, 'mqttUsername', 'MQTT Username', '$DEVICENAME$');
+CALL editSetting(NULL, 'mqttPassword', 'MQTT Password', '$DEVICENAME$');
+CALL editSetting(NULL, 'clientTopic', 'MQTT Client Topic', 'myhouse/client/$DEVICENAME$');
+CALL editSetting(NULL, 'controlTopic', 'MQTT Control Topic', 'myhouse/control/');
+CALL editSetting(NULL, 'eventTopic', 'MQTT Event Topic', 'myhouse/button/');
+CALL editSetting(NULL, 'wifiSSID', 'WiFi SSID Name', 'myWiFiSSID');
+CALL editSetting(NULL, 'wifiKey', 'WiFi Password', 'myWiFiPassword');
+CALL editSetting(NULL, 'bootstrapURL', 'Bootstrap URL', 'http://myBootstrapServer.com/api/controller/devicename/$DEVICENAME$');
+CALL editSetting(NULL, 'bootstrapRefreshMs', 'Bootstrap Refresh (ms)', 3600000);
+CALL editSetting(NULL, 'firmwareRefreshMs', 'Firmware Refresh (ms)', 3600000);
 
 /* Create the button colors */
 CALL editButtonColor(NULL, 'Blue', 'Blue', '#034efc', 0, 100);
