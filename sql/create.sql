@@ -347,6 +347,11 @@ CREATE TABLE IF NOT EXISTS `firefly`.`getInputs` (`controllerId` INT, `name` INT
 CREATE TABLE IF NOT EXISTS `firefly`.`getOutputs` (`outputId` INT, `controllerId` INT, `name` INT, `displayName` INT, `outputType` INT, `pin` INT, `controllerPort` INT, `position` INT, `enabled` INT, `amperage` INT, `breakerId` INT, `json` INT);
 
 -- -----------------------------------------------------
+-- Placeholder table for view `firefly`.`getSettings`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `firefly`.`getSettings` (`id` INT, `name` INT, `displayName` INT, `value` INT, `json` INT);
+
+-- -----------------------------------------------------
 -- Placeholder table for view `firefly`.`getSwitchButtons`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `firefly`.`getSwitchButtons` (`switchId` INT, `json` INT);
@@ -1859,6 +1864,14 @@ DROP TABLE IF EXISTS `firefly`.`getOutputs`;
 DROP VIEW IF EXISTS `firefly`.`getOutputs` ;
 USE `firefly`;
 CREATE  OR REPLACE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `firefly`.`getOutputs` AS select `firefly`.`outputs`.`id` AS `outputId`,`firefly`.`outputs`.`controllerId` AS `controllerId`,`firefly`.`outputs`.`name` AS `name`,`firefly`.`outputs`.`displayName` AS `displayName`,`firefly`.`outputs`.`outputType` AS `outputType`,`firefly`.`outputs`.`pin` AS `pin`,`firefly`.`outputs`.`controllerPort` AS `controllerPort`,if((`firefly`.`outputs`.`outputType` = 'BINARY'),1,2) AS `position`,if(`firefly`.`outputs`.`enabled`,'TRUE','FALSE') AS `enabled`,`firefly`.`outputs`.`amperage` AS `amperage`,`firefly`.`outputs`.`breakerId` AS `breakerId`,json_object('name',`firefly`.`outputs`.`name`,'displayName',`firefly`.`outputs`.`displayName`,'outputType',`firefly`.`outputs`.`outputType`,'pin',`firefly`.`outputs`.`pin`,'enabled',((0 <> `firefly`.`outputs`.`enabled`) is true),'amperage',`firefly`.`outputs`.`amperage`,'breakerId',`firefly`.`outputs`.`breakerId`) AS `json` from `firefly`.`outputs`;
+
+-- -----------------------------------------------------
+-- View `firefly`.`getSettings`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `firefly`.`getSettings`;
+DROP VIEW IF EXISTS `firefly`.`getSettings` ;
+USE `firefly`;
+CREATE  OR REPLACE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `firefly`.`getSettings` AS select `firefly`.`settings`.`id` AS `id`,`firefly`.`settings`.`name` AS `name`,`firefly`.`settings`.`displayName` AS `displayName`,`firefly`.`settings`.`value` AS `value`,json_object('id',`firefly`.`settings`.`id`,'name',`firefly`.`settings`.`name`,'displayName',`firefly`.`settings`.`displayName`,'value',`firefly`.`settings`.`value`) AS `json` from `firefly`.`settings`;
 
 -- -----------------------------------------------------
 -- View `firefly`.`getSwitchButtons`
