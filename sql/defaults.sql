@@ -1,16 +1,16 @@
 /* Create the necessary settings */
-CALL editSetting(NULL, 'mqttServer', 'MQTT Server Name', 'my.mqttserver.com');
-CALL editSetting(NULL, 'mqttPort', 'MQTT Server Port', '1883');
-CALL editSetting(NULL, 'mqttUsername', 'MQTT Username', '$DEVICENAME$');
-CALL editSetting(NULL, 'mqttPassword', 'MQTT Password', '$DEVICENAME$');
-CALL editSetting(NULL, 'clientTopic', 'MQTT Client Topic', 'myhouse/client/$DEVICENAME$');
-CALL editSetting(NULL, 'controlTopic', 'MQTT Control Topic', 'myhouse/control/');
-CALL editSetting(NULL, 'eventTopic', 'MQTT Event Topic', 'myhouse/button/');
-CALL editSetting(NULL, 'wifiSSID', 'WiFi SSID Name', 'myWiFiSSID');
-CALL editSetting(NULL, 'wifiKey', 'WiFi Password', 'myWiFiPassword');
-CALL editSetting(NULL, 'bootstrapURL', 'Bootstrap URL', 'http://myBootstrapServer.com/api/controller/devicename/$DEVICENAME$');
-CALL editSetting(NULL, 'bootstrapRefreshMs', 'Bootstrap Refresh (ms)', 3600000);
-CALL editSetting(NULL, 'firmwareRefreshMs', 'Firmware Refresh (ms)', 3600000);
+INSERT INTO settings (name, displayName, value) VALUES ('mqttServer', 'MQTT Server Name', 'my.mqttserver.com');
+INSERT INTO settings (name, displayName, value) VALUES ('mqttPort', 'MQTT Server Port', '1883');
+INSERT INTO settings (name, displayName, value) VALUES ('mqttUsername', 'MQTT Username', '$DEVICENAME$');
+INSERT INTO settings (name, displayName, value) VALUES ('mqttPassword', 'MQTT Password', '$DEVICENAME$');
+INSERT INTO settings (name, displayName, value) VALUES ('clientTopic', 'MQTT Client Topic', 'myhouse/client/$DEVICENAME$');
+INSERT INTO settings (name, displayName, value) VALUES ('controlTopic', 'MQTT Control Topic', 'myhouse/control/');
+INSERT INTO settings (name, displayName, value) VALUES ('eventTopic', 'MQTT Event Topic', 'myhouse/button/');
+INSERT INTO settings (name, displayName, value) VALUES ('wifiSSID', 'WiFi SSID Name', 'myWiFiSSID');
+INSERT INTO settings (name, displayName, value) VALUES ('wifiKey', 'WiFi Password', 'myWiFiPassword');
+INSERT INTO settings (name, displayName, value) VALUES ('bootstrapURL', 'Bootstrap URL', 'http://myBootstrapServer.com/api/controller/devicename/$DEVICENAME$');
+INSERT INTO settings (name, displayName, value) VALUES ('bootstrapRefreshMs', 'Bootstrap Refresh (ms)', 3600000);
+INSERT INTO settings (name, displayName, value) VALUES ('firmwareRefreshMs', 'Firmware Refresh (ms)', 3600000);
 
 /* Create the button colors */
 CALL editButtonColor(NULL, 'Blue', 'Blue', '#034efc', 0, 100);

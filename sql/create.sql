@@ -1236,27 +1236,15 @@ DELIMITER $$
 USE `firefly`$$
 CREATE PROCEDURE `editSetting`(
 IN _id int,
-IN _name varchar(20),
-IN _displayName varchar(40),
 IN _value varchar(255)
 )
 BEGIN
 
-SET _name = trim(_name);
-SET _displayName = trim(_displayName);
 SET _value = trim(_value);
 
-INSERT INTO settings
-	(name, displayName, value)
-VALUES 
-	(_name, _displayName, _value)
-ON DUPLICATE KEY UPDATE
-	name = _name,
-    displayName = _displayName,
-	value = _value;
+UPDATE settings SET value = _value WHERE id = _id;
     
 END$$
-
 DELIMITER ;
 
 -- -----------------------------------------------------
