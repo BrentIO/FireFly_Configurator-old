@@ -256,7 +256,7 @@ DROP TABLE IF EXISTS `firefly`.`firmware` ;
 
 CREATE TABLE IF NOT EXISTS `firefly`.`firmware` (
   `id` INT NOT NULL AUTO_INCREMENT,
-  `deviceType` ENUM('CONTROLLER', 'CLIENT') NOT NULL,
+  `deviceType` ENUM('CONTROLLER', 'SWITCH') NOT NULL,
   `version` INT NOT NULL,
   `url` VARCHAR(255) NOT NULL,
   PRIMARY KEY (`id`),
@@ -1072,7 +1072,7 @@ DROP procedure IF EXISTS `firefly`.`editFirmware`;
 DELIMITER $$
 USE `firefly`$$
 CREATE PROCEDURE `editFirmware`(IN _id int, 
-IN _deviceType ENUM('CONTROLLER','CLIENT'), 
+IN _deviceType ENUM('CONTROLLER','SWITCH'), 
 IN _version int, 
 IN _url varchar(255))
 BEGIN
@@ -1298,7 +1298,7 @@ SELECT
 INTO _firmwareId_ FROM
     firmware
 WHERE
-    id = _firmwareId AND deviceType = 'CLIENT';
+    id = _firmwareId AND deviceType = 'SWITCH';
 
 
 IF _firmwareId_ is null THEN
