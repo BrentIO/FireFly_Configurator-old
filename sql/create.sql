@@ -1335,8 +1335,8 @@ SELECT
 INTO _firmwareId_ FROM
     firmware
 WHERE
-    id = _firmwareId AND deviceType = 'SWITCH';
-
+    id = _firmwareId
+        AND deviceType = 'SWITCH';
 
 IF _firmwareId_ is null THEN
 
