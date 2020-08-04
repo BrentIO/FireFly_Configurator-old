@@ -105,9 +105,11 @@ paths:
               name:
                 type: string
                 description: "Unique name of the circuit breaker"
+                maxLength: 20
               displayName:
                 type: string
                 description: "A descriptive display name of the circuit breaker"
+                maxLength: 20
               amperage:
                 type: integer
                 description: "The amperage of the circuit breaker"
@@ -190,9 +192,11 @@ paths:
             name:
               type: string
               description: "Unique name of the circuit breaker"
+              maxLength: 20
             displayName:
               type: string
               description: "A descriptive display name of the circuit breaker"
+              maxLength: 20
             amperage:
               type: integer
               description: "The amperage of the circuit breaker"
@@ -296,12 +300,15 @@ paths:
               name:
                 type: string
                 description: "Unique name of the button LED color"
+                maxLength: 20
               displayName:
                 type: string
                 description: "A descriptive display name of the button LED color"
+                maxLength: 20
               hexValue:
                 type: string
                 description: "The button LED color in hex (#XXXXXX), hash sign optional"
+                maxLength: 7
               brightnessMinimum:
                 type: integer
                 minimum: 0
@@ -390,12 +397,15 @@ paths:
             name:
               type: string
               description: "Unique name of the button LED color"
+              maxLength: 20
             displayName:
               type: string
               description: "A descriptive display name of the button LED color"
+              maxLength: 20
             hexValue:
               type: string
               description: "The button LED color in hex (#XXXXXX), hash sign optional"
+              maxLength: 7
             brightnessMinimum:
               type: integer
               minimum: 0
@@ -500,9 +510,11 @@ paths:
               name:
                 type: string
                 description: "Unique name of the brightness level"
+                maxLength: 20
               displayName:
                 type: string
                 description: "A descriptive display name of the brightness level"
+                maxLength: 20
               brightnessValue:
                 type: integer
                 minimum: 0
@@ -584,9 +596,11 @@ paths:
               name:
                 type: string
                 description: "Unique name of the brightness level"
+                maxLength: 20
               displayName:
                 type: string
                 description: "A descriptive display name of the brightness level"
+                maxLength: 20
               brightnessValue:
                 type: integer
                 minimum: 0
@@ -690,30 +704,39 @@ paths:
               name:
                 type: string
                 description: "Name of the controller"
+                maxLength: 20
               displayName:
                 type: string
                 description: "A descriptive display name of the controller"
+                maxLength: 20
               macAddress:
                 type: string
                 description: "Unique MAC hardware address of the controller"
+                maxLength: 17
               ipAddress:
                 type: string
                 description: "IP address of the controller"
+                maxLength: 15
               subnet:
                 type: string
                 description: "Subnet mask of the controller"
+                maxLength: 15
               dns:
                 type: string
                 description: "IP address of the DNS server"
+                maxLength: 15
               gateway:
                 type: string
                 description: "IP address of the network gateway"
+                maxLength: 15
               mqttUsername:
                 type: string
                 description: "Override of the default MQTT username"
+                maxLength: 20
               mqttPassword:
                 type: string
                 description: "Override of the default MQTT password"
+                maxLength: 255
               hwVersion:
                 type: integer
                 description: "Hardware version"
@@ -797,30 +820,39 @@ paths:
               name:
                 type: string
                 description: "Name of the controller"
+                maxLength: 20
               displayName:
                 type: string
                 description: "A descriptive display name of the controller"
+                maxLength: 20
               macAddress:
                 type: string
                 description: "Unique MAC hardware address of the controller"
+                maxLength: 17
               ipAddress:
                 type: string
                 description: "IP address of the controller"
+                maxLength: 15
               subnet:
                 type: string
                 description: "Subnet mask of the controller"
+                maxLength: 15
               dns:
                 type: string
                 description: "IP address of the DNS server"
+                maxLength: 15
               gateway:
                 type: string
                 description: "IP address of the network gateway"
+                maxLength: 15
               mqttUsername:
                 type: string
                 description: "Override of the default MQTT username"
+                maxLength: 20
               mqttPassword:
                 type: string
                 description: "Override of the default MQTT password"
+                maxLength: 255
               hwVersion:
                 type: integer
                 description: "Hardware version"
@@ -983,12 +1015,14 @@ paths:
           description: "The setting to edit"
           schema:
             type: string
+            maxLength: 20
             required:
               - value
             properties:
               value:
                 type: string
                 description: "The value this setting represents"
+                maxLength: 255
               
       security: 
         - ApiKeyAuth: [] 
@@ -1048,9 +1082,11 @@ definitions:
       name:
         type: string
         description: "Unique name"
+        maxLength: 20
       displayName:
         type: string
         description: "A descriptive display name"
+        maxLength: 20
       amperage:
         type: integer
         description: "The amperage of the circuit breaker"
@@ -1069,12 +1105,15 @@ definitions:
       name:
         type: string
         description: "Unique name"
+        maxLength: 20
       displayName:
         type: string
         description: "A descriptive display name"
+        maxLength: 20
       hexValue:
         type: string
         description: "The button LED color in hex (#XXXXXX)"
+        maxLength: 7
       brightnessMinimum:
         type: integer
         minimum: 0
@@ -1098,9 +1137,11 @@ definitions:
       name:
         type: string
         description: "Unique name"
+        maxLength: 20
       displayName:
         type: string
         description: "A descriptive display name"
+        maxLength: 20
       brightnessValue:
         type: integer
         minimum: 0
@@ -1120,30 +1161,39 @@ definitions:
       name:
         type: string
         description: "Name of the controller"
+        maxLength: 20
       displayName:
         type: string
         description: "A descriptive display name"
+        maxLength: 20
       macAddress:
         type: string
         description: "Unique MAC hardware address"
+        maxLength: 17
       ipAddress:
         type: string
         description: "IP address"
+        maxLength: 15
       subnet:
         type: string
         description: "Subnet mask"
+        maxLength: 15
       dns:
         type: string
         description: "IP address of the DNS server"
+        maxLength: 15
       gateway:
         type: string
         description: "IP address of the network gateway"
+        maxLength: 15
       mqttUsername:
         type: string
         description: "Override of the default MQTT username"
+        maxLength: 20
       mqttPassword:
         type: string
         description: "Override of the default MQTT password"
+        maxLength: 255
       hwVersion:
         type: integer
         description: "Hardware version"
