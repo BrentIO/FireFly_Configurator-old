@@ -51,7 +51,6 @@ GRANT EXECUTE ON PROCEDURE firefly.getHeartbeat TO 'firefly'@'localhost';
 /* Grant permissions to the functions */ 
 GRANT EXECUTE ON FUNCTION firefly.adjustBrightnessLevels TO 'firefly'@'localhost';
 GRANT EXECUTE ON FUNCTION firefly.formatMacAddress TO 'firefly'@'localhost';
-GRANT EXECUTE ON FUNCTION firefly.getBootstrapURL TO 'firefly'@'localhost';
 GRANT EXECUTE ON FUNCTION firefly.getButtonColorId TO 'firefly'@'localhost';
 GRANT EXECUTE ON FUNCTION firefly.getMQTTPassword TO 'firefly'@'localhost';
 GRANT EXECUTE ON FUNCTION firefly.getMQTTUsername TO 'firefly'@'localhost';
