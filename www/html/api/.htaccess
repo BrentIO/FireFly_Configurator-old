@@ -18,3 +18,5 @@ RewriteRule "^/?ports/available/([^/]+)" "portsAvailable.php?controllerId=$1" [P
 RewriteRule "^/?ports/assigned/([^/]+)" "portsAssigned.php?controllerId=$1" [PT]
 RewriteRule "^/?setting/([^/]+)" "setting.php?id=$1" [PT]
 RewriteRule "^/?setting$" "setting.php" [PT]
+RewriteRule "^/?firmware/([^/]+)" "firmware.php?id=$1" [PT]
+RewriteRule "^/?firmware$" "firmware.php" [PT]

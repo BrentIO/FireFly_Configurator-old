@@ -337,6 +337,11 @@ CREATE TABLE IF NOT EXISTS `firefly`.`getControllerPortsUsed` (`controllerId` IN
 CREATE TABLE IF NOT EXISTS `firefly`.`getControllers` (`id` INT, `macAddress` INT, `name` INT, `displayName` INT, `ipAddress` INT, `subnet` INT, `dns` INT, `gateway` INT, `json` INT);
 
 -- -----------------------------------------------------
+-- Placeholder table for view `firefly`.`getFirmware`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `firefly`.`getFirmware` (`id` INT, `deviceType` INT, `version` INT, `url` INT, `json` INT);
+
+-- -----------------------------------------------------
 -- Placeholder table for view `firefly`.`getInputs`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `firefly`.`getInputs` (`controllerId` INT, `name` INT, `displayName` INT, `pin` INT, `circuitType` INT, `broadcastOnStateChange` INT, `enabled` INT, `outputs` INT, `json` INT);
@@ -612,6 +617,41 @@ END IF;
 
 
 DELETE FROM controllerPins 
+WHERE
+    id = _id;
+
+END$$
+
+DELIMITER ;
+
+-- -----------------------------------------------------
+-- procedure deleteFirmware
+-- -----------------------------------------------------
+
+USE `firefly`;
+DROP procedure IF EXISTS `firefly`.`deleteFirmware`;
+
+DELIMITER $$
+USE `firefly`$$
+CREATE PROCEDURE `deleteFirmware`(IN _id int)
+BEGIN
+
+DECLARE firmwareCount int;
+
+SELECT 
+    COUNT(*)
+INTO firmwareCount FROM
+    switches
+WHERE
+    firmwareId = _id;
+
+IF firmwareCount > 0 THEN
+
+	SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'One or more switches are using this firmware.';
+
+END IF;
+
+DELETE FROM firmware 
 WHERE
     id = _id;
 
@@ -1836,6 +1876,14 @@ DROP TABLE IF EXISTS `firefly`.`getControllers`;
 DROP VIEW IF EXISTS `firefly`.`getControllers` ;
 USE `firefly`;
 CREATE  OR REPLACE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `getControllers` AS select `controllers`.`id` AS `id`,`FORMATMACADDRESS`(`controllers`.`macAddress`) AS `macAddress`,`controllers`.`name` AS `name`,`controllers`.`displayName` AS `displayName`,inet_ntoa(`controllers`.`ipAddress`) AS `ipAddress`,inet_ntoa(`controllers`.`subnet`) AS `subnet`,inet_ntoa(`controllers`.`dns`) AS `dns`,inet_ntoa(`controllers`.`gateway`) AS `gateway`,json_object('id',`controllers`.`id`,'name',`controllers`.`name`,'displayName',`controllers`.`displayName`,'network',json_object('macAddress',`FORMATMACADDRESS`(`controllers`.`macAddress`),'ipAddress',inet_ntoa(`controllers`.`ipAddress`),'subnet',inet_ntoa(`controllers`.`subnet`),'dns',inet_ntoa(`controllers`.`dns`),'gateway',inet_ntoa(`controllers`.`gateway`)),'mqtt',json_object('serverName',`GETSETTING`('mqttServer'),'port',cast(`GETSETTING`('mqttPort') as unsigned),'username',`GETMQTTUSERNAME`(`controllers`.`macAddress`),'password',`GETMQTTPASSWORD`(`controllers`.`macAddress`),'topics',json_object('client',`GETSETTING`('clientTopic'),'control',`GETSETTING`('controlTopic'),'event',`GETSETTING`('eventTopic')))) AS `json` from `controllers`;
+
+-- -----------------------------------------------------
+-- View `firefly`.`getFirmware`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `firefly`.`getFirmware`;
+DROP VIEW IF EXISTS `firefly`.`getFirmware` ;
+USE `firefly`;
+CREATE  OR REPLACE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `firefly`.`getFirmware` AS select `firefly`.`firmware`.`id` AS `id`,`firefly`.`firmware`.`deviceType` AS `deviceType`,`firefly`.`firmware`.`version` AS `version`,`firefly`.`firmware`.`url` AS `url`,json_object('id',`firefly`.`firmware`.`id`,'deviceType',`firefly`.`firmware`.`deviceType`,'version',`firefly`.`firmware`.`version`,'url',`firefly`.`firmware`.`url`) AS `json` from `firefly`.`firmware`;
 
 -- -----------------------------------------------------
 -- View `firefly`.`getInputs`

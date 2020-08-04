@@ -1042,6 +1042,205 @@ paths:
         500:
           description: "Internal Server Error"
 
+  /firmware:
+    get:
+      tags:
+      - "Settings"
+      produces:
+      - "application/json"
+      description: "Retrieves a list of all firmware" 
+      operationId: listFirmware
+      security: 
+        - ApiKeyAuth: [] 
+      responses:
+        200:
+          description: "Success"
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/Firmware"
+        400:
+          description: "Bad Request"
+          schema:
+            $ref: "#/definitions/Error"
+        401:
+          description: "Unauthorized"
+        500:
+          description: "Internal Server Error"
+    post:
+      tags:
+      - "Settings"
+      produces:
+      - "application/json"
+      consumes:
+      - "application/json"
+      description: "Creates a new firmware" 
+      operationId: createFirmware
+      parameters:
+        - in: body
+          name: controller
+          description: "The firmware to create"
+          schema:
+            type: object
+            required:
+                - deviceType
+                - version
+                - url
+            properties:
+              deviceType:
+                type: string
+                description: "Targeted Device Type"
+                maxLength: 10
+                enum:
+                  - "Switch"
+              version:
+                type: integer
+                description: "Firmware version number"
+              url:
+                type: string
+                description: "Location where the firmware can be downloaded"
+                maxLength: 255
+              
+      security: 
+        - ApiKeyAuth: [] 
+      responses:
+        200:
+          description: "Success"
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/ButtonLEDColor"
+        400:
+          description: "Bad Request"
+          schema:
+            $ref: "#/definitions/Error"
+        401:
+          description: "Unauthorized"
+        500:
+          description: "Internal Server Error"
+
+  /firmware/{id}:
+    get:
+      tags:
+      - "Settings"
+      produces:
+      - "application/json"
+      description: "Retrieves a firmware by ID" 
+      operationId: getFirmwareByID
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "ID of the firmware to return"
+        required: true
+        type: "integer"
+        format: "int32"
+      security: 
+        - ApiKeyAuth: [] 
+      responses:
+        200:
+          description: "Success"
+          schema:
+              $ref: "#/definitions/Firmware"
+        400:
+          description: "Bad Request"
+          schema:
+            $ref: "#/definitions/Error"
+        401:
+          description: "Unauthorized"
+        404:
+          description: "Not Found"
+          schema:
+            $ref: "#/definitions/Error"
+        500:
+          description: "Internal Server Error"
+    patch:
+      tags:
+      - "Settings"
+      produces:
+      - "application/json"
+      consumes:
+      - "application/json"
+      description: "Edits an existing firmware by ID" 
+      operationId: editFirmware
+      parameters:
+        - name: "id"
+          in: "path"
+          description: "ID of the firmware to edit"
+          required: true
+          type: "integer"
+          format: "int32"
+        - in: body
+          name: firmware
+          description: "The controller to edit"
+          schema:
+            type: object
+            required:
+              - id
+              - macAddress
+              - hwVersion
+            properties:
+              deviceType:
+                type: string
+                description: "Targeted Device Type"
+                maxLength: 10
+                enum:
+                  - "Switch"
+              version:
+                type: integer
+                description: "Firmware version number"
+              url:
+                type: string
+                description: "Location where the firmware can be downloaded"
+                maxLength: 255
+      security: 
+        - ApiKeyAuth: [] 
+      responses:
+        200:
+          description: "Success"
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/Firmware"
+        400:
+          description: "Bad Request"
+          schema:
+            $ref: "#/definitions/Error"
+        401:
+          description: "Unauthorized"
+        500:
+          description: "Internal Server Error"
+    delete:
+      tags:
+      - "Settings"
+      produces:
+      - "application/json"
+      description: "Deletes a firmware by ID" 
+      operationId: deleteFirmware
+      security: 
+        - ApiKeyAuth: [] 
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "ID of the firmware to delete"
+        required: true
+        type: "integer"
+        format: "int32"
+      responses:
+        200:
+          description: "Success"
+        400:
+          description: "Bad Request"
+          schema:
+            $ref: "#/definitions/Error"
+        401:
+          description: "Unauthorized"
+        404:
+          description: "Not Found"
+          schema:
+            $ref: "#/definitions/Error"
+        500:
+          description: "Internal Server Error"
+
 
 #Security
 securityDefinitions:
@@ -1212,9 +1411,37 @@ definitions:
       name:
         type: string
         description: "Unique name"
+        maxLength: 20
       displayName:
         type: string
         description: "A descriptive display name"
+        maxLength: 40
       value:
         type: string
         description: "The value this setting represents"
+        maxLength: 255
+
+  Firmware:
+    type: object
+    required:
+      - id
+      - deviceType
+      - version
+      - url
+    properties:
+      id:
+        type: integer
+        description: "Unique ID"
+      deviceType:
+        type: string
+        description: "Targeted Device Type"
+        maxLength: 10
+        enum:
+          - "Switch"
+      version:
+        type: integer
+        description: "Firmware version number"
+      url:
+        type: string
+        description: "Location where the firmware can be downloaded"
+        maxLength: 255

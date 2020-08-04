@@ -13,6 +13,7 @@ GRANT SELECT ON firefly.getControllerPinsUsed TO 'firefly'@'localhost';
 GRANT SELECT ON firefly.getControllerPortsUnused TO 'firefly'@'localhost';
 GRANT SELECT ON firefly.getControllerPortsUsed TO 'firefly'@'localhost';
 GRANT SELECT ON firefly.getControllers TO 'firefly'@'localhost';
+GRANT SELECT ON firefly.getFirmware TO 'firefly'@'localhost';
 GRANT SELECT ON firefly.getInputs TO 'firefly'@'localhost';
 GRANT SELECT ON firefly.getOutputs TO 'firefly'@'localhost';
 GRANT SELECT ON firefly.getSettings TO 'firefly'@'localhost';
@@ -26,6 +27,7 @@ GRANT EXECUTE ON PROCEDURE firefly.deleteBrightnessName TO 'firefly'@'localhost'
 GRANT EXECUTE ON PROCEDURE firefly.deleteButtonColor TO 'firefly'@'localhost';
 GRANT EXECUTE ON PROCEDURE firefly.deleteController TO 'firefly'@'localhost';
 GRANT EXECUTE ON PROCEDURE firefly.deleteControllerPins TO 'firefly'@'localhost';
+GRANT EXECUTE ON PROCEDURE firefly.deleteFirmware TO 'firefly'@'localhost';
 GRANT EXECUTE ON PROCEDURE firefly.deleteInput TO 'firefly'@'localhost';
 GRANT EXECUTE ON PROCEDURE firefly.deleteOutput TO 'firefly'@'localhost';
 GRANT EXECUTE ON PROCEDURE firefly.deleteSetting TO 'firefly'@'localhost';
