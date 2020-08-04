@@ -24,6 +24,9 @@ CALL editBrightnessName(NULL, 'Bright', 'Bright', 100);
 CALL editBrightnessName(NULL, 'Dim', 'Dim', 30);
 CALL editBrightnessName(NULL, 'Default', 'Default', 80);
 
+/* Create a default controller */
+CALL editController(NULL, '00:00:00:00:00:00', 'Version 2 Default', 'Version 2 Default', '0.0.0.0', '0.0.0.0', '0.0.0.0', '0.0.0.0', NULL, NULL, 2);
+
 /* Create the controller pins */
 CALL editControllerPins(NULL, 2, 2, true, true, true);
 CALL editControllerPins(NULL, 2, 3, true, true, true);
