@@ -25,7 +25,7 @@
             throw new Exception("Invalid body", 400);
         }
 
-        //Populate the breaker object with a preferene for the URL rather than the payload
+        //Populate the controller object with a preferene for the URL rather than the payload
         if(isset($_GET_lower['id']) && $_GET_lower['id'] != "" && is_numeric($_GET_lower['id']) == True){
 
             $controller->id = intval($_GET_lower['id']);
@@ -37,13 +37,7 @@
             }   
 
         }
-
-        if(isset($_GET_lower['devicename'])){
-
-            $controller->macAddress = substr($_GET_lower['devicename'], 0, 2) . ":" . substr($_GET_lower['devicename'], 2, 2) . ":" . substr($_GET_lower['devicename'], 4, 2) . ":" . substr($_GET_lower['devicename'], 6, 2) . ":" . substr($_GET_lower['devicename'], 8, 2) . ":" . substr($_GET_lower['devicename'], 10, 2);
-            $controller->macAddress = strtoupper($controller->macAddress);
-        }     
-        
+ 
         //Populate the object from the payload of the body
         if(isset($data['name'])){
             $controller->name = $data['name'];
