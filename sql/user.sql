@@ -8,6 +8,7 @@ GRANT SELECT ON firefly.getBreakers TO 'firefly'@'localhost';
 GRANT SELECT ON firefly.getButtonColors TO 'firefly'@'localhost';
 GRANT SELECT ON firefly.getBrightnessNames TO 'firefly'@'localhost';
 GRANT SELECT ON firefly.getColorBrightnessNames TO 'firefly'@'localhost';
+GRANT SELECT ON firefly.getControllerBootstraps TO 'firefly'@'localhost';
 GRANT SELECT ON firefly.getControllerPinsUnused TO 'firefly'@'localhost';
 GRANT SELECT ON firefly.getControllerPinsUsed TO 'firefly'@'localhost';
 GRANT SELECT ON firefly.getControllerPortsUnused TO 'firefly'@'localhost';
