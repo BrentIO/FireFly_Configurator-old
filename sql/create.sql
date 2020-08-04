@@ -360,6 +360,11 @@ CREATE TABLE IF NOT EXISTS `firefly`.`getOutputs` (`outputId` INT, `controllerId
 CREATE TABLE IF NOT EXISTS `firefly`.`getSettings` (`id` INT, `name` INT, `displayName` INT, `value` INT, `json` INT);
 
 -- -----------------------------------------------------
+-- Placeholder table for view `firefly`.`getSwitchBootstraps`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `firefly`.`getSwitchBootstraps` (`switchId` INT, `macAddress` INT, `deviceName` INT, `firmwareVersion` INT, `firmwareURL` INT, `name` INT, `displayName` INT, `json` INT);
+
+-- -----------------------------------------------------
 -- Placeholder table for view `firefly`.`getSwitchButtons`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `firefly`.`getSwitchButtons` (`switchId` INT, `json` INT);
@@ -1854,6 +1859,14 @@ DROP TABLE IF EXISTS `firefly`.`getSettings`;
 DROP VIEW IF EXISTS `firefly`.`getSettings` ;
 USE `firefly`;
 CREATE  OR REPLACE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `firefly`.`getSettings` AS select `firefly`.`settings`.`id` AS `id`,`firefly`.`settings`.`name` AS `name`,`firefly`.`settings`.`displayName` AS `displayName`,`firefly`.`settings`.`value` AS `value`,json_object('id',`firefly`.`settings`.`id`,'name',`firefly`.`settings`.`name`,'displayName',`firefly`.`settings`.`displayName`,'value',`firefly`.`settings`.`value`) AS `json` from `firefly`.`settings`;
+
+-- -----------------------------------------------------
+-- View `firefly`.`getSwitchBootstraps`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `firefly`.`getSwitchBootstraps`;
+DROP VIEW IF EXISTS `firefly`.`getSwitchBootstraps` ;
+USE `firefly`;
+CREATE  OR REPLACE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `firefly`.`getSwitchBootstraps` AS select `firefly`.`switches`.`id` AS `switchId`,`FORMATMACADDRESS`(`firefly`.`switches`.`macAddress`) AS `macAddress`,hex(`firefly`.`switches`.`macAddress`) AS `deviceName`,`firefly`.`firmware`.`version` AS `firmwareVersion`,`firefly`.`firmware`.`url` AS `firmwareURL`,`firefly`.`switches`.`name` AS `name`,`firefly`.`switches`.`name` AS `displayName`,json_object('id',`firefly`.`switches`.`id`,'name',`firefly`.`switches`.`name`,'displayName',`firefly`.`switches`.`displayName`,'firmware',json_object('url',`firefly`.`firmware`.`url`,'refreshMilliseconds',cast(`GETSETTING`('firmwareRefreshMs') as unsigned)),'network',json_object('ssid',`GETSETTING`('wifiSSID'),'key',`GETSETTING`('wifiKey')),'mqtt',json_object('serverName',`GETSETTING`('mqttServer'),'port',`GETSETTING`('mqttPort'),'username',`GETMQTTUSERNAME`(`firefly`.`switches`.`macAddress`),'password',`GETMQTTPASSWORD`(`firefly`.`switches`.`macAddress`),'topics',json_object('control',`GETSETTING`('controlTopic'),'event',`GETSETTING`('eventTopic'),'client',`GETSETTING`('clientTopic'))),'buttons',ifnull(`getSwitchButtons`.`json`,json_array())) AS `json` from ((`firefly`.`switches` join `firefly`.`firmware` on((`firefly`.`switches`.`firmwareId` = `firefly`.`firmware`.`id`))) left join `firefly`.`getSwitchButtons` on((`getSwitchButtons`.`switchId` = `firefly`.`switches`.`id`)));
 
 -- -----------------------------------------------------
 -- View `firefly`.`getSwitchButtons`

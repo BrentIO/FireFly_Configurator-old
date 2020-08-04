@@ -18,6 +18,7 @@ GRANT SELECT ON firefly.getFirmware TO 'firefly'@'localhost';
 GRANT SELECT ON firefly.getInputs TO 'firefly'@'localhost';
 GRANT SELECT ON firefly.getOutputs TO 'firefly'@'localhost';
 GRANT SELECT ON firefly.getSettings TO 'firefly'@'localhost';
+GRANT SELECT ON firefly.getSwitchBootstraps TO 'firefly'@'localhost';
 GRANT SELECT ON firefly.getSwitchButtons TO 'firefly'@'localhost';
 GRANT SELECT ON firefly.getSwitches TO 'firefly'@'localhost';
 
