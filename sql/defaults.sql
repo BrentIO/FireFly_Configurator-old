@@ -8,8 +8,6 @@ INSERT INTO settings (name, displayName, value) VALUES ('controlTopic', 'MQTT Co
 INSERT INTO settings (name, displayName, value) VALUES ('eventTopic', 'MQTT Event Topic', 'myhouse/button/');
 INSERT INTO settings (name, displayName, value) VALUES ('wifiSSID', 'WiFi SSID Name', 'myWiFiSSID');
 INSERT INTO settings (name, displayName, value) VALUES ('wifiKey', 'WiFi Password', 'myWiFiPassword');
-INSERT INTO settings (name, displayName, value) VALUES ('bootstrapURL', 'Bootstrap URL', 'http://myBootstrapServer.com/api/controller/devicename/$DEVICENAME$');
-INSERT INTO settings (name, displayName, value) VALUES ('bootstrapRefreshMs', 'Bootstrap Refresh (ms)', 3600000);
 INSERT INTO settings (name, displayName, value) VALUES ('firmwareRefreshMs', 'Firmware Refresh (ms)', 3600000);
 
 /* Create the button colors */

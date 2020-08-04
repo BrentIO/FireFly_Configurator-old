@@ -54,8 +54,6 @@ CREATE TABLE IF NOT EXISTS `firefly`.`switches` (
   `displayName` VARCHAR(20) NULL DEFAULT NULL,
   `mqttUsername` VARCHAR(20) NULL DEFAULT NULL,
   `mqttPassword` VARCHAR(255) NULL DEFAULT NULL,
-  `bootstrapURL` VARCHAR(255) NULL DEFAULT NULL,
-  `bootstrapCounter` INT NOT NULL DEFAULT '1',
   PRIMARY KEY (`id`),
   UNIQUE INDEX `id_UNIQUE` (`id` ASC) VISIBLE,
   UNIQUE INDEX `macAddress_UNIQUE` (`macAddress` ASC) VISIBLE,
@@ -364,7 +362,7 @@ CREATE TABLE IF NOT EXISTS `firefly`.`getSwitchButtons` (`switchId` INT, `json` 
 -- -----------------------------------------------------
 -- Placeholder table for view `firefly`.`getSwitches`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `firefly`.`getSwitches` (`switchId` INT, `macAddress` INT, `deviceName` INT, `firmwareVersion` INT, `firmwareURL` INT, `bootstrapVersion` INT, `name` INT, `displayName` INT, `json` INT);
+CREATE TABLE IF NOT EXISTS `firefly`.`getSwitches` (`switchId` INT, `macAddress` INT, `deviceName` INT, `firmwareVersion` INT, `firmwareURL` INT, `name` INT, `displayName` INT, `json` INT);
 
 -- -----------------------------------------------------
 -- function adjustBrightnessLevels
@@ -1187,8 +1185,6 @@ ON DUPLICATE KEY UPDATE
     displayName = _displayName,
 	broadcastOnChange = _broadcastOnChange,
 	enabled = _enabled;
-      
-CALL incrementSwitchBootstrapCounter(id_);
 
 END$$
 
@@ -1306,7 +1302,6 @@ IN _name varchar(20),
 IN _displayName varchar(20),
 IN _mqttUsername varchar(20),
 IN _mqttPassword varchar(255),
-IN _bootstrapURL varchar(255),
 IN _firmwareId int
 )
 BEGIN
@@ -1318,8 +1313,6 @@ SET _displayName = trim(_displayName);
 SET _mqttUsername = trim(_mqttUsername);
 SET _mqttPassword = trim(_mqttPassword);
 SET _macAddress = trim(REPLACE(_macAddress, ':',''));
-SET _bootstrapURL = trim(_bootstrapURL);
-
 
 IF length(_mqttUsername) = 0 THEN
 	SET _mqttUsername = NULL;
@@ -1329,8 +1322,12 @@ IF length(_mqttPassword) = 0 THEN
 	SET _mqttPassword = NULL;
 END IF;
 
-IF length(_bootstrapURL) = 0 THEN
-	SET _bootstrapURL = NULL;
+IF _firmwareId IS NULL THEN
+	SELECT id INTO _firmwareId FROM firmware
+	INNER JOIN (SELECT deviceType AS deviceType, MAX(version) AS version FROM firmware GROUP BY deviceType) AS maxVal
+	ON maxVal.deviceType=firmware.deviceType AND maxVal.version = firmware.version
+	WHERE firmware.deviceType='SWITCH';
+
 END IF;
 
 SELECT 
@@ -1347,7 +1344,6 @@ IF _firmwareId_ is null THEN
 
 END IF;
 
-
 INSERT INTO switches
 	(id, controllerId, controllerPort, macAddress, hwVersion, name, displayName, firmwareId)
 VALUES
@@ -1361,12 +1357,7 @@ ON DUPLICATE KEY UPDATE
     displayName = _displayName,
 	mqttUsername = _mqttUsername,
 	mqttPassword = _mqttPassword,
-    bootstrapURL = _bootstrapURL,
     firmwareId = _firmwareId;
-
-   
-
-CALL incrementSwitchBootstrapCounter(id_);
 
 END$$
 
@@ -1780,24 +1771,6 @@ END$$
 DELIMITER ;
 
 -- -----------------------------------------------------
--- procedure incrementSwitchBootstrapCounter
--- -----------------------------------------------------
-
-USE `firefly`;
-DROP procedure IF EXISTS `firefly`.`incrementSwitchBootstrapCounter`;
-
-DELIMITER $$
-USE `firefly`$$
-CREATE PROCEDURE `incrementSwitchBootstrapCounter`(IN _switchId int)
-BEGIN
-
-UPDATE switches SET bootstrapCounter = bootstrapCounter + 1 WHERE id = _switchId;
-
-END$$
-
-DELIMITER ;
-
--- -----------------------------------------------------
 -- View `firefly`.`getActionsJson`
 -- -----------------------------------------------------
 DROP TABLE IF EXISTS `firefly`.`getActionsJson`;
@@ -1923,7 +1896,7 @@ CREATE  OR REPLACE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `firefly`.`getS
 DROP TABLE IF EXISTS `firefly`.`getSwitches`;
 DROP VIEW IF EXISTS `firefly`.`getSwitches` ;
 USE `firefly`;
-CREATE  OR REPLACE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `firefly`.`getSwitches` AS select `firefly`.`switches`.`id` AS `switchId`,`FORMATMACADDRESS`(`firefly`.`switches`.`macAddress`) AS `macAddress`,hex(`firefly`.`switches`.`macAddress`) AS `deviceName`,`firefly`.`firmware`.`version` AS `firmwareVersion`,`firefly`.`firmware`.`url` AS `firmwareURL`,`firefly`.`switches`.`bootstrapCounter` AS `bootstrapVersion`,`firefly`.`switches`.`name` AS `name`,`firefly`.`switches`.`name` AS `displayName`,json_object('version',`firefly`.`switches`.`bootstrapCounter`,'name',`firefly`.`switches`.`name`,'displayName',`firefly`.`switches`.`displayName`,'bootstrap',json_object('url',`GETBOOTSTRAPURL`(`firefly`.`switches`.`macAddress`),'refreshMilliseconds',cast(`GETSETTING`('bootstrapRefreshMs') as unsigned)),'firmware',json_object('url',`firefly`.`firmware`.`url`,'refreshMilliseconds',cast(`GETSETTING`('firmwareRefreshMs') as unsigned)),'network',json_object('ssid',`GETSETTING`('wifiSSID'),'key',`GETSETTING`('wifiKey')),'mqtt',json_object('serverName',`GETSETTING`('mqttServer'),'port',`GETSETTING`('mqttPort'),'username',`GETMQTTUSERNAME`(`firefly`.`switches`.`macAddress`),'password',`GETMQTTPASSWORD`(`firefly`.`switches`.`macAddress`),'topics',json_object('control',`GETSETTING`('controlTopic'),'event',`GETSETTING`('eventTopic'),'client',`GETSETTING`('clientTopic'))),'buttons',`getSwitchButtons`.`json`) AS `json` from ((`firefly`.`switches` join `firefly`.`firmware` on((`firefly`.`switches`.`firmwareId` = `firefly`.`firmware`.`id`))) join `firefly`.`getSwitchButtons` on((`getSwitchButtons`.`switchId` = `firefly`.`switches`.`id`)));
+CREATE  OR REPLACE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `firefly`.`getSwitches` AS select `firefly`.`switches`.`id` AS `switchId`,`FORMATMACADDRESS`(`firefly`.`switches`.`macAddress`) AS `macAddress`,hex(`firefly`.`switches`.`macAddress`) AS `deviceName`,`firefly`.`firmware`.`version` AS `firmwareVersion`,`firefly`.`firmware`.`url` AS `firmwareURL`,`firefly`.`switches`.`name` AS `name`,`firefly`.`switches`.`name` AS `displayName`,json_object('name',`firefly`.`switches`.`name`,'displayName',`firefly`.`switches`.`displayName`,'firmware',json_object('url',`firefly`.`firmware`.`url`,'refreshMilliseconds',cast(`GETSETTING`('firmwareRefreshMs') as unsigned)),'network',json_object('ssid',`GETSETTING`('wifiSSID'),'key',`GETSETTING`('wifiKey')),'mqtt',json_object('serverName',`GETSETTING`('mqttServer'),'port',`GETSETTING`('mqttPort'),'username',`GETMQTTUSERNAME`(`firefly`.`switches`.`macAddress`),'password',`GETMQTTPASSWORD`(`firefly`.`switches`.`macAddress`),'topics',json_object('control',`GETSETTING`('controlTopic'),'event',`GETSETTING`('eventTopic'),'client',`GETSETTING`('clientTopic'))),'buttons',`getSwitchButtons`.`json`) AS `json` from ((`firefly`.`switches` join `firefly`.`firmware` on((`firefly`.`switches`.`firmwareId` = `firefly`.`firmware`.`id`))) join `firefly`.`getSwitchButtons` on((`getSwitchButtons`.`switchId` = `firefly`.`switches`.`id`)));
 
 SET SQL_MODE=@OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
