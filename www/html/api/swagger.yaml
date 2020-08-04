@@ -1084,7 +1084,6 @@ paths:
             type: object
             required:
                 - deviceType
-                - version
                 - url
             properties:
               deviceType:
@@ -1095,7 +1094,7 @@ paths:
                   - "Switch"
               version:
                 type: integer
-                description: "Firmware version number"
+                description: "Firmware version number, if NULL will use latest"
               url:
                 type: string
                 description: "Location where the firmware can be downloaded"
