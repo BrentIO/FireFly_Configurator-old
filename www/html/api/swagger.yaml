@@ -1,3 +1,7 @@
+########################################################################
+##    GENERAL                                                         ##
+########################################################################
+
 swagger: "2.0"
 
 info:
@@ -11,6 +15,16 @@ info:
 host: "10.1.1.87"
 
 basePath: "/api"
+
+schemes:
+- "http"
+
+
+
+
+########################################################################
+##    TAGS                                                            ##
+########################################################################
 
 tags:
 - name: "System Health"
@@ -30,12 +44,15 @@ tags:
 - name: "Settings"
   description: "Retrieves and edits system settings"
 
-schemes:
-- "http"
+
+
+
+########################################################################
+##    PATHS                                                           ##
+########################################################################
 
 paths:
-
-  #Heartbeat
+  ################ Heartbeat ################
   /heartbeat:
     get:
       tags:
@@ -58,7 +75,8 @@ paths:
             $ref: "#/definitions/Error"
       security: []
   
-  #Circuit Breakers
+
+  ################ Circuit Breakers ################
   /breaker:
     get:
       tags:
@@ -84,6 +102,7 @@ paths:
           description: "Unauthorized"
         500:
           description: "Internal Server Error"
+
     post:
       tags:
       - "Circuit Breakers"
@@ -130,7 +149,8 @@ paths:
           description: "Unauthorized"
         500:
           description: "Internal Server Error"
-  
+
+
   /breaker/{id}:
     get:
       tags:
@@ -165,6 +185,7 @@ paths:
             $ref: "#/definitions/Error"
         500:
           description: "Internal Server Error"
+    
     patch:
       tags:
       - "Circuit Breakers"
@@ -250,7 +271,8 @@ paths:
         500:
           description: "Internal Server Error"
   
-  #Switches        
+
+  ################ Switches ################        
   /buttonColor:
     get:
       tags:
@@ -276,6 +298,7 @@ paths:
           description: "Unauthorized"
         500:
           description: "Internal Server Error"
+    
     post:
       tags:
       - "Switches"
@@ -337,6 +360,7 @@ paths:
         500:
           description: "Internal Server Error"
 
+
   /buttonColor/{id}:
     get:
       tags:
@@ -367,6 +391,7 @@ paths:
           description: "Unauthorized"
         500:
           description: "Internal Server Error"
+    
     patch:
       tags:
       - "Switches"
@@ -431,6 +456,7 @@ paths:
           description: "Unauthorized"
         500:
           description: "Internal Server Error"
+    
     delete:
       tags:
       - "Switches"
@@ -463,6 +489,7 @@ paths:
         500:
           description: "Internal Server Error"
 
+
   /brightnessName:
     get:
       tags:
@@ -488,6 +515,7 @@ paths:
           description: "Unauthorized"
         500:
           description: "Internal Server Error"
+    
     post:
       tags:
       - "Switches"
@@ -538,6 +566,7 @@ paths:
         500:
           description: "Internal Server Error"
 
+
   /brightnessName/{id}:
     get:
       tags:
@@ -568,6 +597,7 @@ paths:
           description: "Unauthorized"
         500:
           description: "Internal Server Error"
+    
     patch:
       tags:
       - "Switches"
@@ -623,6 +653,7 @@ paths:
           description: "Unauthorized"
         500:
           description: "Internal Server Error"
+    
     delete:
       tags:
       - "Switches"
@@ -681,6 +712,7 @@ paths:
           description: "Unauthorized"
         500:
           description: "Internal Server Error"
+    
     post:
       tags:
       - "Controllers"
@@ -761,6 +793,7 @@ paths:
         500:
           description: "Internal Server Error"
 
+
   /controller/{id}:
     get:
       tags:
@@ -791,6 +824,7 @@ paths:
           description: "Unauthorized"
         500:
           description: "Internal Server Error"
+    
     patch:
       tags:
       - "Controllers"
@@ -875,6 +909,7 @@ paths:
           description: "Unauthorized"
         500:
           description: "Internal Server Error"
+    
     delete:
       tags:
       - "Controllers"
@@ -907,6 +942,7 @@ paths:
         500:
           description: "Internal Server Error"
 
+
   /controller/bootstrap/{deviceName}:
     get:
       tags:
@@ -937,7 +973,9 @@ paths:
         500:
           description: "Internal Server Error"
 
-  #Settings
+
+
+  ################ Settings ################
   /setting:
     get:
       tags:
@@ -994,6 +1032,7 @@ paths:
           description: "Unauthorized"
         500:
           description: "Internal Server Error"
+    
     patch:
       tags:
       - "Settings"
@@ -1042,14 +1081,15 @@ paths:
         500:
           description: "Internal Server Error"
 
+
   /firmware:
     get:
       tags:
       - "Settings"
       produces:
       - "application/json"
-      description: "Retrieves a list of all firmware" 
-      operationId: listFirmware
+      description: "Retrieves a list of all switches" 
+      operationId: listSwitch
       security: 
         - ApiKeyAuth: [] 
       responses:
@@ -1067,6 +1107,7 @@ paths:
           description: "Unauthorized"
         500:
           description: "Internal Server Error"
+
     post:
       tags:
       - "Settings"
@@ -1118,6 +1159,7 @@ paths:
         500:
           description: "Internal Server Error"
 
+
   /firmware/{id}:
     get:
       tags:
@@ -1152,6 +1194,7 @@ paths:
             $ref: "#/definitions/Error"
         500:
           description: "Internal Server Error"
+    
     patch:
       tags:
       - "Settings"
@@ -1208,6 +1251,7 @@ paths:
           description: "Unauthorized"
         500:
           description: "Internal Server Error"
+    
     delete:
       tags:
       - "Settings"
@@ -1241,15 +1285,29 @@ paths:
           description: "Internal Server Error"
 
 
-#Security
+
+
+
+########################################################################
+##    SECURITY                                                        ##
+########################################################################
+
 securityDefinitions:
   ApiKeyAuth:
       type: apiKey
       in: header
       name: x-api-key
 
-#Defined Objects
+
+
+
+
+########################################################################
+##    DEFINITIONS                                                     ##
+########################################################################
+
 definitions:
+
   Error:
     type: "object"
     properties:
@@ -1257,6 +1315,7 @@ definitions:
         type: "string"
         description: "Additional data about the given error"
   
+
   Heartbeat:
     type: "object"
     properties:
@@ -1267,12 +1326,10 @@ definitions:
       status:
         type: "string"
         description: "Will always return \"ok\" on success"
-    
+
+
   Breaker:
     type: "object"
-    required:
-      - id
-      - name
     properties:
       id:
         type: "integer"
@@ -1289,13 +1346,9 @@ definitions:
         type: integer
         description: "The amperage of the circuit breaker"
   
+
   ButtonLEDColor:
     type: object
-    required:
-      - id
-      - name
-      - brightnessMinimum
-      - brightnessMaximum
     properties:
       id:
         type: integer
@@ -1323,11 +1376,9 @@ definitions:
         maximum: 100
         description: "The maximum brightness this LED can be set"
 
+
   BrightnessName:
     type: object
-    required:
-      - id
-      - name
     properties:
       id:
         type: integer
@@ -1346,12 +1397,9 @@ definitions:
         maximum: 100
         description: "The value this brightness name represents"
 
+
   Controller:
     type: object
-    required:
-      - id
-      - macAddress
-      - hwVersion
     properties:
       id:
         type: integer
@@ -1420,13 +1468,9 @@ definitions:
         description: "The value this setting represents"
         maxLength: 255
 
+
   Firmware:
     type: object
-    required:
-      - id
-      - deviceType
-      - version
-      - url
     properties:
       id:
         type: integer
