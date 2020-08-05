@@ -542,7 +542,7 @@ WHERE
 
 IF switchCount + outputCount > 0 THEN
 
-	SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'One or more switches or outputs are using this controller.';
+	SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'One or more inputs or outputs are using this controller.';
 
 END IF;
 
