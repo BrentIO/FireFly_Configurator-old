@@ -57,7 +57,7 @@
 
                 //Make sure we have an ID to edit
                 if($setting->id == NULL || $setting->id == 0){
-                    throw new Exception("No ID specified for patching", 400);
+                    throw new Exception("No ID specified to PATCH", 400);
                 }
 
                 $setting->edit();

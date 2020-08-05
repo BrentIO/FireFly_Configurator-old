@@ -66,7 +66,7 @@
 
                 //Make sure we have an ID to edit
                 if($breaker->id == NULL || $breaker->id == 0){
-                    throw new Exception("No ID specified for patching", 400);
+                    throw new Exception("No ID specified to PATCH", 400);
                 }
 
                 $breaker->edit();
@@ -96,7 +96,7 @@
 
                 //Make sure we have an ID to delete
                 if($breaker->id == NULL || $breaker->id == 0){
-                    throw new Exception("No ID specified for deletion", 400);
+                    throw new Exception("No ID specified to DELETE", 400);
                 }
 
                 //Check to make sure the procedure was successful

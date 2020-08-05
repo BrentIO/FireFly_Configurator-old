@@ -67,7 +67,7 @@
 
                 //Make sure we have an ID to edit
                 if($firmware->id == NULL || $firmware->id == 0){
-                    throw new Exception("No ID specified for patching", 400);
+                    throw new Exception("No ID specified to PATCH", 400);
                 }
 
                 $firmware->edit();
@@ -96,7 +96,7 @@
 
                 //Make sure we have an ID to delete
                 if($firmware->id == NULL){
-                    throw new Exception("No ID specified for deletion", 400);
+                    throw new Exception("No ID specified to DELETE", 400);
                 }
 
                 //Check to make sure the procedure was successful
@@ -169,7 +169,7 @@
             }elseif($this->deviceType != ""){
                 $response = $database->query("SELECT json FROM getFirmware WHERE deviceType = '" . $this->deviceType . "' AND version = " . $this->version . ";");
             }
-            #var_dump($response);
+            
             if(is_array(json_decode($response)) == False){
                        
                 return($response);

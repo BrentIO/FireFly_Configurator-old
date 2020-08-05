@@ -75,7 +75,7 @@
 
                 //Make sure we have an ID to edit
                 if($buttonColor->id == NULL || $buttonColor->id == 0){
-                    throw new Exception("No ID specified for patching", 400);
+                    throw new Exception("No ID specified to PATCH", 400);
                 }
 
                 $buttonColor->edit();
@@ -104,7 +104,7 @@
 
                 //Make sure we have an ID to delete
                 if($buttonColor->id == NULL){
-                    throw new Exception("No ID specified for deletion", 400);
+                    throw new Exception("No ID specified to DELETE", 400);
                 }
 
                 //Check to make sure the procedure was successful
@@ -181,7 +181,6 @@
             }elseif($this->name != ""){
                 $response = $database->query("SELECT json FROM getButtonColors WHERE name = '" . $this->name . "';");
             }
-            #var_dump($response);
             if(is_array(json_decode($response)) == False){
                        
                 return($response);
