@@ -1041,7 +1041,7 @@ paths:
         200:
           description: "Success"
           schema:
-              $ref: "#/definitions/Firmware"
+            $ref: "#/definitions/Firmware"
         400:
           description: "Bad Request"
           schema:
@@ -1210,7 +1210,7 @@ definitions:
         maxLength: 20
       hexValue:
         type: string
-        description: "The button LED color in hex (#XXXXXX)"
+        description: "The button LED color in hex (#XXXXXX), hash sign optional"
         maxLength: 7
       brightnessMinimum:
         type: integer
