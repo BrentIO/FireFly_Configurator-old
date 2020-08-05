@@ -42,6 +42,10 @@
 
             $result = mysqli_query($this->conn, $sql);
 
+            if($result == False){
+                return json_encode(array());
+            }
+
             //Get the number of rows to determine if we should return an object or an array
             if(mysqli_num_rows($result) == 1) {
 
