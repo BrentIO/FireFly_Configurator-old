@@ -37,7 +37,7 @@
             case "get":
 
                 #See if the user is attempting to get one or many ID's
-                if($pin->controllerId != NULL && is_numeric($pin->controllerId)){
+                if($pin->controllerId != NULL && is_numeric($pin->controllerId) && $pin->controllerId !=0){
 
                     #Get the specific ID requested
                     print($pin->get());

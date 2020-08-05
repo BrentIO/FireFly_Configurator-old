@@ -37,7 +37,7 @@
             case "get":
 
                 #See if the user is attempting to get one or many ID's
-                if($port->controllerId != NULL && is_numeric($port->controllerId)){
+                if($port->controllerId != NULL && is_numeric($port->controllerId) && $port->controllerId !=0){
 
                     #Get the specific ID requested
                     print($port->get());
