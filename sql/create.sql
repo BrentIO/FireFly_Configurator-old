@@ -322,7 +322,7 @@ CREATE TABLE IF NOT EXISTS `firefly`.`getControllerPinsUnused` (`controllerId` I
 -- -----------------------------------------------------
 -- Placeholder table for view `firefly`.`getControllerPinsUsed`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `firefly`.`getControllerPinsUsed` (`controllerId` INT, `switchId` INT, `pin` INT, `pinType` INT);
+CREATE TABLE IF NOT EXISTS `firefly`.`getControllerPinsUsed` (`controllerId` INT, `switchId` INT, `pin` INT, `pinType` INT, `json` INT);
 
 -- -----------------------------------------------------
 -- Placeholder table for view `firefly`.`getControllerPortsUnused`
@@ -332,7 +332,7 @@ CREATE TABLE IF NOT EXISTS `firefly`.`getControllerPortsUnused` (`controllerId` 
 -- -----------------------------------------------------
 -- Placeholder table for view `firefly`.`getControllerPortsUsed`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `firefly`.`getControllerPortsUsed` (`controllerId` INT, `id` INT, `port` INT, `portType` INT);
+CREATE TABLE IF NOT EXISTS `firefly`.`getControllerPortsUsed` (`controllerId` INT, `id` INT, `port` INT, `portType` INT, `json` INT);
 
 -- -----------------------------------------------------
 -- Placeholder table for view `firefly`.`getControllers`
@@ -1802,7 +1802,7 @@ CREATE  OR REPLACE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `firefly`.`getC
 DROP TABLE IF EXISTS `firefly`.`getControllerPinsUsed`;
 DROP VIEW IF EXISTS `firefly`.`getControllerPinsUsed` ;
 USE `firefly`;
-CREATE  OR REPLACE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `firefly`.`getControllerPinsUsed` AS select `usedPins`.`controllerId` AS `controllerId`,`usedPins`.`switchId` AS `switchId`,`usedPins`.`pin` AS `pin`,`usedPins`.`pinType` AS `pinType` from (select `firefly`.`switches`.`controllerId` AS `controllerId`,`firefly`.`inputs`.`switchId` AS `switchId`,`firefly`.`inputs`.`pin` AS `pin`,'INPUT' AS `pinType` from ((`firefly`.`inputs` join `firefly`.`switches` on((`firefly`.`inputs`.`switchId` = `firefly`.`switches`.`id`))) join `firefly`.`controllers` on((`firefly`.`switches`.`controllerId` = `firefly`.`controllers`.`id`))) union select `firefly`.`outputs`.`controllerId` AS `controllerId`,NULL AS `switchId`,`firefly`.`outputs`.`pin` AS `pin`,'OUTPUT' AS `pinType` from `firefly`.`outputs`) `usedPins` order by `usedPins`.`controllerId`,`usedPins`.`pin`;
+CREATE  OR REPLACE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `firefly`.`getControllerPinsUsed` AS select `usedPins`.`controllerId` AS `controllerId`,`usedPins`.`switchId` AS `switchId`,`usedPins`.`pin` AS `pin`,`usedPins`.`pinType` AS `pinType`,json_object('controllerId',`usedPins`.`controllerId`,'switchId',`usedPins`.`switchId`,'pin',`usedPins`.`pin`,'pinType',`usedPins`.`pinType`) AS `json` from (select `firefly`.`switches`.`controllerId` AS `controllerId`,`firefly`.`inputs`.`switchId` AS `switchId`,`firefly`.`inputs`.`pin` AS `pin`,'INPUT' AS `pinType` from ((`firefly`.`inputs` join `firefly`.`switches` on((`firefly`.`inputs`.`switchId` = `firefly`.`switches`.`id`))) join `firefly`.`controllers` on((`firefly`.`switches`.`controllerId` = `firefly`.`controllers`.`id`))) union select `firefly`.`outputs`.`controllerId` AS `controllerId`,NULL AS `switchId`,`firefly`.`outputs`.`pin` AS `pin`,'OUTPUT' AS `pinType` from `firefly`.`outputs`) `usedPins` order by `usedPins`.`controllerId`,`usedPins`.`pin`;
 
 -- -----------------------------------------------------
 -- View `firefly`.`getControllerPortsUnused`
@@ -1818,7 +1818,7 @@ CREATE  OR REPLACE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `firefly`.`getC
 DROP TABLE IF EXISTS `firefly`.`getControllerPortsUsed`;
 DROP VIEW IF EXISTS `firefly`.`getControllerPortsUsed` ;
 USE `firefly`;
-CREATE  OR REPLACE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `firefly`.`getControllerPortsUsed` AS select `usedPorts`.`controllerId` AS `controllerId`,`usedPorts`.`id` AS `id`,`usedPorts`.`port` AS `port`,`usedPorts`.`portType` AS `portType` from (select `firefly`.`switches`.`controllerId` AS `controllerId`,`firefly`.`switches`.`id` AS `id`,`firefly`.`switches`.`controllerPort` AS `port`,'INPUT' AS `portType` from `firefly`.`switches` union select `firefly`.`outputs`.`controllerId` AS `controllerId`,`firefly`.`outputs`.`id` AS `id`,`firefly`.`outputs`.`controllerPort` AS `port`,'OUTPUT' AS `portType` from `firefly`.`outputs`) `usedPorts`;
+CREATE  OR REPLACE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `firefly`.`getControllerPortsUsed` AS select `usedPorts`.`controllerId` AS `controllerId`,`usedPorts`.`id` AS `id`,`usedPorts`.`port` AS `port`,`usedPorts`.`portType` AS `portType`,json_object('controllerId',`usedPorts`.`controllerId`,'id',`usedPorts`.`id`,'port',`usedPorts`.`port`,'portType',`usedPorts`.`portType`) AS `json` from (select `firefly`.`switches`.`controllerId` AS `controllerId`,`firefly`.`switches`.`id` AS `id`,`firefly`.`switches`.`controllerPort` AS `port`,'INPUT' AS `portType` from `firefly`.`switches` union select `firefly`.`outputs`.`controllerId` AS `controllerId`,`firefly`.`outputs`.`id` AS `id`,`firefly`.`outputs`.`controllerPort` AS `port`,'OUTPUT' AS `portType` from `firefly`.`outputs`) `usedPorts`;
 
 -- -----------------------------------------------------
 -- View `firefly`.`getControllers`
