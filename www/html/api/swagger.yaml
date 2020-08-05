@@ -640,7 +640,7 @@ paths:
       consumes:
       - "application/json"
       description: "Creates a new switch" 
-      operationId: createButtonColor
+      operationId: createSwitch
       parameters:
         - in: body
           name: switch
