@@ -1317,6 +1317,7 @@ IN _firmwareId int
 BEGIN
 
 DECLARE _firmwareId_ int;
+DECLARE controllerCount int;
 
 SET _name = trim(_name);
 SET _displayName = trim(_displayName);
@@ -1330,6 +1331,19 @@ END IF;
 
 IF length(_mqttPassword) = 0 THEN
 	SET _mqttPassword = NULL;
+END IF;
+
+SELECT 
+    COUNT(*)
+INTO controllerCount FROM
+    controllers
+WHERE
+    id = _controllerId;
+
+IF controllerCount != 1 THEN
+
+	SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Invalid controller.';
+
 END IF;
 
 IF _firmwareId IS NULL THEN
