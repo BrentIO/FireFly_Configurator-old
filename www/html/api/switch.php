@@ -5,7 +5,7 @@
     require_once('database.php');
 
     $simpleRest = new simpleRest();
-    $switch = new switch();
+    $switch = new switchClass();
 
     $_GET_lower = array_change_key_case($_GET, CASE_LOWER);
 
@@ -47,6 +47,33 @@
             $switch->displayName = $data['displayName'];
         }
 
+        if(isset($data['hwVersion'])){
+            $switch->hwVersion = intval($data['hwVersion']);
+        }
+
+        if(isset($data['firmwareId'])){
+            $switch->firmwareId = intval($data['firmwareId']);
+        }
+
+        if(isset($data['macAddress'])){
+            $switch->macAddress = $data['macAddress'];
+        }
+
+        if(isset($data['controllerId'])){
+            $switch->controllerId = intval($data['controllerId']);
+        }
+
+        if(isset($data['mqttUsername'])){
+            $switch->mqttUsername = $data['mqttUsername'];
+        }
+
+        if(isset($data['mqttPassword'])){
+            $switch->mqttPassword = $data['mqttPassword'];
+        }
+
+        if(isset($data['controllerPort'])){
+            $switch->controllerPort = intval($data['controllerPort']);
+        }
 
         switch(strtolower($_SERVER['REQUEST_METHOD'])){
 
@@ -126,24 +153,32 @@
         }
     }
 
-    class switch{
+    class switchClass{
 
         public $id;
         public $name;
+        public $hwVersion;
+        public $firmwareId;
+        public $macAddress;
         public $displayName;
-        public $hexValue;
-        public $brightnessMinimum;
-        public $brightnessMaximum;
+        public $controllerId;
+        public $mqttPassword;
+        public $mqttUsername;
+        public $controllerPort;
 
 
         function __construct(){
 
             $this->id = NULL;
             $this->name = NULL;
+            $this->hwVersion = NULL;
+            $this->firmwareId = NULL;
+            $this->macAddress = NULL;
             $this->displayName = NULL;
-            $this->hexValue = NULL;
-            $this->brightnessMinimum = 0;
-            $this->brightnessMaximum = 100;
+            $this->controllerId = NULL;
+            $this->mqttPassword = NULL;
+            $this->mqttUsername = NULL;
+            $this->controllerPort = NULL;
 
         }
 
@@ -207,11 +242,11 @@
             }
 
             //Build the variables
-            $variables = array($this->id, $this->name, $this->displayName, $this->hexValue, $this->brightnessMinimum, $this->brightnessMaximum);
-            $varTypes = "isssii";
+            $variables = array($this->id, $this->controllerId, $this->controllerPort, $this->macAddress, $this->hwVersion, $this->name, $this->displayName, $this->mqttUsername, $this->mqttPassword, $this->firmwareId);
+            $varTypes = "iiisissssi";
 
             //Perform the creation
-            $database->callProcedure("CALL editSwitch(?,?,?,?,?,?)", $varTypes, $variables);
+            $database->callProcedure("CALL editSwitch(?,?,?,?,?,?,?,?,?,?)", $varTypes, $variables);
 
             //Handle the number of affected rows correctly
             switch($database->rowsAffected){
