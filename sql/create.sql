@@ -1340,6 +1340,12 @@ IF _firmwareId IS NULL THEN
 
 END IF;
 
+IF _controllerPort IS NULL THEN
+
+	SELECT getNextPort(_controllerId, 'INPUT') INTO _controllerPort;
+
+END IF;
+
 SELECT 
     id
 INTO _firmwareId_ FROM
