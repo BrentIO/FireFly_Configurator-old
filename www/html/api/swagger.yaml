@@ -588,7 +588,77 @@ paths:
         500:
           description: "Internal Server Error"
 
-  #Controllers
+
+  /switch:
+    get:
+        tags:
+        - "Switches"
+        produces:
+        - "application/json"
+        description: "Retrieves a list of all defined switches" 
+        operationId: listSwitch
+        security: 
+          - ApiKeyAuth: [] 
+        responses:
+          200:
+            description: "Success"
+            schema:
+              type: array
+              items:
+                $ref: "#/definitions/Switch"
+          400:
+            description: "Bad Request"
+            schema:
+              $ref: "#/definitions/Error"
+          401:
+            description: "Unauthorized"
+          500:
+            description: "Internal Server Error"
+    
+    post:
+      tags:
+      - "Switches"
+      produces:
+      - "application/json"
+      consumes:
+      - "application/json"
+      description: "Creates a new switch" 
+      operationId: createButtonColor
+      parameters:
+        - in: body
+          name: switch
+          description: "The switch to create"
+          schema:
+            type: object
+            required:
+            - controllerId
+            - macAddress
+            - hwVersion
+            $ref: "#/definitions/Switch"
+      security: 
+        - ApiKeyAuth: [] 
+      responses:
+        200:
+          description: "Success"
+          schema:
+            $ref: "#/definitions/Switch"
+        400:
+          description: "Bad Request"
+          schema:
+            $ref: "#/definitions/Error"
+        401:
+          description: "Unauthorized"
+        500:
+          description: "Internal Server Error"
+
+
+  #/switch/{id}:
+
+  #/switch/bootstrap/{deviceName}:
+
+
+
+  ################ Controllers ################
   /controller:
     get:
       tags:
