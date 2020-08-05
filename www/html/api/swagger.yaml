@@ -1292,12 +1292,18 @@ definitions:
         description: "Hardware version"
         enum:
           - 2
-    
+
+
+  ControllerBootstrap:
+    type: object
+    properties:
+      id:
+        type: integer
+        description: "Unique ID"
+
+
   Setting:
     type: object
-    required:
-      - name
-      - value
     properties:
       id:
         type: integer
@@ -1335,3 +1341,45 @@ definitions:
         type: string
         description: "Location where the firmware can be downloaded"
         maxLength: 255
+
+
+  Switch:
+    type: object
+    properties:
+      id:
+        type: integer
+        description: "Unique ID"
+      controllerId:
+        type: integer
+        description: "Host Controller"
+      controllerPort:
+        type: integer
+        description: "Controller port number; If NULL, next available port is assigned"
+      macAddress:
+        type: string
+        description: "Unique MAC hardware address"
+        maxLength: 17
+      hwVersion:
+        type: integer
+        description: "Hardware version"
+        enum:
+         - 2
+      name:
+        type: string
+        description: "Name of the switch"
+        maxLength: 20
+      displayName:
+        type: string
+        description: "A descriptive display name"
+        maxLength: 20
+      mqttUsername:
+        type: string
+        description: "Override of the default MQTT username"
+        maxLength: 20
+      mqttPassword:
+        type: string
+        description: "Override of the default MQTT password"
+        maxLength: 255
+      firmwareId:
+        type: integer
+        description: "Firmware ID to use; If NULL, latest firmware is assigned"
