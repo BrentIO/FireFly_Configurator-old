@@ -769,18 +769,18 @@ USE `firefly`$$
 CREATE PROCEDURE `deleteSwitch`(IN _id int)
 BEGIN
 
-DECLARE buttonCount int;
+DECLARE inputCount int;
 
 SELECT 
     COUNT(*)
-INTO buttonCount FROM
-    buttons
+INTO inputCount FROM
+    inputs
 WHERE
     switchId = _id;
 
-IF buttonCount > 0 THEN
+IF inputCount > 0 THEN
 
-	SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'One or more buttons or outputs are using this switch.';
+	SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'One or more inputs are using this switch.';
 
 END IF;
 
