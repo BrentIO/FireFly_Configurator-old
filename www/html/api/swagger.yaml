@@ -1148,8 +1148,8 @@ paths:
       - "Settings"
       produces:
       - "application/json"
-      description: "Retrieves a list of all switches" 
-      operationId: listSwitch
+      description: "Retrieves a list of all firmware" 
+      operationId: listFirmware
       security: 
         - ApiKeyAuth: [] 
       responses:
