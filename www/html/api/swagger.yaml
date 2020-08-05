@@ -853,6 +853,154 @@ paths:
             $ref: "#/definitions/Error"
         401:
           description: "Unauthorized"
+        404:
+          description: "Not Found"
+          schema:
+            $ref: "#/definitions/Error"
+        500:
+          description: "Internal Server Error"
+
+
+  /controller/{id}/pins/available:
+    get:
+      tags:
+      - "Controllers"
+      produces:
+      - "application/json"
+      description: "Retrieves the list of available pins for a given controller ID" 
+      operationId: getPinsAvailableByControllerID
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "ID of the controller to return"
+        required: true
+        type: "integer"
+        format: "int32"
+      security: 
+        - ApiKeyAuth: [] 
+      responses:
+        200:
+          description: "Success"
+          schema:
+            $ref: "#/definitions/PinAvailable"
+        400:
+          description: "Bad Request"
+          schema:
+            $ref: "#/definitions/Error"
+        401:
+          description: "Unauthorized"
+        404:
+          description: "Not Found"
+          schema:
+            $ref: "#/definitions/Error"
+        500:
+          description: "Internal Server Error"
+
+
+  /controller/{id}/pins/assigned:
+    get:
+      tags:
+      - "Controllers"
+      produces:
+      - "application/json"
+      description: "Retrieves the list of assigned pins for a given controller ID" 
+      operationId: getPinsAssignedByControllerID
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "ID of the controller to return"
+        required: true
+        type: "integer"
+        format: "int32"
+      security: 
+        - ApiKeyAuth: [] 
+      responses:
+        200:
+          description: "Success"
+          schema:
+            $ref: "#/definitions/PinAssigned"
+        400:
+          description: "Bad Request"
+          schema:
+            $ref: "#/definitions/Error"
+        401:
+          description: "Unauthorized"
+        404:
+          description: "Not Found"
+          schema:
+            $ref: "#/definitions/Error"
+        500:
+          description: "Internal Server Error"
+
+          
+  /controller/{id}/ports/available:
+    get:
+      tags:
+      - "Controllers"
+      produces:
+      - "application/json"
+      description: "Retrieves the list of available ports for a given controller ID" 
+      operationId: getportsAvailableByControllerID
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "ID of the controller to return"
+        required: true
+        type: "integer"
+        format: "int32"
+      security: 
+        - ApiKeyAuth: [] 
+      responses:
+        200:
+          description: "Success"
+          schema:
+            $ref: "#/definitions/PortAvailable"
+        400:
+          description: "Bad Request"
+          schema:
+            $ref: "#/definitions/Error"
+        401:
+          description: "Unauthorized"
+        404:
+          description: "Not Found"
+          schema:
+            $ref: "#/definitions/Error"
+        500:
+          description: "Internal Server Error"
+
+
+  /controller/{id}/ports/assigned:
+    get:
+      tags:
+      - "Controllers"
+      produces:
+      - "application/json"
+      description: "Retrieves the list of assigned ports for a given controller ID" 
+      operationId: getPortsAssignedByControllerID
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "ID of the controller to return"
+        required: true
+        type: "integer"
+        format: "int32"
+      security: 
+        - ApiKeyAuth: [] 
+      responses:
+        200:
+          description: "Success"
+          schema:
+            $ref: "#/definitions/PortAssigned"
+        400:
+          description: "Bad Request"
+          schema:
+            $ref: "#/definitions/Error"
+        401:
+          description: "Unauthorized"
+        404:
+          description: "Not Found"
+          schema:
+            $ref: "#/definitions/Error"
         500:
           description: "Internal Server Error"
 
@@ -1300,6 +1448,152 @@ definitions:
       id:
         type: integer
         description: "Unique ID"
+      mqtt:
+        type: object
+        description: "Information about the MQTT connection"
+        properties:
+          serverName:
+            type: string
+            description: "MQTT server name or IP address"
+            maxLength: 255
+          port:
+            type: integer
+            description: "MQTT server port number"
+          username:
+            type: string
+            description: "MQTT server username"
+            maxLength: 20
+          password:
+            type: string
+            description: "MQTT server password"
+            maxLength: 255
+          topics:
+            type: object
+            properties:
+              event:
+                type: string
+                description: "Topic the controller posts event information"
+                maxLength: 255
+              client:
+                type: string
+                description: "Topic used for broadcasting metadata about the device"
+                maxLength: 255
+              control:
+                type: string
+                description: "Topic used to direct the controller to take an action"
+                maxLength: 255
+      name:
+        type: string
+        description: "Name of the controller"
+        maxLength: 20
+      displayName:
+        type: string
+        description: "A descriptive display name"
+        maxLength: 20
+      network:
+        type: object
+        description: "Information about the network connection"
+        properties:
+          macAddress:
+            type: string
+            description: "Unique MAC hardware address"
+            maxLength: 17
+          ipAddress:
+            type: string
+            description: "IP address"
+            maxLength: 15
+          gateway:
+            type: string
+            description: "IP address of the network gateway"
+            maxLength: 15
+          subnet:
+            type: string
+            description: "Subnet mask"
+            maxLength: 15
+          dns:
+            type: string
+            description: "IP address of the DNS server"
+            maxLength: 15 
+
+
+  PinAvailable:
+    type: object
+    properties:
+      pin:
+        type: integer
+        description: "The physical pin number"
+      controllerId:
+        type: integer
+        description: "Controller's Unique ID"
+      inputAllowed:
+        type: boolean
+        description: "If input is allowed on the pin"
+      binaryOutputAllowed:
+        type: boolean
+        description: "If binary output is allowed on the pin"
+      variableOutputAllowed:
+        type: boolean
+        description: "If variable output is allowed on the pin"
+
+
+  PinAssigned:
+    type: object
+    properties:
+      pin:
+        type: integer
+        description: "The physical pin number"
+      controllerId:
+        type: integer
+        description: "Controller's Unique ID"
+      switchId:
+        type: integer
+        description: "Switch's Unique ID"
+      pinType:
+        type: string
+        description: "Pin usage"
+        enum:
+          - "INPUT"
+          - "OUTPUT"
+
+
+  PortAvailable:
+    type: object
+    properties:
+      port:
+        type: integer
+        description: "The physical port number"
+      controllerId:
+        type: integer
+        description: "Controller's Unique ID"
+      inputAllowed:
+        type: boolean
+        description: "If input is allowed on the port"
+      outputAllowed:
+        type: boolean
+        description: "If output is allowed on the port"
+
+
+  PortAssigned:
+    type: object
+    properties:
+      controllerId:
+        type: integer
+        description: "Controller's Unique ID"
+      port:
+        type: integer
+        description: "The physical port number"
+      portType:
+        type: integer
+        description: "The port type"
+        enum:
+          - "INPUT"
+          - "OUTPUT"
+      id:
+        type: integer
+        description: "The ID of either the input or output assigned to this port"
+
+
+
 
 
   Setting:

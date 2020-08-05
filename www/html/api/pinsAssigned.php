@@ -5,7 +5,7 @@
     require_once('database.php');
 
     $simpleRest = new simpleRest();
-    $port = new port();
+    $pin = new pin();
 
     $_GET_lower = array_change_key_case($_GET, CASE_LOWER);
 
@@ -28,7 +28,7 @@
         //Populate the breaker object with a preferene for the URL rather than the payload
         if(isset($_GET_lower['controllerid']) && $_GET_lower['controllerid'] != "" && is_numeric($_GET_lower['controllerid']) == True){
 
-            $port->controllerId = intval($_GET_lower['controllerid']);
+            $pin->controllerId = intval($_GET_lower['controllerid']);
 
         }
 
@@ -37,10 +37,10 @@
             case "get":
 
                 #See if the user is attempting to get one or many ID's
-                if($port->controllerId != NULL && is_numeric($port->controllerId) && $port->controllerId !=0){
+                if($pin->controllerId != NULL && is_numeric($pin->controllerId) && $pin->controllerId !=0){
 
                     #List the specific controller ID requested
-                    print($port->list());
+                    print($pin->list());
 
                 }
                 else{
@@ -70,20 +70,22 @@
         }
     }
 
-    class port{
+    class pin{
 
+        public $pin;
         public $controllerId;
-        public $port;
         public $inputAllowed;
-        public $outputAllowed;
+        public $binaryOutputAllowed;
+        public $variableOutputAllowed;
 
 
         function __construct(){
 
+            $this->pin = NULL;
             $this->controllerId = NULL;
-            $this->port = NULL;
             $this->inputAllowed = NULL;
-            $this->outputAllowed = NULL;
+            $this->binaryOutputAllowed = NULL;
+            $this->variableOutputAllowed = 0;
 
         }
 
@@ -92,7 +94,7 @@
             global $database;
             global $simpleRest;
 
-            $response = $database->query("SELECT json FROM getControllerPortsUnused WHERE controllerId = " . $this->controllerId . ";");
+            $response = $database->query("SELECT json FROM getControllerPinsUsed WHERE controllerId = " . $this->controllerId . ";");
 
             //Ensure the response is an array, even if there are 0 or 1 rows
             if(is_array(json_decode($response)) == False){

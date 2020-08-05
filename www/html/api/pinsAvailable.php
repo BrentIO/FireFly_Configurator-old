@@ -39,8 +39,8 @@
                 #See if the user is attempting to get one or many ID's
                 if($pin->controllerId != NULL && is_numeric($pin->controllerId) && $pin->controllerId !=0){
 
-                    #Get the specific ID requested
-                    print($pin->get());
+                    #List the specific controller ID requested
+                    print($pin->list());
 
                 }
                 else{
@@ -88,21 +88,27 @@
             $this->variableOutputAllowed = 0;
 
         }
-   
-        function get(){
+
+        function list(){
 
             global $database;
             global $simpleRest;
 
             $response = $database->query("SELECT json FROM getControllerPinsUnused WHERE controllerId = " . $this->controllerId . ";");
 
-            if(count(json_decode($response)) > 0){
-                
-                return($response);
-        
+            //Ensure the response is an array, even if there are 0 or 1 rows
+            if(is_array(json_decode($response)) == False){
+
+                $responseArray = array();
+                $responseArray[] = json_decode($response);
+
+                return json_encode($responseArray);
+
             }else{
-                throw new Exception(NULL, 404);
-                return;
+
+                //Return the list from SQL
+                return($response);
+
             }
 
         }

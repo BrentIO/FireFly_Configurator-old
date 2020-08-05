@@ -92,7 +92,7 @@
             global $database;
             global $simpleRest;
 
-            $response = $database->query("SELECT json FROM getControllerPortsUnused WHERE controllerId = " . $this->controllerId . ";");
+            $response = $database->query("SELECT json FROM getControllerPortsUsed WHERE controllerId = " . $this->controllerId . ";");
 
             //Ensure the response is an array, even if there are 0 or 1 rows
             if(is_array(json_decode($response)) == False){
