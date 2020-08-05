@@ -120,18 +120,7 @@ paths:
             type: object
             required:
               - name
-            properties:
-              name:
-                type: string
-                description: "Unique name of the circuit breaker"
-                maxLength: 20
-              displayName:
-                type: string
-                description: "A descriptive display name of the circuit breaker"
-                maxLength: 20
-              amperage:
-                type: integer
-                description: "The amperage of the circuit breaker"
+            $ref: "#/definitions/Breaker"
       security: 
         - ApiKeyAuth: [] 
       responses:
@@ -207,20 +196,9 @@ paths:
         description: "The circuit breaker to create"
         schema:
           type: object
+          $ref: "#/definitions/Breaker"
           required:
-            - name
-          properties:
-            name:
-              type: string
-              description: "Unique name of the circuit breaker"
-              maxLength: 20
-            displayName:
-              type: string
-              description: "A descriptive display name of the circuit breaker"
-              maxLength: 20
-            amperage:
-              type: integer
-              description: "The amperage of the circuit breaker"
+           - id
       responses:
         200:
           description: "Success"
@@ -314,43 +292,19 @@ paths:
           description: "The button LED color to create"
           schema:
             type: object
+            $ref: "#/definitions/ButtonLEDColor"
             required:
               - name
               - hexValue
               - brightnessMinimum
               - brightnessMaximum
-            properties:
-              name:
-                type: string
-                description: "Unique name of the button LED color"
-                maxLength: 20
-              displayName:
-                type: string
-                description: "A descriptive display name of the button LED color"
-                maxLength: 20
-              hexValue:
-                type: string
-                description: "The button LED color in hex (#XXXXXX), hash sign optional"
-                maxLength: 7
-              brightnessMinimum:
-                type: integer
-                minimum: 0
-                maximum: 100
-                description: "The minimum brightness this LED can be set"
-              brightnessMaximum:
-                type: integer
-                minimum: 0
-                maximum: 100
-                description: "The maximum brightness this LED can be set"
       security: 
         - ApiKeyAuth: [] 
       responses:
         200:
           description: "Success"
           schema:
-            type: array
-            items:
-              $ref: "#/definitions/ButtonLEDColor"
+            $ref: "#/definitions/ButtonLEDColor"
         400:
           description: "Bad Request"
           schema:
@@ -413,34 +367,12 @@ paths:
         description: "The button LED color to edit"
         schema:
           type: object
+          $ref: "#/definitions/ButtonLEDColor"
           required:
             - name
             - hexValue
             - brightnessMinimum
             - brightnessMaximum
-          properties:
-            name:
-              type: string
-              description: "Unique name of the button LED color"
-              maxLength: 20
-            displayName:
-              type: string
-              description: "A descriptive display name of the button LED color"
-              maxLength: 20
-            hexValue:
-              type: string
-              description: "The button LED color in hex (#XXXXXX), hash sign optional"
-              maxLength: 7
-            brightnessMinimum:
-              type: integer
-              minimum: 0
-              maximum: 100
-              description: "The minimum brightness this LED can be set"
-            brightnessMaximum:
-              type: integer
-              minimum: 0
-              maximum: 100
-              description: "The maximum brightness this LED can be set"
       security: 
         - ApiKeyAuth: [] 
       responses:
@@ -531,32 +463,17 @@ paths:
           description: "The button LED brightness name to create"
           schema:
             type: object
+            $ref: "#/definitions/BrightnessName"
             required:
               - name
               - brightnessValue
-            properties:
-              name:
-                type: string
-                description: "Unique name of the brightness level"
-                maxLength: 20
-              displayName:
-                type: string
-                description: "A descriptive display name of the brightness level"
-                maxLength: 20
-              brightnessValue:
-                type: integer
-                minimum: 0
-                maximum: 100
-                description: "The value this brightness name represents"
       security: 
         - ApiKeyAuth: [] 
       responses:
         200:
           description: "Success"
           schema:
-            type: array
-            items:
-              $ref: "#/definitions/BrightnessName"
+            $ref: "#/definitions/BrightnessName"
         400:
           description: "Bad Request"
           schema:
@@ -619,31 +536,16 @@ paths:
           description: "The button LED brightness name to edit"
           schema:
             type: object
+            $ref: "#/definitions/BrightnessName"
             required:
               - name
               - brightnessValue
-            properties:
-              name:
-                type: string
-                description: "Unique name of the brightness level"
-                maxLength: 20
-              displayName:
-                type: string
-                description: "A descriptive display name of the brightness level"
-                maxLength: 20
-              brightnessValue:
-                type: integer
-                minimum: 0
-                maximum: 100
-                description: "The value this brightness name represents"
       security: 
         - ApiKeyAuth: [] 
       responses:
         200:
           description: "Success"
           schema:
-            type: array
-            items:
               $ref: "#/definitions/BrightnessName"
         400:
           description: "Bad Request"
@@ -724,66 +626,20 @@ paths:
       operationId: createController
       parameters:
         - in: body
-          name: controller
+          name: Controller
           description: "The controller to create"
           schema:
             type: object
+            $ref: "#/definitions/Controller"
             required:
-              - id
               - macAddress
-              - hwVersion
-            properties:
-              name:
-                type: string
-                description: "Name of the controller"
-                maxLength: 20
-              displayName:
-                type: string
-                description: "A descriptive display name of the controller"
-                maxLength: 20
-              macAddress:
-                type: string
-                description: "Unique MAC hardware address of the controller"
-                maxLength: 17
-              ipAddress:
-                type: string
-                description: "IP address of the controller"
-                maxLength: 15
-              subnet:
-                type: string
-                description: "Subnet mask of the controller"
-                maxLength: 15
-              dns:
-                type: string
-                description: "IP address of the DNS server"
-                maxLength: 15
-              gateway:
-                type: string
-                description: "IP address of the network gateway"
-                maxLength: 15
-              mqttUsername:
-                type: string
-                description: "Override of the default MQTT username"
-                maxLength: 20
-              mqttPassword:
-                type: string
-                description: "Override of the default MQTT password"
-                maxLength: 255
-              hwVersion:
-                type: integer
-                description: "Hardware version"
-                enum:
-                  - 2
-
       security: 
         - ApiKeyAuth: [] 
       responses:
         200:
           description: "Success"
           schema:
-            type: array
-            items:
-              $ref: "#/definitions/ButtonLEDColor"
+            $ref: "#/definitions/Controller"
         400:
           description: "Bad Request"
           schema:
@@ -815,7 +671,7 @@ paths:
         200:
           description: "Success"
           schema:
-              $ref: "#/definitions/Controller"
+            $ref: "#/definitions/Controller"
         400:
           description: "Bad Request"
           schema:
@@ -842,65 +698,22 @@ paths:
           type: "integer"
           format: "int32"
         - in: body
-          name: controller
+          name: Controller
           description: "The controller to edit"
           schema:
             type: object
+            $ref: "#/definitions/Controller"
             required:
               - id
               - macAddress
               - hwVersion
-            properties:
-              name:
-                type: string
-                description: "Name of the controller"
-                maxLength: 20
-              displayName:
-                type: string
-                description: "A descriptive display name of the controller"
-                maxLength: 20
-              macAddress:
-                type: string
-                description: "Unique MAC hardware address of the controller"
-                maxLength: 17
-              ipAddress:
-                type: string
-                description: "IP address of the controller"
-                maxLength: 15
-              subnet:
-                type: string
-                description: "Subnet mask of the controller"
-                maxLength: 15
-              dns:
-                type: string
-                description: "IP address of the DNS server"
-                maxLength: 15
-              gateway:
-                type: string
-                description: "IP address of the network gateway"
-                maxLength: 15
-              mqttUsername:
-                type: string
-                description: "Override of the default MQTT username"
-                maxLength: 20
-              mqttPassword:
-                type: string
-                description: "Override of the default MQTT password"
-                maxLength: 255
-              hwVersion:
-                type: integer
-                description: "Hardware version"
-                enum:
-                  - 2
       security: 
         - ApiKeyAuth: [] 
       responses:
         200:
           description: "Success"
           schema:
-            type: array
-            items:
-              $ref: "#/definitions/Controller"
+            $ref: "#/definitions/Controller"
         400:
           description: "Bad Request"
           schema:
@@ -963,7 +776,7 @@ paths:
         200:
           description: "Success"
           schema:
-              $ref: "#/definitions/Controller"
+              $ref: "#/definitions/ControllerBootstrap"
         400:
           description: "Bad Request"
           schema:
@@ -1053,25 +866,17 @@ paths:
           name: setting
           description: "The setting to edit"
           schema:
-            type: string
-            maxLength: 20
+            type: object
+            $ref: "#/definitions/Setting"
             required:
-              - value
-            properties:
-              value:
-                type: string
-                description: "The value this setting represents"
-                maxLength: 255
-              
+              - value              
       security: 
         - ApiKeyAuth: [] 
       responses:
         200:
           description: "Success"
           schema:
-            type: array
-            items:
-              $ref: "#/definitions/Setting"
+            $ref: "#/definitions/Setting"
         400:
           description: "Bad Request"
           schema:
@@ -1123,33 +928,18 @@ paths:
           description: "The firmware to create"
           schema:
             type: object
+            $ref: "#/definitions/Firmware"
             required:
                 - deviceType
                 - url
-            properties:
-              deviceType:
-                type: string
-                description: "Targeted Device Type"
-                maxLength: 10
-                enum:
-                  - "Switch"
-              version:
-                type: integer
-                description: "Firmware version number, if NULL will use latest"
-              url:
-                type: string
-                description: "Location where the firmware can be downloaded"
-                maxLength: 255
-              
+                - version              
       security: 
         - ApiKeyAuth: [] 
       responses:
         200:
           description: "Success"
           schema:
-            type: array
-            items:
-              $ref: "#/definitions/ButtonLEDColor"
+            $ref: "#/definitions/Firmware"
         400:
           description: "Bad Request"
           schema:
@@ -1216,24 +1006,11 @@ paths:
           description: "The controller to edit"
           schema:
             type: object
+            $ref: "#/definitions/Firmware"
             required:
-              - id
-              - macAddress
-              - hwVersion
-            properties:
-              deviceType:
-                type: string
-                description: "Targeted Device Type"
-                maxLength: 10
-                enum:
-                  - "Switch"
-              version:
-                type: integer
-                description: "Firmware version number"
-              url:
-                type: string
-                description: "Location where the firmware can be downloaded"
-                maxLength: 255
+              - deviceType
+              - url
+              - version   
       security: 
         - ApiKeyAuth: [] 
       responses:
