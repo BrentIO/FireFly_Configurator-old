@@ -170,8 +170,6 @@ paths:
           description: "Unauthorized"
         404:
           description: "Not Found"
-          schema:
-            $ref: "#/definitions/Error"
         500:
           description: "Internal Server Error"
     
@@ -212,8 +210,6 @@ paths:
           description: "Unauthorized"
         404:
           description: "Not Found"
-          schema:
-            $ref: "#/definitions/Error"
         500:
           description: "Internal Server Error"
     
@@ -244,8 +240,6 @@ paths:
           description: "Unauthorized"
         404:
           description: "Not Found"
-          schema:
-            $ref: "#/definitions/Error"
         500:
           description: "Internal Server Error"
   
@@ -416,8 +410,6 @@ paths:
           description: "Unauthorized"
         404:
           description: "Not Found"
-          schema:
-            $ref: "#/definitions/Error"
         500:
           description: "Internal Server Error"
 
@@ -447,8 +439,6 @@ paths:
           description: "Unauthorized"
         404:
           description: "Not Found"
-          schema:
-            $ref: "#/definitions/Error"
         500:
           description: "Internal Server Error"
     
@@ -516,8 +506,6 @@ paths:
             $ref: "#/definitions/Error"
         404:
           description: "Not Found"
-          schema:
-            $ref: "#/definitions/Error"
         401:
           description: "Unauthorized"
         500:
@@ -564,8 +552,6 @@ paths:
 
         404:
           description: "Not Found"
-          schema:
-            $ref: "#/definitions/Error"
         500:
           description: "Internal Server Error"
     
@@ -596,8 +582,6 @@ paths:
           description: "Unauthorized"
         404:
           description: "Not Found"
-          schema:
-            $ref: "#/definitions/Error"
         500:
           description: "Internal Server Error"
 
@@ -627,8 +611,6 @@ paths:
             description: "Unauthorized"
           404:
             description: "Not Found"
-            schema:
-              $ref: "#/definitions/Error"
           500:
             description: "Internal Server Error"
     
@@ -767,8 +749,6 @@ paths:
           description: "Unauthorized"
         404:
           description: "Not Found"
-          schema:
-            $ref: "#/definitions/Error"
         500:
           description: "Internal Server Error"
     
@@ -813,8 +793,6 @@ paths:
           description: "Unauthorized"
         404:
           description: "Not Found"
-          schema:
-            $ref: "#/definitions/Error"
         500:
           description: "Internal Server Error"
     
@@ -845,13 +823,11 @@ paths:
           description: "Unauthorized"
         404:
           description: "Not Found"
-          schema:
-            $ref: "#/definitions/Error"
         500:
           description: "Internal Server Error"
 
 
-  /controller/bootstrap/{deviceName}:
+  /controller/{deviceName}/bootstrap:
     get:
       tags:
       - "Controllers"
@@ -880,8 +856,6 @@ paths:
           description: "Unauthorized"
         404:
           description: "Not Found"
-          schema:
-            $ref: "#/definitions/Error"
         500:
           description: "Internal Server Error"
 
@@ -916,8 +890,6 @@ paths:
           description: "Unauthorized"
         404:
           description: "Not Found"
-          schema:
-            $ref: "#/definitions/Error"
         500:
           description: "Internal Server Error"
 
@@ -952,8 +924,6 @@ paths:
           description: "Unauthorized"
         404:
           description: "Not Found"
-          schema:
-            $ref: "#/definitions/Error"
         500:
           description: "Internal Server Error"
 
@@ -988,8 +958,6 @@ paths:
           description: "Unauthorized"
         404:
           description: "Not Found"
-          schema:
-            $ref: "#/definitions/Error"
         500:
           description: "Internal Server Error"
 
@@ -1024,8 +992,6 @@ paths:
           description: "Unauthorized"
         404:
           description: "Not Found"
-          schema:
-            $ref: "#/definitions/Error"
         500:
           description: "Internal Server Error"
 
@@ -1057,10 +1023,9 @@ paths:
           description: "Unauthorized"
         404:
           description: "Not Found"
-          schema:
-            $ref: "#/definitions/Error"
         500:
           description: "Internal Server Error"
+
 
   /setting/{id}:
     get:
@@ -1092,8 +1057,6 @@ paths:
           description: "Unauthorized"
         404:
           description: "Not Found"
-          schema:
-            $ref: "#/definitions/Error"
         500:
           description: "Internal Server Error"
     
@@ -1136,8 +1099,6 @@ paths:
           description: "Unauthorized"
         404:
           description: "Not Found"
-          schema:
-            $ref: "#/definitions/Error"
         500:
           description: "Internal Server Error"
 
@@ -1167,8 +1128,6 @@ paths:
           description: "Unauthorized"
         404:
           description: "Not Found"
-          schema:
-            $ref: "#/definitions/Error"
         500:
           description: "Internal Server Error"
 
@@ -1207,8 +1166,6 @@ paths:
           description: "Unauthorized"
         404:
           description: "Not Found"
-          schema:
-            $ref: "#/definitions/Error"
         500:
           description: "Internal Server Error"
 
@@ -1243,8 +1200,6 @@ paths:
           description: "Unauthorized"
         404:
           description: "Not Found"
-          schema:
-            $ref: "#/definitions/Error"
         500:
           description: "Internal Server Error"
     
@@ -1291,8 +1246,6 @@ paths:
           description: "Unauthorized"
         404:
           description: "Not Found"
-          schema:
-            $ref: "#/definitions/Error"
         500:
           description: "Internal Server Error"
     
@@ -1323,8 +1276,6 @@ paths:
           description: "Unauthorized"
         404:
           description: "Not Found"
-          schema:
-            $ref: "#/definitions/Error"
         500:
           description: "Internal Server Error"
 
