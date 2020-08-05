@@ -151,8 +151,20 @@
 
             $response = $database->query("SELECT json FROM getBreakers;");
 
-            //Return the list from SQL
-            return($response);
+            //Ensure the response is an array, even if there are 0 or 1 rows
+            if(is_array(json_decode($response)) == False){
+
+                $responseArray = array();
+                $responseArray[] = json_decode($response);
+
+                return json_encode($responseArray);
+
+            }else{
+
+                //Return the list from SQL
+                return($response);
+
+            }
             
         }
     
