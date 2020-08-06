@@ -345,9 +345,9 @@ CREATE TABLE IF NOT EXISTS `firefly`.`getControllers` (`id` INT, `macAddress` IN
 CREATE TABLE IF NOT EXISTS `firefly`.`getFirmware` (`id` INT, `deviceType` INT, `version` INT, `url` INT, `json` INT);
 
 -- -----------------------------------------------------
--- Placeholder table for view `firefly`.`getInputs`
+-- Placeholder table for view `firefly`.`getControllerInputs`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `firefly`.`getInputs` (`controllerId` INT, `name` INT, `displayName` INT, `pin` INT, `circuitType` INT, `broadcastOnStateChange` INT, `enabled` INT, `outputs` INT, `json` INT);
+CREATE TABLE IF NOT EXISTS `firefly`.`getControllerInputs` (`controllerId` INT, `name` INT, `displayName` INT, `pin` INT, `circuitType` INT, `broadcastOnStateChange` INT, `enabled` INT, `outputs` INT, `json` INT);
 
 -- -----------------------------------------------------
 -- Placeholder table for view `firefly`.`getOutputs`
@@ -1878,12 +1878,12 @@ USE `firefly`;
 CREATE  OR REPLACE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `firefly`.`getFirmware` AS select `firefly`.`firmware`.`id` AS `id`,`firefly`.`firmware`.`deviceType` AS `deviceType`,`firefly`.`firmware`.`version` AS `version`,`firefly`.`firmware`.`url` AS `url`,json_object('id',`firefly`.`firmware`.`id`,'deviceType',`firefly`.`firmware`.`deviceType`,'version',`firefly`.`firmware`.`version`,'url',`firefly`.`firmware`.`url`) AS `json` from `firefly`.`firmware`;
 
 -- -----------------------------------------------------
--- View `firefly`.`getInputs`
+-- View `firefly`.`getControllerInputs`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `firefly`.`getInputs`;
-DROP VIEW IF EXISTS `firefly`.`getInputs` ;
+DROP TABLE IF EXISTS `firefly`.`getControllerInputs`;
+DROP VIEW IF EXISTS `firefly`.`getControllerInputs` ;
 USE `firefly`;
-CREATE  OR REPLACE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `firefly`.`getInputs` AS select `firefly`.`switches`.`controllerId` AS `controllerId`,concat(`firefly`.`switches`.`name`,`firefly`.`inputs`.`name`) AS `name`,`firefly`.`inputs`.`displayName` AS `displayName`,`firefly`.`inputs`.`pin` AS `pin`,`firefly`.`inputs`.`circuitType` AS `circuitType`,if(`firefly`.`inputs`.`broadcastOnChange`,'TRUE','FALSE') AS `broadcastOnStateChange`,if(`firefly`.`inputs`.`enabled`,'TRUE','FALSE') AS `enabled`,`getActionsJson`.`json` AS `outputs`,json_object('name',concat(`firefly`.`switches`.`name`,`firefly`.`inputs`.`name`),'displayName',`firefly`.`inputs`.`displayName`,'pin',`firefly`.`inputs`.`pin`,'circuitType',`firefly`.`inputs`.`circuitType`,'broadcastOnStateChange',((0 <> `firefly`.`inputs`.`broadcastOnChange`) is true),'enabled',((0 <> `firefly`.`inputs`.`enabled`) is true),'outputs',`getActionsJson`.`json`) AS `json` from ((`firefly`.`inputs` join `firefly`.`switches` on((`firefly`.`inputs`.`switchId` = `firefly`.`switches`.`id`))) join `firefly`.`getActionsJson` on((`getActionsJson`.`inputId` = `firefly`.`inputs`.`id`)));
+CREATE  OR REPLACE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `firefly`.`getControllerInputs` AS select `firefly`.`switches`.`controllerId` AS `controllerId`,concat(`firefly`.`switches`.`name`,`firefly`.`inputs`.`name`) AS `name`,`firefly`.`inputs`.`displayName` AS `displayName`,`firefly`.`inputs`.`pin` AS `pin`,`firefly`.`inputs`.`circuitType` AS `circuitType`,if(`firefly`.`inputs`.`broadcastOnChange`,'TRUE','FALSE') AS `broadcastOnStateChange`,if(`firefly`.`inputs`.`enabled`,'TRUE','FALSE') AS `enabled`,`getActionsJson`.`json` AS `outputs`,json_object('name',concat(`firefly`.`switches`.`name`,`firefly`.`inputs`.`name`),'displayName',`firefly`.`inputs`.`displayName`,'pin',`firefly`.`inputs`.`pin`,'circuitType',`firefly`.`inputs`.`circuitType`,'broadcastOnStateChange',((0 <> `firefly`.`inputs`.`broadcastOnChange`) is true),'enabled',((0 <> `firefly`.`inputs`.`enabled`) is true),'outputs',`getActionsJson`.`json`) AS `json` from ((`firefly`.`inputs` join `firefly`.`switches` on((`firefly`.`inputs`.`switchId` = `firefly`.`switches`.`id`))) join `firefly`.`getActionsJson` on((`getActionsJson`.`inputId` = `firefly`.`inputs`.`id`)));
 
 -- -----------------------------------------------------
 -- View `firefly`.`getOutputs`
