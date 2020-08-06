@@ -1236,9 +1236,41 @@ IN _amperage tinyint,
 IN _breakerId int)
 BEGIN
 
-DECLARE id_ int;
+DECLARE badOutputCount int;
+
 SET _displayName = trim(_displayName);
 SET _name = trim(_name);
+
+IF _pin IS NULL THEN
+
+	SELECT getNextOutputPin(_controllerId, _outputType) INTO _pin;
+
+END IF;
+
+IF _outputType = 'VARIABLE' THEN
+	
+    SELECT COUNT(*) INTO badOutputCount FROM actions WHERE outputId = _id AND actionType NOT IN ('INCREASE' , 'DECREASE');
+    
+    IF badOutputCount != 0 THEN
+
+		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'One or more actions are not INCREASE or DECREASE for this variable output.';
+
+	END IF;
+
+END IF;
+
+    
+IF _outputType = 'BINARY' THEN
+        
+	SELECT COUNT(*) INTO badOutputCount FROM actions WHERE outputId = _id AND actionType NOT IN ('TOGGLE');
+    
+	IF badOutputCount != 0 THEN
+
+		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'One or more actions are not TOGGLE for this binary output.';
+
+	END IF;
+    
+END IF;
 
 INSERT INTO outputs
 	(id, controllerId, controllerPort, pin, name, displayName, outputType, enabled, amperage, breakerId)
@@ -1254,32 +1286,7 @@ ON DUPLICATE KEY UPDATE
     enabled = _enabled,
     amperage = IFNULL(_amperage, 0),
     breakerId = _breakerId;
-
-SELECT 
-    id
-INTO id_ FROM
-    outputs
-WHERE
-    controllerId = _controllerId
-        AND controllerPort = _controllerPort
-        AND pin = _pin
-        AND outputType = _outputType
-        AND name = _name;
     
-
-IF _outputType = 'VARIABLE' THEN
-	DELETE FROM actions 
-	WHERE
-		outputId = id_
-		AND actionType NOT IN ('INCREASE' , 'DECREASE');
-END IF;
-    
-IF _outputType = 'BINARY' THEN
-    DELETE FROM actions
-    WHERE
-		outputId = id_
-        AND actionType NOT IN ('TOGGLE');
-END IF;
 
 END$$
 
