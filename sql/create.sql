@@ -1159,9 +1159,23 @@ IN _broadcastOnChange tinyint,
 IN _enabled tinyint)
 BEGIN
 
+DECLARE controllerId int;
+
 SET _name = trim(_name);
 SET _displayName = trim(_displayName);
 
+SELECT 
+    controllerId
+INTO controllerId FROM
+    switches
+WHERE
+    id = _switchId;
+
+IF _pin IS NULL THEN
+
+	SELECT getNextInputPin(controllerId) INTO _pin;
+
+END IF;
 
 INSERT INTO inputs (
 	id,
