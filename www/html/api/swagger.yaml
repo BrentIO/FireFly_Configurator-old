@@ -722,7 +722,38 @@ paths:
         500:
           description: "Internal Server Error"
 
-  #/switch/{deviceName}/bootstrap:
+
+  /switch/{deviceName}/bootstrap:
+    get:
+      tags:
+      - "Switches"
+      produces:
+      - "application/json"
+      description: "Retrieves a switch bootstrap by device name" 
+      operationId: getSwitchBootstrapDeviceName
+      parameters:
+      - name: "deviceName"
+        in: "path"
+        description: "The device name (MAC Address) of the switch to retrieve"
+        required: true
+        type: "string"
+      security: 
+        - ApiKeyAuth: [] 
+      responses:
+        200:
+          description: "Success"
+          schema:
+              $ref: "#/definitions/SwitchBootstrap"
+        400:
+          description: "Bad Request"
+          schema:
+            $ref: "#/definitions/Error"
+        401:
+          description: "Unauthorized"
+        404:
+          description: "Not Found"
+        500:
+          description: "Internal Server Error"
 
 
 
@@ -1754,3 +1785,57 @@ definitions:
         type: integer
         description: "Firmware ID to use; If NULL, latest firmware is assigned"
         default: null
+
+
+  SwitchBootstrap:
+    type: object
+    properties:
+      id:
+        type: integer
+        description: "Unique ID"
+      name:
+        type: string
+        description: "Name of the switch"
+        maxLength: 20
+      displayName:
+        type: string
+        description: "A descriptive display name"
+        maxLength: 20
+      mqtt:
+        $ref: "#/definitions/MQTTInfo"
+      firmware:
+        type: object
+        properties:
+          url: 
+            type: string
+            description: "URL where the assigned firmware can be obtained"
+            maxLength: 255
+          version:
+            type: integer
+            description: "Firmware version"
+          refreshMilliseconds:
+            type: integer
+            description: "Number of seconds between checks for new firmware"
+      network:
+        type: object
+        properties:
+          key:
+            type: string
+            description: "WiFi passphrase"
+            maxLength: 255
+          ssid:
+            type: string
+            description: "WiFi network name"
+            maxLength: 255
+      buttons:
+        type: array
+        items:
+          $ref: "#/definitions/Button"
+
+  
+  
+  Button:
+    type: object
+    properties:
+      id:
+        type: string
