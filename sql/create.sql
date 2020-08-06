@@ -1149,7 +1149,7 @@ DELIMITER $$
 USE `firefly`$$
 CREATE PROCEDURE `editInput`(IN _id int,
 IN _switchId int,
-IN _position tinyint,
+IN _position varchar(1),
 IN _pin tinyint,
 IN _colorId int,
 IN _circuitType ENUM('NORMALLY_OPEN','NORMALLY_CLOSED'),
@@ -1159,23 +1159,76 @@ IN _broadcastOnChange tinyint,
 IN _enabled tinyint)
 BEGIN
 
-DECLARE controllerId int;
+DECLARE _controllerId int;
+DECLARE _position_ int;
+DECLARE badPositionCheck int;
+DECLARE badPinCheck int;
 
-SET _name = trim(_name);
+SET _name = upper(replace(trim(_name), " ", ""));
 SET _displayName = trim(_displayName);
+SET _position = upper(trim(_position));
+
+CASE
+	WHEN _position = 'A' THEN
+		SET _position_ = 1;
+	WHEN _position = 'B' THEN 
+		SET _position_ = 2;
+	WHEN _position = 'C' THEN
+		SET _position_ = 3;
+	WHEN _position = 'D' THEN
+		SET _position_ = 4;
+	WHEN _position = 'E' THEN
+		SET _position_ = 5;
+	WHEN _position = 'F' THEN
+		SET _position_ = 6;
+	ELSE 
+		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Invalid position.';
+	
+END CASE;
+
 
 SELECT 
-    controllerId
-INTO controllerId FROM
-    switches
+    COUNT(*)
+INTO badPositionCheck FROM
+    inputs
 WHERE
-    id = _switchId;
+    switchId = _switchId
+        AND position = _position_
+        AND ID != IFNULL(_id, 0);
+
+IF badPositionCheck > 0 THEN
+	SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Position in use.';
+END IF;
+ 
+ 
+SELECT 
+    COUNT(inputs.id)
+INTO badPinCheck FROM
+    inputs
+        INNER JOIN
+    switches ON inputs.switchId = switches.id
+WHERE
+    inputs.pin = _pin
+        AND inputs.id != IFNULL(_id, 0);
+        
+IF badPinCheck > 0 THEN
+	SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Pin in use.';
+END IF;
+
 
 IF _pin IS NULL THEN
 
-	SELECT getNextInputPin(controllerId) INTO _pin;
+	SELECT 
+		controllerId
+	INTO _controllerId FROM
+		switches
+	WHERE
+		id = _switchId;
+
+	SELECT GETNEXTINPUTPIN(_controllerId) INTO _pin;
 
 END IF;
+
 
 INSERT INTO inputs (
 	id,
@@ -1191,7 +1244,7 @@ INSERT INTO inputs (
 VALUES(
 	_id,
 	_switchId,
-	_position,
+	_position_,
 	_pin,
 	_colorId,
 	_circuitType,
@@ -1201,7 +1254,7 @@ VALUES(
 	true)
 ON DUPLICATE KEY UPDATE
 	switchId = _switchId,
-	position = _position,
+	position = _position_,
 	pin = _pin,
 	colorId = _colorId,
 	circuitType = _circuitType,
@@ -1340,7 +1393,7 @@ BEGIN
 DECLARE _firmwareId_ int;
 DECLARE controllerCount int;
 
-SET _name = trim(_name);
+SET _name = upper(replace(trim(_name), " ", ""));
 SET _displayName = trim(_displayName);
 SET _mqttUsername = trim(_mqttUsername);
 SET _mqttPassword = trim(_mqttPassword);
