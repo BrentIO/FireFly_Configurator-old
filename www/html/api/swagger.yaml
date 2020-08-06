@@ -76,6 +76,7 @@ paths:
       security: []
   
 
+
   ################ Circuit Breakers ################
   /breaker:
     get:
@@ -117,9 +118,6 @@ paths:
           name: breaker
           description: "The circuit breaker to create"
           schema:
-            type: object
-            required:
-              - name
             $ref: "#/definitions/Breaker"
       security: 
         - ApiKeyAuth: [] 
@@ -193,10 +191,7 @@ paths:
         name: breaker
         description: "The circuit breaker to create"
         schema:
-          type: object
           $ref: "#/definitions/Breaker"
-          required:
-           - id
       responses:
         200:
           description: "Success"
@@ -244,6 +239,7 @@ paths:
           description: "Internal Server Error"
   
 
+
   ################ Switches ################        
   /buttonColor:
     get:
@@ -285,13 +281,7 @@ paths:
           name: buttonLEDColor
           description: "The button LED color to create"
           schema:
-            type: object
             $ref: "#/definitions/ButtonLEDColor"
-            required:
-              - name
-              - hexValue
-              - brightnessMinimum
-              - brightnessMaximum
       security: 
         - ApiKeyAuth: [] 
       responses:
@@ -360,13 +350,7 @@ paths:
         name: buttonLEDColor
         description: "The button LED color to edit"
         schema:
-          type: object
           $ref: "#/definitions/ButtonLEDColor"
-          required:
-            - name
-            - hexValue
-            - brightnessMinimum
-            - brightnessMaximum
       security: 
         - ApiKeyAuth: [] 
       responses:
@@ -456,11 +440,7 @@ paths:
           name: brightnessName
           description: "The button LED brightness name to create"
           schema:
-            type: object
             $ref: "#/definitions/BrightnessName"
-            required:
-              - name
-              - brightnessValue
       security: 
         - ApiKeyAuth: [] 
       responses:
@@ -531,11 +511,7 @@ paths:
           name: brightnessName
           description: "The button LED brightness name to edit"
           schema:
-            type: object
             $ref: "#/definitions/BrightnessName"
-            required:
-              - name
-              - brightnessValue
       security: 
         - ApiKeyAuth: [] 
       responses:
@@ -628,11 +604,6 @@ paths:
           name: switch
           description: "The switch to create"
           schema:
-            type: object
-            required:
-            - controllerId
-            - macAddress
-            - hwVersion
             $ref: "#/definitions/Switch"
       security: 
         - ApiKeyAuth: [] 
@@ -702,11 +673,7 @@ paths:
           name: switch
           description: "The switch to edit"
           schema:
-            type: object
             $ref: "#/definitions/Switch"
-            required:
-              - name
-              - brightnessValue
         security: 
           - ApiKeyAuth: [] 
         responses:
@@ -800,10 +767,7 @@ paths:
           name: Controller
           description: "The controller to create"
           schema:
-            type: object
             $ref: "#/definitions/Controller"
-            required:
-              - macAddress
       security: 
         - ApiKeyAuth: [] 
       responses:
@@ -874,12 +838,7 @@ paths:
           name: Controller
           description: "The controller to edit"
           schema:
-            type: object
             $ref: "#/definitions/Controller"
-            required:
-              - id
-              - macAddress
-              - hwVersion
       security: 
         - ApiKeyAuth: [] 
       responses:
@@ -935,8 +894,8 @@ paths:
       - "Controllers"
       produces:
       - "application/json"
-      description: "Retrieves a controller by device name" 
-      operationId: getControllerNameByDeviceName
+      description: "Retrieves a controller bootstrap by device name" 
+      operationId: getControllerBootstrapDeviceName
       parameters:
       - name: "deviceName"
         in: "path"
@@ -1182,10 +1141,7 @@ paths:
           name: setting
           description: "The setting to edit"
           schema:
-            type: object
             $ref: "#/definitions/Setting"
-            required:
-              - value              
       security: 
         - ApiKeyAuth: [] 
       responses:
@@ -1247,12 +1203,7 @@ paths:
           name: controller
           description: "The firmware to create"
           schema:
-            type: object
             $ref: "#/definitions/Firmware"
-            required:
-                - deviceType
-                - url
-                - version              
       security: 
         - ApiKeyAuth: [] 
       responses:
@@ -1325,12 +1276,7 @@ paths:
           name: firmware
           description: "The controller to edit"
           schema:
-            type: object
             $ref: "#/definitions/Firmware"
-            required:
-              - deviceType
-              - url
-              - version   
       security: 
         - ApiKeyAuth: [] 
       responses:
@@ -1427,6 +1373,9 @@ definitions:
 
   Breaker:
     type: "object"
+    required:
+      - name
+      - id
     properties:
       id:
         type: "integer"
@@ -1446,6 +1395,11 @@ definitions:
 
   ButtonLEDColor:
     type: object
+    required:
+      - name
+      - hexValue
+      - brightnessMinimum
+      - brightnessMaximum
     properties:
       id:
         type: integer
@@ -1476,6 +1430,9 @@ definitions:
 
   BrightnessName:
     type: object
+    required:
+      - name
+      - brightnessValue
     properties:
       id:
         type: integer
@@ -1497,6 +1454,10 @@ definitions:
 
   Controller:
     type: object
+    required:
+      - macAddress
+      - id
+      - hwVersion
     properties:
       id:
         type: integer
@@ -1551,39 +1512,7 @@ definitions:
         type: integer
         description: "Unique ID"
       mqtt:
-        type: object
-        description: "Information about the MQTT connection"
-        properties:
-          serverName:
-            type: string
-            description: "MQTT server name or IP address"
-            maxLength: 255
-          port:
-            type: integer
-            description: "MQTT server port number"
-          username:
-            type: string
-            description: "MQTT server username"
-            maxLength: 20
-          password:
-            type: string
-            description: "MQTT server password"
-            maxLength: 255
-          topics:
-            type: object
-            properties:
-              event:
-                type: string
-                description: "Topic the controller posts event information"
-                maxLength: 255
-              client:
-                type: string
-                description: "Topic used for broadcasting metadata about the device"
-                maxLength: 255
-              control:
-                type: string
-                description: "Topic used to direct the controller to take an action"
-                maxLength: 255
+        $ref: "#/definitions/MQTTInfo"
       name:
         type: string
         description: "Name of the controller"
@@ -1685,7 +1614,7 @@ definitions:
         type: integer
         description: "The physical port number"
       portType:
-        type: integer
+        type: string
         description: "The port type"
         enum:
           - "INPUT"
@@ -1695,11 +1624,10 @@ definitions:
         description: "The ID of either the input or output assigned to this port"
 
 
-
-
-
   Setting:
     type: object
+    required:
+      - value   
     properties:
       id:
         type: integer
@@ -1720,6 +1648,10 @@ definitions:
 
   Firmware:
     type: object
+    required:
+      - deviceType
+      - url
+      - version
     properties:
       id:
         type: integer
@@ -1738,9 +1670,48 @@ definitions:
         description: "Location where the firmware can be downloaded"
         maxLength: 255
 
+  MQTTInfo:
+    description: "Information about the MQTT connection"
+    properties:
+      serverName:
+        type: string
+        description: "MQTT server name or IP address"
+        maxLength: 255
+      port:
+        type: integer
+        description: "MQTT server port number"
+        default: 1883
+      username:
+        type: string
+        description: "MQTT server username"
+        maxLength: 20
+      password:
+        type: string
+        description: "MQTT server password"
+        maxLength: 255
+      topics:
+        type: object
+        properties:
+          event:
+            type: string
+            description: "Topic the device posts event information"
+            maxLength: 255
+          client:
+            type: string
+            description: "Topic used for broadcasting metadata about the device"
+            maxLength: 255
+          control:
+            type: string
+            description: "Topic used to direct the device to take an action"
+            maxLength: 255
+
 
   Switch:
     type: object
+    required:
+      - controllerId
+      - macAddress
+      - hwVersion
     properties:
       id:
         type: integer
