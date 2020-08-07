@@ -1871,8 +1871,6 @@ DECLARE countUsed int;
 SET countUnused = -1;
 SET countUsed = -1;
 
-SET _id = IFNULL(_id, 0);
-
 CASE
 	WHEN _pinType = 'INPUT' THEN
     
@@ -1972,8 +1970,6 @@ DECLARE countUsed int;
 
 SET countUnused = -1;
 SET countUsed = -1;
-
-SET _id = IFNULL(_id, 0);
 
 CASE
 	WHEN _portType = 'INPUT' THEN
