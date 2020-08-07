@@ -3,7 +3,7 @@ DROP USER IF EXISTS 'firefly'@'localhost';
 CREATE USER 'firefly'@'localhost' IDENTIFIED BY 'firefly';
 
 /* Grant permissions to the views */
-GRANT SELECT ON firefly.getActionsJson TO 'firefly'@'localhost';
+GRANT SELECT ON firefly.getActions TO 'firefly'@'localhost';
 GRANT SELECT ON firefly.getBreakers TO 'firefly'@'localhost';
 GRANT SELECT ON firefly.getButtonColors TO 'firefly'@'localhost';
 GRANT SELECT ON firefly.getBrightnessNames TO 'firefly'@'localhost';
@@ -14,9 +14,10 @@ GRANT SELECT ON firefly.getControllerPinsUsed TO 'firefly'@'localhost';
 GRANT SELECT ON firefly.getControllerPortsUnused TO 'firefly'@'localhost';
 GRANT SELECT ON firefly.getControllerPortsUsed TO 'firefly'@'localhost';
 GRANT SELECT ON firefly.getControllers TO 'firefly'@'localhost';
-GRANT SELECT ON firefly.getFirmware TO 'firefly'@'localhost';
 GRANT SELECT ON firefly.getControllerInputs TO 'firefly'@'localhost';
+GRANT SELECT ON firefly.getFirmware TO 'firefly'@'localhost';
 GRANT SELECT ON firefly.getInputs TO 'firefly'@'localhost';
+GRANT SELECT ON firefly.getInputActions TO 'firefly'@'localhost';
 GRANT SELECT ON firefly.getOutputs TO 'firefly'@'localhost';
 GRANT SELECT ON firefly.getSettings TO 'firefly'@'localhost';
 GRANT SELECT ON firefly.getSwitchBootstraps TO 'firefly'@'localhost';
@@ -24,7 +25,9 @@ GRANT SELECT ON firefly.getSwitchButtons TO 'firefly'@'localhost';
 GRANT SELECT ON firefly.getSwitches TO 'firefly'@'localhost';
 
 
+
 /* Grant permissions to the stored procedures */ 
+GRANT EXECUTE ON PROCEDURE firefly.deleteAction TO 'firefly'@'localhost';
 GRANT EXECUTE ON PROCEDURE firefly.deleteBreaker TO 'firefly'@'localhost';
 GRANT EXECUTE ON PROCEDURE firefly.deleteBrightnessName TO 'firefly'@'localhost';
 GRANT EXECUTE ON PROCEDURE firefly.deleteButtonColor TO 'firefly'@'localhost';

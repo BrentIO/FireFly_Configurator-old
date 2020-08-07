@@ -264,9 +264,9 @@ COLLATE = utf8mb4_0900_ai_ci;
 USE `firefly` ;
 
 -- -----------------------------------------------------
--- Placeholder table for view `firefly`.`getActionsJson`
+-- Placeholder table for view `firefly`.`getActions`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `firefly`.`getActionsJson` (`json` INT, `inputId` INT);
+CREATE TABLE IF NOT EXISTS `firefly`.`getActions` (`id` INT, `inputId` INT, `outputId` INT, `actionType` INT, `json` INT);
 
 -- -----------------------------------------------------
 -- Placeholder table for view `firefly`.`getBreakers`
@@ -339,6 +339,11 @@ CREATE TABLE IF NOT EXISTS `firefly`.`getControllerInputs` (`controllerId` INT, 
 CREATE TABLE IF NOT EXISTS `firefly`.`getControllerOutputs` (`controllerId` INT, `json` INT);
 
 -- -----------------------------------------------------
+-- Placeholder table for view `firefly`.`getInputActions`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `firefly`.`getInputActions` (`inputId` INT, `json` INT);
+
+-- -----------------------------------------------------
 -- Placeholder table for view `firefly`.`getOutputs`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `firefly`.`getOutputs` (`id` INT, `controllerId` INT, `name` INT, `displayName` INT, `outputType` INT, `pin` INT, `port` INT, `position` INT, `enabled` INT, `amperage` INT, `breakerId` INT, `json` INT);
@@ -406,6 +411,24 @@ END IF;
 
 
 RETURN brightnessLevel;
+
+END$$
+
+DELIMITER ;
+
+-- -----------------------------------------------------
+-- procedure deleteAction
+-- -----------------------------------------------------
+
+USE `firefly`;
+DROP procedure IF EXISTS `firefly`.`deleteAction`;
+
+DELIMITER $$
+USE `firefly`$$
+CREATE PROCEDURE `deleteAction`(IN _id int)
+BEGIN
+
+DELETE FROM actions WHERE id = _id;
 
 END$$
 
@@ -790,7 +813,7 @@ DROP procedure IF EXISTS `firefly`.`editAction`;
 
 DELIMITER $$
 USE `firefly`$$
-CREATE PROCEDURE `editAction`(IN _id int, IN _inputId int, IN _outputId int, _actionType ENUM('INCREASE','DECREASE','TOGGLE'), OUT id_ int)
+CREATE PROCEDURE `editAction`(IN _id int, IN _inputId int, IN _outputId int, _actionType ENUM('INCREASE','DECREASE','TOGGLE'))
 BEGIN
 
 
@@ -846,13 +869,6 @@ VALUES (_id, _inputId, _outputId, _actionType)
 ON DUPLICATE KEY UPDATE
 	actionType = _actionType;
 
-SELECT 
-    id
-INTO id_ FROM
-    actions
-WHERE
-    inputId = _inputId
-        AND outputId = _outputId;
 
 END$$
 
@@ -2033,12 +2049,12 @@ END$$
 DELIMITER ;
 
 -- -----------------------------------------------------
--- View `firefly`.`getActionsJson`
+-- View `firefly`.`getActions`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `firefly`.`getActionsJson`;
-DROP VIEW IF EXISTS `firefly`.`getActionsJson` ;
+DROP TABLE IF EXISTS `firefly`.`getActions`;
+DROP VIEW IF EXISTS `firefly`.`getActions` ;
 USE `firefly`;
-CREATE  OR REPLACE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `firefly`.`getActionsJson` AS select json_arrayagg(json_object('output',`firefly`.`outputs`.`name`,'action',`firefly`.`actions`.`actionType`)) AS `json`,`firefly`.`actions`.`inputId` AS `inputId` from (`firefly`.`actions` join `firefly`.`outputs` on((`firefly`.`outputs`.`id` = `firefly`.`actions`.`outputId`))) group by `firefly`.`actions`.`inputId`;
+CREATE  OR REPLACE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `firefly`.`getActions` AS select `firefly`.`actions`.`id` AS `id`,`firefly`.`actions`.`inputId` AS `inputId`,`firefly`.`actions`.`outputId` AS `outputId`,`firefly`.`actions`.`actionType` AS `actionType`,json_object('id',`firefly`.`actions`.`id`,'inputId',`firefly`.`actions`.`inputId`,'outputId',`firefly`.`actions`.`outputId`,'actionType',`firefly`.`actions`.`actionType`) AS `json` from `firefly`.`actions`;
 
 -- -----------------------------------------------------
 -- View `firefly`.`getBreakers`
@@ -2134,7 +2150,7 @@ CREATE  OR REPLACE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `firefly`.`getF
 DROP TABLE IF EXISTS `firefly`.`getControllerInputs`;
 DROP VIEW IF EXISTS `firefly`.`getControllerInputs` ;
 USE `firefly`;
-CREATE  OR REPLACE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `firefly`.`getControllerInputs` AS select `firefly`.`switches`.`controllerId` AS `controllerId`,json_arrayagg(json_object('name',concat(`firefly`.`switches`.`name`,'B',`firefly`.`inputs`.`port`),'pin',`firefly`.`inputs`.`pin`,'circuitType',`firefly`.`inputs`.`circuitType`,'broadcastOnStateChange',((0 <> `firefly`.`inputs`.`broadcastOnChange`) is true),'enabled',((0 <> `firefly`.`inputs`.`enabled`) is true))) AS `json` from (`firefly`.`inputs` join `firefly`.`switches` on((`firefly`.`inputs`.`switchId` = `firefly`.`switches`.`id`))) group by `firefly`.`switches`.`controllerId`;
+CREATE  OR REPLACE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `firefly`.`getControllerInputs` AS select `firefly`.`switches`.`controllerId` AS `controllerId`,json_arrayagg(json_object('name',concat(`firefly`.`switches`.`name`,'B',`firefly`.`inputs`.`port`),'pin',`firefly`.`inputs`.`pin`,'circuitType',`firefly`.`inputs`.`circuitType`,'broadcastOnStateChange',((0 <> `firefly`.`inputs`.`broadcastOnChange`) is true),'enabled',((0 <> `firefly`.`inputs`.`enabled`) is true),'actions',`getInputActions`.`json`)) AS `json` from ((`firefly`.`inputs` join `firefly`.`switches` on((`firefly`.`inputs`.`switchId` = `firefly`.`switches`.`id`))) join `firefly`.`getInputActions` on((`getInputActions`.`inputId` = `firefly`.`inputs`.`id`))) group by `firefly`.`switches`.`controllerId`;
 
 -- -----------------------------------------------------
 -- View `firefly`.`getControllerOutputs`
@@ -2144,7 +2160,6 @@ DROP VIEW IF EXISTS `firefly`.`getControllerOutputs` ;
 USE `firefly`;
 CREATE  OR REPLACE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `firefly`.`getControllerOutputs` AS select `getOutputs`.`controllerId` AS `controllerId`,json_arrayagg(json_object('name',`getOutputs`.`name`,'outputType',`getOutputs`.`outputType`,'pin',`getOutputs`.`pin`,'enabled',`getOutputs`.`enabled`)) AS `json` from `firefly`.`getOutputs` group by `getOutputs`.`controllerId`;
 
-
 -- -----------------------------------------------------
 -- View `firefly`.`getInputs`
 -- -----------------------------------------------------
@@ -2152,6 +2167,14 @@ DROP TABLE IF EXISTS `firefly`.`getInputs`;
 DROP VIEW IF EXISTS `firefly`.`getInputs` ;
 USE `firefly`;
 CREATE  OR REPLACE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `firefly`.`getInputs` AS select `firefly`.`inputs`.`id` AS `id`,`firefly`.`inputs`.`switchId` AS `switchId`,(case when (`firefly`.`inputs`.`port` = 1) then 'A' when (`firefly`.`inputs`.`port` = 2) then 'B' when (`firefly`.`inputs`.`port` = 3) then 'C' when (`firefly`.`inputs`.`port` = 4) then 'D' when (`firefly`.`inputs`.`port` = 5) then 'E' when (`firefly`.`inputs`.`port` = 6) then 'F' end) AS `port`,`firefly`.`inputs`.`pin` AS `pin`,`firefly`.`inputs`.`colorId` AS `colorId`,`firefly`.`inputs`.`circuitType` AS `circuitType`,`firefly`.`inputs`.`displayName` AS `displayName`,if(`firefly`.`inputs`.`broadcastOnChange`,'true','false') AS `broadcastOnChange`,if(`firefly`.`inputs`.`enabled`,'true','false') AS `enabled`,json_object('id',`firefly`.`inputs`.`id`,'switchId',`firefly`.`inputs`.`switchId`,'port',(case when (`firefly`.`inputs`.`port` = 1) then 'A' when (`firefly`.`inputs`.`port` = 2) then 'B' when (`firefly`.`inputs`.`port` = 3) then 'C' when (`firefly`.`inputs`.`port` = 4) then 'D' when (`firefly`.`inputs`.`port` = 5) then 'E' when (`firefly`.`inputs`.`port` = 6) then 'F' end),'pin',`firefly`.`inputs`.`pin`,'colorId',`firefly`.`inputs`.`colorId`,'circuitType',`firefly`.`inputs`.`circuitType`,'displayName',`firefly`.`inputs`.`displayName`,'broadcastOnChange',cast(if(`firefly`.`inputs`.`broadcastOnChange`,'true','false') as json),'enabled',cast(if(`firefly`.`inputs`.`enabled`,'true','false') as json)) AS `json` from `firefly`.`inputs`;
+
+-- -----------------------------------------------------
+-- View `firefly`.`getInputActions`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `firefly`.`getInputActions`;
+DROP VIEW IF EXISTS `firefly`.`getInputActions` ;
+USE `firefly`;
+CREATE  OR REPLACE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `firefly`.`getInputActions` AS select `firefly`.`actions`.`inputId` AS `inputId`,json_arrayagg(json_object('name',`firefly`.`outputs`.`name`,'action',`firefly`.`actions`.`actionType`)) AS `json` from ((`firefly`.`actions` join `firefly`.`inputs` on((`firefly`.`actions`.`inputId` = `firefly`.`inputs`.`id`))) join `firefly`.`outputs` on((`firefly`.`outputs`.`id` = `firefly`.`actions`.`outputId`))) group by `firefly`.`actions`.`inputId`;
 
 -- -----------------------------------------------------
 -- View `firefly`.`getOutputs`
