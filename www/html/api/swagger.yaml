@@ -1231,7 +1231,7 @@ paths:
       operationId: createFirmware
       parameters:
         - in: body
-          name: controller
+          name: firmware
           description: "The firmware to create"
           schema:
             $ref: "#/definitions/Firmware"
