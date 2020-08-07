@@ -336,7 +336,7 @@ CREATE TABLE IF NOT EXISTS `firefly`.`getControllerInputs` (`controllerId` INT, 
 -- -----------------------------------------------------
 -- Placeholder table for view `firefly`.`getOutputs`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `firefly`.`getOutputs` (`outputId` INT, `controllerId` INT, `name` INT, `displayName` INT, `outputType` INT, `pin` INT, `port` INT, `position` INT, `enabled` INT, `amperage` INT, `breakerId` INT, `json` INT);
+CREATE TABLE IF NOT EXISTS `firefly`.`getOutputs` (`id` INT, `controllerId` INT, `name` INT, `displayName` INT, `outputType` INT, `pin` INT, `port` INT, `position` INT, `enabled` INT, `amperage` INT, `breakerId` INT, `json` INT);
 
 -- -----------------------------------------------------
 -- Placeholder table for view `firefly`.`getSettings`
@@ -707,7 +707,7 @@ SELECT
 INTO actionsCount FROM
     actions
 WHERE
-    outputId = _id;
+    id = _id;
 
 IF actionsCount > 0 THEN
 
@@ -2145,7 +2145,7 @@ CREATE  OR REPLACE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `firefly`.`getI
 DROP TABLE IF EXISTS `firefly`.`getOutputs`;
 DROP VIEW IF EXISTS `firefly`.`getOutputs` ;
 USE `firefly`;
-CREATE  OR REPLACE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `firefly`.`getOutputs` AS select `firefly`.`outputs`.`id` AS `outputId`,`firefly`.`outputs`.`controllerId` AS `controllerId`,`firefly`.`outputs`.`name` AS `name`,`firefly`.`outputs`.`displayName` AS `displayName`,`firefly`.`outputs`.`outputType` AS `outputType`,`firefly`.`outputs`.`pin` AS `pin`,`firefly`.`outputs`.`port` AS `port`,if((`firefly`.`outputs`.`outputType` = 'BINARY'),1,2) AS `position`,if(`firefly`.`outputs`.`enabled`,'TRUE','FALSE') AS `enabled`,`firefly`.`outputs`.`amperage` AS `amperage`,`firefly`.`outputs`.`breakerId` AS `breakerId`,json_object('id',`firefly`.`outputs`.`id`,'controllerId',`firefly`.`outputs`.`controllerId`,'name',`firefly`.`outputs`.`name`,'displayName',`firefly`.`outputs`.`displayName`,'outputType',`firefly`.`outputs`.`outputType`,'pin',`firefly`.`outputs`.`pin`,'port',`firefly`.`outputs`.`port`,'enabled',((0 <> `firefly`.`outputs`.`enabled`) is true),'amperage',`firefly`.`outputs`.`amperage`,'breakerId',`firefly`.`outputs`.`breakerId`) AS `json` from `firefly`.`outputs`;
+CREATE  OR REPLACE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `firefly`.`getOutputs` AS select `firefly`.`outputs`.`id` AS `id`,`firefly`.`outputs`.`controllerId` AS `controllerId`,`firefly`.`outputs`.`name` AS `name`,`firefly`.`outputs`.`displayName` AS `displayName`,`firefly`.`outputs`.`outputType` AS `outputType`,`firefly`.`outputs`.`pin` AS `pin`,`firefly`.`outputs`.`port` AS `port`,if((`firefly`.`outputs`.`outputType` = 'BINARY'),1,2) AS `position`,if(`firefly`.`outputs`.`enabled`,'TRUE','FALSE') AS `enabled`,`firefly`.`outputs`.`amperage` AS `amperage`,`firefly`.`outputs`.`breakerId` AS `breakerId`,json_object('id',`firefly`.`outputs`.`id`,'controllerId',`firefly`.`outputs`.`controllerId`,'name',`firefly`.`outputs`.`name`,'displayName',`firefly`.`outputs`.`displayName`,'outputType',`firefly`.`outputs`.`outputType`,'pin',`firefly`.`outputs`.`pin`,'port',`firefly`.`outputs`.`port`,'enabled',((0 <> `firefly`.`outputs`.`enabled`) is true),'amperage',`firefly`.`outputs`.`amperage`,'breakerId',`firefly`.`outputs`.`breakerId`) AS `json` from `firefly`.`outputs`;
 
 -- -----------------------------------------------------
 -- View `firefly`.`getSettings`
