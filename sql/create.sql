@@ -1332,7 +1332,7 @@ END IF;
 INSERT INTO outputs
 	(id, controllerId, port, pin, name, displayName, outputType, enabled, amperage, breakerId)
 VALUES
-	(_id, _controllerId, _port, _pin, _name, _displayName, _outputType, true, IFNULL(_amperage, 0), breakerId)
+	(_id, _controllerId, _port, _pin, _name, _displayName, _outputType, true, IFNULL(_amperage, 0), _breakerId)
 ON DUPLICATE KEY UPDATE
 	controllerId = _controllerId,
     port = _port,
