@@ -71,24 +71,15 @@ DROP TABLE IF EXISTS `firefly`.`inputs` ;
 CREATE TABLE IF NOT EXISTS `firefly`.`inputs` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `switchId` INT NOT NULL,
-  `position` TINYINT UNSIGNED NOT NULL,
+  `port` TINYINT UNSIGNED NOT NULL,
   `pin` TINYINT UNSIGNED NULL DEFAULT NULL,
   `colorId` INT NOT NULL,
   `circuitType` ENUM('NORMALLY_OPEN', 'NORMALLY_CLOSED') NOT NULL,
-  `name` VARCHAR(20) NOT NULL,
   `displayName` VARCHAR(20) NULL DEFAULT NULL,
   `broadcastOnChange` TINYINT UNSIGNED NOT NULL DEFAULT '1',
   `enabled` TINYINT UNSIGNED NOT NULL DEFAULT '1',
   PRIMARY KEY (`id`),
-  UNIQUE INDEX `id_UNIQUE` (`id` ASC) VISIBLE,
-  INDEX `switchId_idx` (`switchId` ASC) VISIBLE,
-  INDEX `colorId_idx` (`colorId` ASC) VISIBLE,
-  CONSTRAINT `colorId`
-    FOREIGN KEY (`colorId`)
-    REFERENCES `firefly`.`buttonColors` (`id`),
-  CONSTRAINT `switchId`
-    FOREIGN KEY (`switchId`)
-    REFERENCES `firefly`.`switches` (`id`))
+  UNIQUE INDEX `id_UNIQUE` (`id` ASC) VISIBLE)
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_0900_ai_ci;
@@ -345,9 +336,14 @@ CREATE TABLE IF NOT EXISTS `firefly`.`getControllers` (`id` INT, `macAddress` IN
 CREATE TABLE IF NOT EXISTS `firefly`.`getFirmware` (`id` INT, `deviceType` INT, `version` INT, `url` INT, `json` INT);
 
 -- -----------------------------------------------------
+-- Placeholder table for view `firefly`.`getInputs`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `firefly`.`getInputs` (`id` INT);
+
+-- -----------------------------------------------------
 -- Placeholder table for view `firefly`.`getControllerInputs`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `firefly`.`getControllerInputs` (`controllerId` INT, `name` INT, `displayName` INT, `pin` INT, `circuitType` INT, `broadcastOnStateChange` INT, `enabled` INT, `outputs` INT, `json` INT);
+CREATE TABLE IF NOT EXISTS `firefly`.`getControllerInputs` (`controllerId` INT, `name` INT, `displayName` INT, `pin` INT, `circuitType` INT, `broadcastOnStateChange` INT, `enabled` INT, `json` INT);
 
 -- -----------------------------------------------------
 -- Placeholder table for view `firefly`.`getOutputs`
@@ -1149,55 +1145,53 @@ DELIMITER $$
 USE `firefly`$$
 CREATE PROCEDURE `editInput`(IN _id int,
 IN _switchId int,
-IN _position varchar(1),
+IN _port varchar(1),
 IN _pin tinyint,
 IN _colorId int,
 IN _circuitType ENUM('NORMALLY_OPEN','NORMALLY_CLOSED'),
-IN _name varchar(20),
 IN _displayName varchar(20),
 IN _broadcastOnChange tinyint,
 IN _enabled tinyint)
 BEGIN
 
 DECLARE _controllerId int;
-DECLARE _position_ int;
-DECLARE badPositionCheck int;
+DECLARE _port_ int;
+DECLARE badPortCheck int;
 DECLARE badPinCheck int;
 
-SET _name = upper(replace(trim(_name), " ", ""));
 SET _displayName = trim(_displayName);
-SET _position = upper(trim(_position));
+SET _port = upper(trim(_port));
 
 CASE
-	WHEN _position = 'A' THEN
-		SET _position_ = 1;
-	WHEN _position = 'B' THEN 
-		SET _position_ = 2;
-	WHEN _position = 'C' THEN
-		SET _position_ = 3;
-	WHEN _position = 'D' THEN
-		SET _position_ = 4;
-	WHEN _position = 'E' THEN
-		SET _position_ = 5;
-	WHEN _position = 'F' THEN
-		SET _position_ = 6;
+	WHEN _port = 'A' THEN
+		SET _port_ = 1;
+	WHEN _port = 'B' THEN 
+		SET _port_ = 2;
+	WHEN _port = 'C' THEN
+		SET _port_ = 3;
+	WHEN _port = 'D' THEN
+		SET _port_ = 4;
+	WHEN _port = 'E' THEN
+		SET _port_ = 5;
+	WHEN _port = 'F' THEN
+		SET _port_ = 6;
 	ELSE 
-		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Invalid position.';
+		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Invalid port.';
 	
 END CASE;
 
 
 SELECT 
     COUNT(*)
-INTO badPositionCheck FROM
+INTO badPortCheck FROM
     inputs
 WHERE
     switchId = _switchId
-        AND position = _position_
+        AND port = _port_
         AND ID != IFNULL(_id, 0);
 
-IF badPositionCheck > 0 THEN
-	SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Position in use.';
+IF badPortCheck > 0 THEN
+	SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Port in use.';
 END IF;
  
  
@@ -1233,32 +1227,29 @@ END IF;
 INSERT INTO inputs (
 	id,
 	switchId,
-	position,
+	port,
 	pin,
 	colorId, 
 	circuitType,
-	name,
     displayName,
 	broadcastOnChange,
 	enabled)
 VALUES(
 	_id,
 	_switchId,
-	_position_,
+	_port_,
 	_pin,
 	_colorId,
 	_circuitType,
-	_name,
     _displayName,
 	_broadcastOnChange,
 	true)
 ON DUPLICATE KEY UPDATE
 	switchId = _switchId,
-	position = _position_,
+	port = _port_,
 	pin = _pin,
 	colorId = _colorId,
 	circuitType = _circuitType,
-	name = _name,
     displayName = _displayName,
 	broadcastOnChange = _broadcastOnChange,
 	enabled = _enabled;
@@ -1936,7 +1927,15 @@ CREATE  OR REPLACE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `firefly`.`getF
 DROP TABLE IF EXISTS `firefly`.`getControllerInputs`;
 DROP VIEW IF EXISTS `firefly`.`getControllerInputs` ;
 USE `firefly`;
-CREATE  OR REPLACE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `firefly`.`getControllerInputs` AS select `firefly`.`switches`.`controllerId` AS `controllerId`,concat(`firefly`.`switches`.`name`,`firefly`.`inputs`.`name`) AS `name`,`firefly`.`inputs`.`displayName` AS `displayName`,`firefly`.`inputs`.`pin` AS `pin`,`firefly`.`inputs`.`circuitType` AS `circuitType`,if(`firefly`.`inputs`.`broadcastOnChange`,'TRUE','FALSE') AS `broadcastOnStateChange`,if(`firefly`.`inputs`.`enabled`,'TRUE','FALSE') AS `enabled`,`getActionsJson`.`json` AS `outputs`,json_object('name',concat(`firefly`.`switches`.`name`,`firefly`.`inputs`.`name`),'displayName',`firefly`.`inputs`.`displayName`,'pin',`firefly`.`inputs`.`pin`,'circuitType',`firefly`.`inputs`.`circuitType`,'broadcastOnStateChange',((0 <> `firefly`.`inputs`.`broadcastOnChange`) is true),'enabled',((0 <> `firefly`.`inputs`.`enabled`) is true),'outputs',`getActionsJson`.`json`) AS `json` from ((`firefly`.`inputs` join `firefly`.`switches` on((`firefly`.`inputs`.`switchId` = `firefly`.`switches`.`id`))) join `firefly`.`getActionsJson` on((`getActionsJson`.`inputId` = `firefly`.`inputs`.`id`)));
+CREATE  OR REPLACE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `firefly`.`getControllerInputs` AS select `firefly`.`switches`.`controllerId` AS `controllerId`,concat(`firefly`.`switches`.`name`,`firefly`.`inputs`.`port`) AS `name`,`firefly`.`inputs`.`displayName` AS `displayName`,`firefly`.`inputs`.`pin` AS `pin`,`firefly`.`inputs`.`circuitType` AS `circuitType`,if(`firefly`.`inputs`.`broadcastOnChange`,'TRUE','FALSE') AS `broadcastOnStateChange`,if(`firefly`.`inputs`.`enabled`,'TRUE','FALSE') AS `enabled`,json_object('name',concat(`firefly`.`switches`.`name`,`firefly`.`inputs`.`port`),'displayName',`firefly`.`inputs`.`displayName`,'pin',`firefly`.`inputs`.`pin`,'circuitType',`firefly`.`inputs`.`circuitType`,'broadcastOnStateChange',((0 <> `firefly`.`inputs`.`broadcastOnChange`) is true),'enabled',((0 <> `firefly`.`inputs`.`enabled`) is true)) AS `json` from (`firefly`.`inputs` join `firefly`.`switches` on((`firefly`.`inputs`.`switchId` = `firefly`.`switches`.`id`)));
+
+-- -----------------------------------------------------
+-- View `firefly`.`getInputs`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `firefly`.`getInputs`;
+DROP VIEW IF EXISTS `firefly`.`getInputs` ;
+USE `firefly`;
+CREATE  OR REPLACE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `firefly`.`getInputs` AS select `firefly`.`inputs`.`id` AS `id`,`firefly`.`inputs`.`switchId` AS `switchId`,(case when (`firefly`.`inputs`.`port` = 1) then 'A' when (`firefly`.`inputs`.`port` = 2) then 'B' when (`firefly`.`inputs`.`port` = 3) then 'C' when (`firefly`.`inputs`.`port` = 4) then 'D' when (`firefly`.`inputs`.`port` = 5) then 'E' when (`firefly`.`inputs`.`port` = 6) then 'F' end) AS `port`,`firefly`.`inputs`.`pin` AS `pin`,`firefly`.`inputs`.`colorId` AS `colorId`,`firefly`.`inputs`.`circuitType` AS `circuitType`,`firefly`.`inputs`.`displayName` AS `displayName`,if(`firefly`.`inputs`.`broadcastOnChange`,'true','false') AS `broadcastOnChange`,if(`firefly`.`inputs`.`enabled`,'true','false') AS `enabled`,json_object('id',`firefly`.`inputs`.`id`,'switchId',`firefly`.`inputs`.`switchId`,'port',(case when (`firefly`.`inputs`.`port` = 1) then 'A' when (`firefly`.`inputs`.`port` = 2) then 'B' when (`firefly`.`inputs`.`port` = 3) then 'C' when (`firefly`.`inputs`.`port` = 4) then 'D' when (`firefly`.`inputs`.`port` = 5) then 'E' when (`firefly`.`inputs`.`port` = 6) then 'F' end),'pin',`firefly`.`inputs`.`pin`,'colorId',`firefly`.`inputs`.`colorId`,'circuitType',`firefly`.`inputs`.`circuitType`,'displayName',`firefly`.`inputs`.`displayName`,'broadcastOnChange',cast(if(`firefly`.`inputs`.`broadcastOnChange`,'true','false') as json),'enabled',cast(if(`firefly`.`inputs`.`enabled`,'true','false') as json)) AS `json` from `firefly`.`inputs`;
 
 -- -----------------------------------------------------
 -- View `firefly`.`getOutputs`
@@ -1968,7 +1967,7 @@ CREATE  OR REPLACE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `firefly`.`getS
 DROP TABLE IF EXISTS `firefly`.`getSwitchButtons`;
 DROP VIEW IF EXISTS `firefly`.`getSwitchButtons` ;
 USE `firefly`;
-CREATE  OR REPLACE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `firefly`.`getSwitchButtons` AS select `firefly`.`inputs`.`switchId` AS `switchId`,json_arrayagg(json_object('name',concat('B',`firefly`.`inputs`.`position`),'port',(case when (`firefly`.`inputs`.`position` = 1) then 'A' when (`firefly`.`inputs`.`position` = 2) then 'B' when (`firefly`.`inputs`.`position` = 3) then 'C' when (`firefly`.`inputs`.`position` = 4) then 'D' when (`firefly`.`inputs`.`position` = 5) then 'E' when (`firefly`.`inputs`.`position` = 6) then 'F' end),'led',`getColorBrightnessNames`.`brightnessNames`)) AS `json` from (((`firefly`.`inputs` join `firefly`.`buttonColors` on((`firefly`.`buttonColors`.`id` = `firefly`.`inputs`.`colorId`))) join `firefly`.`getColorBrightnessNames` on((`firefly`.`inputs`.`colorId` = `getColorBrightnessNames`.`colorId`))) join `firefly`.`switches` on((`firefly`.`inputs`.`switchId` = `firefly`.`switches`.`id`))) group by `firefly`.`inputs`.`switchId`;
+CREATE  OR REPLACE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `firefly`.`getSwitchButtons` AS select `firefly`.`inputs`.`switchId` AS `switchId`,json_arrayagg(json_object('name',concat('B',`firefly`.`inputs`.`port`),'port',(case when (`firefly`.`inputs`.`port` = 1) then 'A' when (`firefly`.`inputs`.`port` = 2) then 'B' when (`firefly`.`inputs`.`port` = 3) then 'C' when (`firefly`.`inputs`.`port` = 4) then 'D' when (`firefly`.`inputs`.`port` = 5) then 'E' when (`firefly`.`inputs`.`port` = 6) then 'F' end),'led',`getColorBrightnessNames`.`brightnessNames`)) AS `json` from (((`firefly`.`inputs` join `firefly`.`buttonColors` on((`firefly`.`buttonColors`.`id` = `firefly`.`inputs`.`colorId`))) join `firefly`.`getColorBrightnessNames` on((`firefly`.`inputs`.`colorId` = `getColorBrightnessNames`.`colorId`))) join `firefly`.`switches` on((`firefly`.`inputs`.`switchId` = `firefly`.`switches`.`id`))) group by `firefly`.`inputs`.`switchId`;
 
 -- -----------------------------------------------------
 -- View `firefly`.`getSwitches`

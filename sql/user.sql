@@ -16,6 +16,7 @@ GRANT SELECT ON firefly.getControllerPortsUsed TO 'firefly'@'localhost';
 GRANT SELECT ON firefly.getControllers TO 'firefly'@'localhost';
 GRANT SELECT ON firefly.getFirmware TO 'firefly'@'localhost';
 GRANT SELECT ON firefly.getControllerInputs TO 'firefly'@'localhost';
+GRANT SELECT ON firefly.getInputs TO 'firefly'@'localhost';
 GRANT SELECT ON firefly.getOutputs TO 'firefly'@'localhost';
 GRANT SELECT ON firefly.getSettings TO 'firefly'@'localhost';
 GRANT SELECT ON firefly.getSwitchBootstraps TO 'firefly'@'localhost';

@@ -1360,6 +1360,168 @@ paths:
 
 
 
+  /input:
+    get:
+      tags:
+      - "Inputs"
+      produces:
+      - "application/json"
+      description: "Retrieves a list of all inputs" 
+      operationId: listInputs
+      security: 
+        - ApiKeyAuth: [] 
+      responses:
+        200:
+          description: "Success"
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/Input"
+        400:
+          description: "Bad Request"
+          schema:
+            $ref: "#/definitions/Error"
+        401:
+          description: "Unauthorized"
+        404:
+          description: "Not Found"
+        500:
+          description: "Internal Server Error"
+
+    post:
+      tags:
+      - "Inputs"
+      produces:
+      - "application/json"
+      consumes:
+      - "application/json"
+      description: "Creates a new input" 
+      operationId: createInput
+      parameters:
+        - in: body
+          name: input
+          description: "The input to create"
+          schema:
+            $ref: "#/definitions/Input"
+      security: 
+        - ApiKeyAuth: [] 
+      responses:
+        200:
+          description: "Success"
+          schema:
+            $ref: "#/definitions/Input"
+        400:
+          description: "Bad Request"
+          schema:
+            $ref: "#/definitions/Error"
+        401:
+          description: "Unauthorized"
+        404:
+          description: "Not Found"
+        500:
+          description: "Internal Server Error"
+
+  /input/{id}:
+    get:
+      tags:
+      - "Inputs"
+      produces:
+      - "application/json"
+      description: "Retrieves an input by ID" 
+      operationId: getInputById
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "ID of the input to return"
+        required: true
+        type: "integer"
+        format: "int32"
+      security: 
+        - ApiKeyAuth: [] 
+      responses:
+        200:
+          description: "Success"
+          schema:
+            $ref: "#/definitions/Input"
+        400:
+          description: "Bad Request"
+          schema:
+            $ref: "#/definitions/Error"
+        401:
+          description: "Unauthorized"
+        404:
+          description: "Not Found"
+        500:
+          description: "Internal Server Error"
+
+    patch:
+      tags:
+      - "Inputs"
+      produces:
+      - "application/json"
+      consumes:
+      - "application/json"
+      description: "Edits an existing input by ID" 
+      operationId: editInput
+      parameters:
+        - name: "id"
+          in: "path"
+          description: "ID of the input to edit"
+          required: true
+          type: "integer"
+          format: "int32"
+        - in: body
+          name: input
+          description: "The input to edit"
+          schema:
+            $ref: "#/definitions/Input"
+      security: 
+        - ApiKeyAuth: [] 
+      responses:
+        200:
+          description: "Success"
+          schema:
+            $ref: "#/definitions/Input"
+        400:
+          description: "Bad Request"
+          schema:
+            $ref: "#/definitions/Error"
+        401:
+          description: "Unauthorized"
+        404:
+          description: "Not Found"
+        500:
+          description: "Internal Server Error"
+
+    delete:
+      tags:
+      - "Inputs"
+      produces:
+      - "application/json"
+      description: "Deletes an input by ID" 
+      operationId: deleteInput
+      security: 
+        - ApiKeyAuth: [] 
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "ID of the input to delete"
+        required: true
+        type: "integer"
+        format: "int32"
+      responses:
+        200:
+          description: "Success"
+        400:
+          description: "Bad Request"
+          schema:
+            $ref: "#/definitions/Error"
+        401:
+          description: "Unauthorized"
+        404:
+          description: "Not Found"
+        500:
+          description: "Internal Server Error"
 
 
 ########################################################################
@@ -1839,3 +2001,55 @@ definitions:
     properties:
       id:
         type: string
+
+
+
+  Input:
+    type: object
+    required:
+      - id
+      - switchId
+      - position
+      - colorId
+      - broadcastOnChange
+    properties:
+      id:
+        type: integer
+        description: "Unique ID"
+      switchId:
+        type: integer
+        description: "Host switch"
+      port:
+        type: string
+        description: "Port on the Switch"
+        enum:
+        - "A"
+        - "B"
+        - "C"
+        - "D"
+        - "E"
+        - "F"
+      pin:
+        type: integer
+        description: "Controller pin; If NULL, the next available pin is assigned"
+      colorId:
+        type: integer
+        description: "Button Color"
+      circuitType:
+        type: string
+        description: "Circuit type"
+        enum:
+        - "NORMALLY_OPEN"
+        - "NORMALLY_CLOSED"
+      displayName:
+        type: string
+        description: "A descriptive display name"
+      broadcastOnChange:
+        type: boolean
+        description: "The controller should broadcast on each input change"
+        default: true
+      enabled:
+        type: boolean
+        description: "Input is enabled; Ignored for new inputs"
+
+      
