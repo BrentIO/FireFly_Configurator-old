@@ -128,11 +128,7 @@ CREATE TABLE IF NOT EXISTS `firefly`.`outputs` (
   `enabled` TINYINT UNSIGNED NOT NULL DEFAULT '1',
   PRIMARY KEY (`id`),
   UNIQUE INDEX `id_UNIQUE` (`id` ASC) VISIBLE,
-  UNIQUE INDEX `uniqueRow` (`controllerId` ASC, `name` ASC) VISIBLE,
-  INDEX `controllerId_idx` (`controllerId` ASC) VISIBLE,
-  CONSTRAINT `controllerId`
-    FOREIGN KEY (`controllerId`)
-    REFERENCES `firefly`.`controllers` (`id`))
+  UNIQUE INDEX `uniqueRow` (`controllerId` ASC, `name` ASC) VISIBLE)
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_0900_ai_ci;
@@ -150,15 +146,7 @@ CREATE TABLE IF NOT EXISTS `firefly`.`actions` (
   `actionType` ENUM('INCREASE', 'DECREASE', 'TOGGLE') NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE INDEX `id_UNIQUE` (`id` ASC) VISIBLE,
-  UNIQUE INDEX `unique` (`inputId` ASC, `outputId` ASC) VISIBLE,
-  INDEX `buttonId_idx` (`inputId` ASC) VISIBLE,
-  INDEX `outputId_idx` (`outputId` ASC) VISIBLE,
-  CONSTRAINT `buttonId`
-    FOREIGN KEY (`inputId`)
-    REFERENCES `firefly`.`inputs` (`id`),
-  CONSTRAINT `outputId`
-    FOREIGN KEY (`outputId`)
-    REFERENCES `firefly`.`outputs` (`id`))
+  UNIQUE INDEX `row_UNIQUE` (`inputId` ASC, `outputId` ASC, `actionType` ASC) VISIBLE)
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_0900_ai_ci;
