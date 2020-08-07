@@ -128,7 +128,7 @@ CREATE TABLE IF NOT EXISTS `firefly`.`outputs` (
   `enabled` TINYINT UNSIGNED NOT NULL DEFAULT '1',
   PRIMARY KEY (`id`),
   UNIQUE INDEX `id_UNIQUE` (`id` ASC) VISIBLE,
-  UNIQUE INDEX `uniqueRow` (`controllerId` ASC, `port` ASC, `pin` ASC, `name` ASC) VISIBLE,
+  UNIQUE INDEX `uniqueRow` (`controllerId` ASC, `name` ASC) VISIBLE,
   INDEX `controllerId_idx` (`controllerId` ASC) VISIBLE,
   CONSTRAINT `controllerId`
     FOREIGN KEY (`controllerId`)
