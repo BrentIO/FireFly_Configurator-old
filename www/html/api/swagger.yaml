@@ -1905,7 +1905,15 @@ definitions:
           dns:
             type: string
             description: "IP address of the DNS server"
-            maxLength: 15 
+            maxLength: 15
+      inputs:
+        type: array
+        items:
+          $ref: "#/definitions/ControllerBootstrapInput"
+      outputs:
+        type: array
+        items:
+          $ref: "#/definitions/ControllerBootstrapOutput"
 
 
   PinAvailable:
@@ -2157,19 +2165,52 @@ definitions:
             type: string
             description: "WiFi network name"
             maxLength: 255
-      buttons:
+      inputs:
         type: array
         items:
           $ref: "#/definitions/Button"
 
   
   
-  Button:
+  ControllerBootstrapInput:
     type: object
     properties:
-      id:
+      pin:
+        type: integer
+        description: "Controller pin"
+      name:
         type: string
+        description: "Internal input name"
+      enabled:
+        type: boolean
+      circuitType:
+        type: string
+        description: "Circuit type"
+        enum:
+        - "NORMALLY_OPEN"
+        - "NORMALLY_CLOSED"
+      broadcastOnChange:
+        type: boolean
+        description: "The controller should broadcast on each input change"
 
+
+  ControllerBootstrapOutput:
+    type: object
+    properties:
+      pin:
+        type: integer
+        description: "Controller pin"
+      name:
+        type: string
+        description: "Internal input name"
+      enabled:
+        type: boolean
+      outputType:
+        type: string
+        description: "Output type"
+        enum:
+          - "BINARY"
+          - "VARIABLE"
 
 
   Input:
@@ -2219,6 +2260,8 @@ definitions:
       enabled:
         type: boolean
         description: "Input is enabled; Ignored for new inputs"
+
+
 
   Output:
     type: object
