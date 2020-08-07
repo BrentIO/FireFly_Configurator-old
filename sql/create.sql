@@ -46,7 +46,7 @@ DROP TABLE IF EXISTS `firefly`.`switches` ;
 CREATE TABLE IF NOT EXISTS `firefly`.`switches` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `controllerId` INT NULL DEFAULT NULL,
-  `controllerPort` INT NULL DEFAULT NULL,
+  `port` INT NULL DEFAULT NULL,
   `macAddress` BIGINT UNSIGNED NULL DEFAULT NULL,
   `hwVersion` TINYINT(1) NOT NULL,
   `firmwareId` INT NULL DEFAULT NULL,
@@ -118,7 +118,7 @@ DROP TABLE IF EXISTS `firefly`.`outputs` ;
 CREATE TABLE IF NOT EXISTS `firefly`.`outputs` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `controllerId` INT NULL DEFAULT NULL,
-  `controllerPort` TINYINT UNSIGNED NULL DEFAULT NULL,
+  `port` TINYINT UNSIGNED NULL DEFAULT NULL,
   `pin` TINYINT UNSIGNED NULL DEFAULT NULL,
   `name` VARCHAR(20) NOT NULL,
   `displayName` VARCHAR(20) NULL DEFAULT NULL,
@@ -128,7 +128,7 @@ CREATE TABLE IF NOT EXISTS `firefly`.`outputs` (
   `breakerId` INT NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE INDEX `id_UNIQUE` (`id` ASC) VISIBLE,
-  UNIQUE INDEX `uniqueRow` (`controllerId` ASC, `controllerPort` ASC, `pin` ASC, `name` ASC) VISIBLE,
+  UNIQUE INDEX `uniqueRow` (`controllerId` ASC, `port` ASC, `pin` ASC, `name` ASC) VISIBLE,
   INDEX `controllerId_idx` (`controllerId` ASC) VISIBLE,
   CONSTRAINT `controllerId`
     FOREIGN KEY (`controllerId`)
@@ -348,7 +348,7 @@ CREATE TABLE IF NOT EXISTS `firefly`.`getControllerInputs` (`controllerId` INT, 
 -- -----------------------------------------------------
 -- Placeholder table for view `firefly`.`getOutputs`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `firefly`.`getOutputs` (`outputId` INT, `controllerId` INT, `name` INT, `displayName` INT, `outputType` INT, `pin` INT, `controllerPort` INT, `position` INT, `enabled` INT, `amperage` INT, `breakerId` INT, `json` INT);
+CREATE TABLE IF NOT EXISTS `firefly`.`getOutputs` (`outputId` INT, `controllerId` INT, `name` INT, `displayName` INT, `outputType` INT, `pin` INT, `port` INT, `position` INT, `enabled` INT, `amperage` INT, `breakerId` INT, `json` INT);
 
 -- -----------------------------------------------------
 -- Placeholder table for view `firefly`.`getSettings`
@@ -368,7 +368,7 @@ CREATE TABLE IF NOT EXISTS `firefly`.`getSwitchButtons` (`switchId` INT, `json` 
 -- -----------------------------------------------------
 -- Placeholder table for view `firefly`.`getSwitches`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `firefly`.`getSwitches` (`id` INT, `controllerId` INT, `controllerPort` INT, `macAddress` INT, `hwVersion` INT, `firmwareId` INT, `name` INT, `displayName` INT, `mqttUsername` INT, `mqttPassword` INT, `json` INT);
+CREATE TABLE IF NOT EXISTS `firefly`.`getSwitches` (`id` INT, `controllerId` INT, `port` INT, `macAddress` INT, `hwVersion` INT, `firmwareId` INT, `name` INT, `displayName` INT, `mqttUsername` INT, `mqttPassword` INT, `json` INT);
 
 -- -----------------------------------------------------
 -- function adjustBrightnessLevels
@@ -1270,7 +1270,7 @@ USE `firefly`$$
 CREATE PROCEDURE `editOutput`(
 IN _id int,
 IN _controllerId int,
-IN _controllerPort tinyint,
+IN _port tinyint,
 IN _pin tinyint,
 IN _name varchar(20),
 IN _displayName varchar(20),
@@ -1317,12 +1317,12 @@ IF _outputType = 'BINARY' THEN
 END IF;
 
 INSERT INTO outputs
-	(id, controllerId, controllerPort, pin, name, displayName, outputType, enabled, amperage, breakerId)
+	(id, controllerId, port, pin, name, displayName, outputType, enabled, amperage, breakerId)
 VALUES
-	(_id, _controllerId, _controllerPort, _pin, _name, _displayName, _outputType, true, IFNULL(_amperage, 0), breakerId)
+	(_id, _controllerId, _port, _pin, _name, _displayName, _outputType, true, IFNULL(_amperage, 0), breakerId)
 ON DUPLICATE KEY UPDATE
 	controllerId = _controllerId,
-    controllerPort = _controllerPort,
+    port = _port,
     pin = _pin, 
     name = _name,
     displayName = _displayName,
@@ -1370,7 +1370,7 @@ USE `firefly`$$
 CREATE PROCEDURE `editSwitch`(
 IN _id int,
 IN _controllerId int,
-IN _controllerPort int,
+IN _port int,
 IN _macAddress varchar(17),
 IN _hwVersion tinyint,
 IN _name varchar(20),
@@ -1419,9 +1419,9 @@ IF _firmwareId IS NULL THEN
 
 END IF;
 
-IF _controllerPort IS NULL THEN
+IF _port IS NULL THEN
 
-	SELECT getNextPort(_controllerId, 'INPUT') INTO _controllerPort;
+	SELECT getNextPort(_controllerId, 'INPUT') INTO _port;
 
 END IF;
 
@@ -1440,12 +1440,12 @@ IF _firmwareId_ is null THEN
 END IF;
 
 INSERT INTO switches
-	(id, controllerId, controllerPort, macAddress, hwVersion, name, displayName, firmwareId)
+	(id, controllerId, port, macAddress, hwVersion, name, displayName, firmwareId)
 VALUES
-	(_id, _controllerId, _controllerPort, CONV(_macAddress,16,10), _hwVersion, _name, _displayName, _firmwareId)
+	(_id, _controllerId, _port, CONV(_macAddress,16,10), _hwVersion, _name, _displayName, _firmwareId)
 ON DUPLICATE KEY UPDATE
 	controllerId = _controllerId,
-    controllerPort = _controllerPort,
+    port = _port,
     macAddress = CONV(_macAddress,16,10),
     hwVersion = _hwVersion,
 	name = _name,
@@ -1895,7 +1895,7 @@ CREATE  OR REPLACE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `firefly`.`getC
 DROP TABLE IF EXISTS `firefly`.`getControllerPortsUnused`;
 DROP VIEW IF EXISTS `firefly`.`getControllerPortsUnused` ;
 USE `firefly`;
-CREATE  OR REPLACE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `firefly`.`getControllerPortsUnused` AS select `controllers`.`id` AS `controllerId`,`controllerPorts`.`port` AS `port`,`controllerPorts`.`inputAllowed` AS `inputAllowed`,`controllerPorts`.`outputAllowed` AS `outputAllowed`,json_object('controllerId',`controllers`.`id`,'port',`controllerPorts`.`port`,'inputAllowed',if((`controllerPorts`.`inputAllowed` = '1'),cast(true as json),cast(false as json)),'outputAllowed',if((`controllerPorts`.`outputAllowed` = '1'),cast(true as json),cast(false as json))) AS `json` from ((`controllerPorts` join `controllers` on((`controllers`.`hwVersion` = `controllerPorts`.`hwVersion`))) left join `getControllerPortsUsed` on(((`getControllerPortsUsed`.`controllerId` = `controllers`.`id`) and (`getControllerPortsUsed`.`port` = `controllerPorts`.`port`)))) where (`getControllerPortsUsed`.`portType` is null);
+CREATE  OR REPLACE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `firefly`.`getControllerPortsUnused` AS select `controllers`.`id` AS `controllerId`,`ports`.`port` AS `port`,`controllerPorts`.`inputAllowed` AS `inputAllowed`,`controllerPorts`.`outputAllowed` AS `outputAllowed`,json_object('controllerId',`controllers`.`id`,'port',`controllerPorts`.`port`,'inputAllowed',if((`controllerPorts`.`inputAllowed` = '1'),cast(true as json),cast(false as json)),'outputAllowed',if((`controllerPorts`.`outputAllowed` = '1'),cast(true as json),cast(false as json))) AS `json` from ((`controllerPorts` join `controllers` on((`controllers`.`hwVersion` = `controllerPorts`.`hwVersion`))) left join `getControllerPortsUsed` on(((`getControllerPortsUsed`.`controllerId` = `controllers`.`id`) and (`getControllerPortsUsed`.`port` = `controllerPorts`.`port`)))) where (`getControllerPortsUsed`.`portType` is null);
 
 -- -----------------------------------------------------
 -- View `firefly`.`getControllerPortsUsed`
@@ -1903,7 +1903,7 @@ CREATE  OR REPLACE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `firefly`.`getC
 DROP TABLE IF EXISTS `firefly`.`getControllerPortsUsed`;
 DROP VIEW IF EXISTS `firefly`.`getControllerPortsUsed` ;
 USE `firefly`;
-CREATE  OR REPLACE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `firefly`.`getControllerPortsUsed` AS select `usedPorts`.`controllerId` AS `controllerId`,`usedPorts`.`id` AS `id`,`usedPorts`.`port` AS `port`,`usedPorts`.`portType` AS `portType`,json_object('controllerId',`usedPorts`.`controllerId`,'id',`usedPorts`.`id`,'port',`usedPorts`.`port`,'portType',`usedPorts`.`portType`) AS `json` from (select `firefly`.`switches`.`controllerId` AS `controllerId`,`firefly`.`switches`.`id` AS `id`,`firefly`.`switches`.`controllerPort` AS `port`,'INPUT' AS `portType` from `firefly`.`switches` union select `firefly`.`outputs`.`controllerId` AS `controllerId`,`firefly`.`outputs`.`id` AS `id`,`firefly`.`outputs`.`controllerPort` AS `port`,'OUTPUT' AS `portType` from `firefly`.`outputs`) `usedPorts`;
+CREATE  OR REPLACE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `firefly`.`getControllerPortsUsed` AS select `usedPorts`.`controllerId` AS `controllerId`,`usedPorts`.`id` AS `id`,`usedPorts`.`port` AS `port`,`usedPorts`.`portType` AS `portType`,json_object('controllerId',`usedPorts`.`controllerId`,'id',`usedPorts`.`id`,'port',`usedPorts`.`port`,'portType',`usedPorts`.`portType`) AS `json` from (select `firefly`.`switches`.`controllerId` AS `controllerId`,`firefly`.`switches`.`id` AS `id`,`firefly`.`switches`.`port` AS `port`,'INPUT' AS `portType` from `firefly`.`switches` union select `firefly`.`outputs`.`controllerId` AS `controllerId`,`firefly`.`outputs`.`id` AS `id`,`firefly`.`outputs`.`port` AS `port`,'OUTPUT' AS `portType` from `firefly`.`outputs`) `usedPorts`;
 
 -- -----------------------------------------------------
 -- View `firefly`.`getControllers`
@@ -1943,7 +1943,7 @@ CREATE  OR REPLACE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `firefly`.`getI
 DROP TABLE IF EXISTS `firefly`.`getOutputs`;
 DROP VIEW IF EXISTS `firefly`.`getOutputs` ;
 USE `firefly`;
-CREATE  OR REPLACE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `firefly`.`getOutputs` AS select `firefly`.`outputs`.`id` AS `outputId`,`firefly`.`outputs`.`controllerId` AS `controllerId`,`firefly`.`outputs`.`name` AS `name`,`firefly`.`outputs`.`displayName` AS `displayName`,`firefly`.`outputs`.`outputType` AS `outputType`,`firefly`.`outputs`.`pin` AS `pin`,`firefly`.`outputs`.`controllerPort` AS `controllerPort`,if((`firefly`.`outputs`.`outputType` = 'BINARY'),1,2) AS `position`,if(`firefly`.`outputs`.`enabled`,'TRUE','FALSE') AS `enabled`,`firefly`.`outputs`.`amperage` AS `amperage`,`firefly`.`outputs`.`breakerId` AS `breakerId`,json_object('name',`firefly`.`outputs`.`name`,'displayName',`firefly`.`outputs`.`displayName`,'outputType',`firefly`.`outputs`.`outputType`,'pin',`firefly`.`outputs`.`pin`,'enabled',((0 <> `firefly`.`outputs`.`enabled`) is true),'amperage',`firefly`.`outputs`.`amperage`,'breakerId',`firefly`.`outputs`.`breakerId`) AS `json` from `firefly`.`outputs`;
+CREATE  OR REPLACE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `firefly`.`getOutputs` AS select `firefly`.`outputs`.`id` AS `outputId`,`firefly`.`outputs`.`controllerId` AS `controllerId`,`firefly`.`outputs`.`name` AS `name`,`firefly`.`outputs`.`displayName` AS `displayName`,`firefly`.`outputs`.`outputType` AS `outputType`,`firefly`.`outputs`.`pin` AS `pin`,`firefly`.`outputs`.`port` AS `port`,if((`firefly`.`outputs`.`outputType` = 'BINARY'),1,2) AS `position`,if(`firefly`.`outputs`.`enabled`,'TRUE','FALSE') AS `enabled`,`firefly`.`outputs`.`amperage` AS `amperage`,`firefly`.`outputs`.`breakerId` AS `breakerId`,json_object('name',`firefly`.`outputs`.`name`,'displayName',`firefly`.`outputs`.`displayName`,'outputType',`firefly`.`outputs`.`outputType`,'pin',`firefly`.`outputs`.`pin`,'enabled',((0 <> `firefly`.`outputs`.`enabled`) is true),'amperage',`firefly`.`outputs`.`amperage`,'breakerId',`firefly`.`outputs`.`breakerId`) AS `json` from `firefly`.`outputs`;
 
 -- -----------------------------------------------------
 -- View `firefly`.`getSettings`
@@ -1975,7 +1975,7 @@ CREATE  OR REPLACE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `firefly`.`getS
 DROP TABLE IF EXISTS `firefly`.`getSwitches`;
 DROP VIEW IF EXISTS `firefly`.`getSwitches` ;
 USE `firefly`;
-CREATE  OR REPLACE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `firefly`.`getSwitches` AS select `firefly`.`switches`.`id` AS `id`,`firefly`.`switches`.`controllerId` AS `controllerId`,`firefly`.`switches`.`controllerPort` AS `controllerPort`,`FORMATMACADDRESS`(`firefly`.`switches`.`macAddress`) AS `macAddress`,`firefly`.`switches`.`hwVersion` AS `hwVersion`,`firefly`.`switches`.`firmwareId` AS `firmwareId`,`firefly`.`switches`.`name` AS `name`,`firefly`.`switches`.`displayName` AS `displayName`,`GETMQTTUSERNAME`(`firefly`.`switches`.`macAddress`) AS `mqttUsername`,`GETMQTTPASSWORD`(`firefly`.`switches`.`macAddress`) AS `mqttPassword`,json_object('id',`firefly`.`switches`.`id`,'controllerId',`firefly`.`switches`.`controllerId`,'controllerPort',`firefly`.`switches`.`controllerPort`,'macAddress',`FORMATMACADDRESS`(`firefly`.`switches`.`macAddress`),'hwVersion',`firefly`.`switches`.`hwVersion`,'firmwareId',`firefly`.`switches`.`firmwareId`,'name',`firefly`.`switches`.`name`,'displayName',`firefly`.`switches`.`displayName`,'mqttUsername',`GETMQTTUSERNAME`(`firefly`.`switches`.`macAddress`),'mqttPassword',`GETMQTTPASSWORD`(`firefly`.`switches`.`macAddress`)) AS `json` from `firefly`.`switches`;
+CREATE  OR REPLACE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `firefly`.`getSwitches` AS select `firefly`.`switches`.`id` AS `id`,`firefly`.`switches`.`controllerId` AS `controllerId`,`firefly`.`switches`.`port` AS `port`,`FORMATMACADDRESS`(`firefly`.`switches`.`macAddress`) AS `macAddress`,`firefly`.`switches`.`hwVersion` AS `hwVersion`,`firefly`.`switches`.`firmwareId` AS `firmwareId`,`firefly`.`switches`.`name` AS `name`,`firefly`.`switches`.`displayName` AS `displayName`,`GETMQTTUSERNAME`(`firefly`.`switches`.`macAddress`) AS `mqttUsername`,`GETMQTTPASSWORD`(`firefly`.`switches`.`macAddress`) AS `mqttPassword`,json_object('id',`firefly`.`switches`.`id`,'controllerId',`firefly`.`switches`.`controllerId`,'controllerPort',`firefly`.`switches`.`port`,'macAddress',`FORMATMACADDRESS`(`firefly`.`switches`.`macAddress`),'hwVersion',`firefly`.`switches`.`hwVersion`,'firmwareId',`firefly`.`switches`.`firmwareId`,'name',`firefly`.`switches`.`name`,'displayName',`firefly`.`switches`.`displayName`,'mqttUsername',`GETMQTTUSERNAME`(`firefly`.`switches`.`macAddress`),'mqttPassword',`GETMQTTPASSWORD`(`firefly`.`switches`.`macAddress`)) AS `json` from `firefly`.`switches`;
 
 SET SQL_MODE=@OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
