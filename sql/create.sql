@@ -1290,13 +1290,18 @@ SELECT
             'OUTPUT',
             _outputType)
 INTO badPinCheck;
-        
+
 IF badPinCheck = 0 THEN
 	SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Pin in use.';
 END IF;
 
+IF _port IS NULL THEN
+	SET _port = getNextPort(_controllerId, 'OUTPUT');
+END IF;
+
+
 SELECT ISCONTROLLERPORTAVAILABLE(_controllerId, _port, _id, 'OUTPUT') INTO badPortCheck;
-        
+     
 IF badPortCheck = 0 THEN
 
 	SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Controller port in use.';
