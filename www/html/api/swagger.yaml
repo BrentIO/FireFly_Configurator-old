@@ -2039,6 +2039,7 @@ definitions:
         description: "Location where the firmware can be downloaded"
         maxLength: 255
 
+
   MQTTInfo:
     description: "Information about the MQTT connection"
     properties:
@@ -2128,16 +2129,9 @@ definitions:
   SwitchBootstrap:
     type: object
     properties:
-      id:
-        type: integer
-        description: "Unique ID"
       name:
         type: string
         description: "Name of the switch"
-        maxLength: 20
-      displayName:
-        type: string
-        description: "A descriptive display name"
         maxLength: 20
       mqtt:
         $ref: "#/definitions/MQTTInfo"
