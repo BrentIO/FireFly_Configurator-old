@@ -313,7 +313,7 @@ CREATE TABLE IF NOT EXISTS `firefly`.`getControllerPinsUnused` (`controllerId` I
 -- -----------------------------------------------------
 -- Placeholder table for view `firefly`.`getControllerPinsUsed`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `firefly`.`getControllerPinsUsed` (`controllerId` INT, `switchId` INT, `pin` INT, `pinType` INT, `json` INT);
+CREATE TABLE IF NOT EXISTS `firefly`.`getControllerPinsUsed` (`controllerId` INT, `id` INT, `pin` INT, `pinType` INT, `json` INT);
 
 -- -----------------------------------------------------
 -- Placeholder table for view `firefly`.`getControllerPortsUnused`
@@ -1162,6 +1162,13 @@ DECLARE badPinCheck int;
 SET _displayName = trim(_displayName);
 SET _port = upper(trim(_port));
 
+SELECT 
+    controllerId
+INTO _controllerId FROM
+    switches
+WHERE
+    id = _switchId;
+
 CASE
 	WHEN _port = 'A' THEN
 		SET _port_ = 1;
@@ -1186,41 +1193,24 @@ SELECT
 INTO badPortCheck FROM
     inputs
 WHERE
-    switchId = _switchId
-        AND port = _port_
+    switchId = _switchId AND port = _port_
         AND ID != IFNULL(_id, 0);
 
 IF badPortCheck > 0 THEN
 	SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Port in use.';
 END IF;
- 
- 
-SELECT 
-    COUNT(inputs.id)
-INTO badPinCheck FROM
-    inputs
-        INNER JOIN
-    switches ON inputs.switchId = switches.id
-WHERE
-    inputs.pin = _pin
-        AND inputs.id != IFNULL(_id, 0);
-        
-IF badPinCheck > 0 THEN
-	SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Pin in use.';
-END IF;
-
 
 IF _pin IS NULL THEN
 
-	SELECT 
-		controllerId
-	INTO _controllerId FROM
-		switches
-	WHERE
-		id = _switchId;
-
 	SELECT GETNEXTINPUTPIN(_controllerId) INTO _pin;
 
+END IF;
+ 
+ 
+SELECT ISCONTROLLERPINAVAILABLE(_controllerId, _pin, _id, 'INPUT', NULL) INTO badPinCheck;
+        
+IF badPinCheck = 0 THEN
+	SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Pin in use.';
 END IF;
 
 
@@ -1281,6 +1271,8 @@ IN _breakerId int)
 BEGIN
 
 DECLARE badOutputCount int;
+DECLARE badPortCheck int;
+DECLARE badPinCheck int;
 
 SET _displayName = trim(_displayName);
 SET _name = trim(_name);
@@ -1290,6 +1282,27 @@ IF _pin IS NULL THEN
 	SELECT getNextOutputPin(_controllerId, _outputType) INTO _pin;
 
 END IF;
+
+SELECT 
+    ISCONTROLLERPINAVAILABLE(_controllerId,
+            _pin,
+            _id,
+            'OUTPUT',
+            _outputType)
+INTO badPinCheck;
+        
+IF badPinCheck = 0 THEN
+	SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Pin in use.';
+END IF;
+
+SELECT ISCONTROLLERPORTAVAILABLE(_controllerId, _port, _id, 'OUTPUT') INTO badPortCheck;
+        
+IF badPortCheck = 0 THEN
+
+	SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Controller port in use.';
+
+END IF;
+
 
 IF _outputType = 'VARIABLE' THEN
 	
@@ -1383,6 +1396,7 @@ BEGIN
 
 DECLARE _firmwareId_ int;
 DECLARE controllerCount int;
+DECLARE badPortCheck int;
 
 SET _name = upper(replace(trim(_name), " ", ""));
 SET _displayName = trim(_displayName);
@@ -1422,6 +1436,14 @@ END IF;
 IF _port IS NULL THEN
 
 	SELECT getNextPort(_controllerId, 'INPUT') INTO _port;
+
+END IF;
+
+SELECT ISCONTROLLERPORTAVAILABLE(_controllerId, _port, _id, 'INPUT') INTO badPortCheck;
+        
+IF badPortCheck = 0 THEN
+
+	SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Controller port in use.';
 
 END IF;
 
@@ -1826,6 +1848,197 @@ END$$
 DELIMITER ;
 
 -- -----------------------------------------------------
+-- function isControllerPinAvailable
+-- -----------------------------------------------------
+
+USE `firefly`;
+DROP function IF EXISTS `firefly`.`isControllerPinAvailable`;
+
+DELIMITER $$
+USE `firefly`$$
+CREATE FUNCTION `isControllerPinAvailable`(_controllerId int, _pin int, _id int, _pinType ENUM('INPUT','OUTPUT'), _outputType ENUM('BINARY','VARIABLE')) RETURNS tinyint(1)
+    DETERMINISTIC
+BEGIN
+
+DECLARE countUnused int;
+DECLARE countUsed int;
+
+SET countUnused = -1;
+SET countUsed = -1;
+
+SET _id = IFNULL(_id, 0);
+
+CASE
+	WHEN _pinType = 'INPUT' THEN
+    
+		#Check if the pin is available and if input is allowed
+		SELECT COUNT(*) INTO countUnused FROM getControllerPinsUnused WHERE controllerId = _controllerId AND pin = _pin AND inputAllowed = true;
+		
+		IF countUnused = 1 THEN
+			#The pin is available for use and input is allowed
+			RETURN TRUE;
+		END IF;
+        
+		SELECT 
+			COUNT(*)
+		INTO countUsed FROM
+			getControllerPinsUsed
+		WHERE
+			controllerId = _controllerId
+				AND pin = _pin
+				AND id = _id
+				AND pinType = _pinType;
+        
+		IF countUsed = 1 THEN
+			#This input is already using this pin, so allow it to continue
+			RETURN TRUE;
+		ELSE
+			#This pin is occupied by someone else
+			RETURN FALSE;
+		END IF;
+        
+	WHEN _pinType = 'OUTPUT' THEN
+        
+		IF _outputType NOT IN ('BINARY','VARIABLE') OR _outputType IS NULL THEN
+			SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Invalid output type.';
+        END IF;
+        
+		IF _outputType = 'BINARY' THEN
+        
+			#Check if the pin is available and if output is allowed
+			SELECT COUNT(*) INTO countUnused FROM getControllerPinsUnused WHERE controllerId = _controllerId AND pin = _pin AND binaryOutputAllowed = true;
+        
+        END IF;
+        
+		IF _outputType = 'VARIABLE' THEN
+        
+			#Check if the pin is available and if output is allowed
+			SELECT COUNT(*) INTO countUnused FROM getControllerPinsUnused WHERE controllerId = _controllerId AND pin = _pin AND variableOutputAllowed = true;
+        
+        END IF;
+    
+		IF countUnused = 1 THEN
+			#The pin is available for use and the output type is allowed
+			RETURN TRUE;
+		END IF;
+        
+		SELECT 
+			COUNT(*)
+		INTO countUsed FROM
+			getControllerPinsUsed
+		WHERE
+			controllerId = _controllerId
+				AND pin = _pin
+				AND id = _id
+				AND pinType = _pinType;
+        
+		IF countUsed = 1 THEN
+			#This output is already using this pin, so allow it to continue
+			RETURN TRUE;
+		ELSE
+			#This pin is occupied by someone else OR the output type is not allowed
+			RETURN FALSE;
+		END IF;
+
+	ELSE 
+		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Invalid pin type.';
+	
+END CASE;
+
+END$$
+
+DELIMITER ;
+
+-- -----------------------------------------------------
+-- function isControllerPortAvailable
+-- -----------------------------------------------------
+
+USE `firefly`;
+DROP function IF EXISTS `firefly`.`isControllerPortAvailable`;
+
+DELIMITER $$
+USE `firefly`$$
+CREATE FUNCTION `isControllerPortAvailable`(_controllerId int, _port int, _id int, _portType ENUM('INPUT','OUTPUT')) RETURNS tinyint(1)
+    DETERMINISTIC
+BEGIN
+
+DECLARE countUnused int;
+DECLARE countUsed int;
+
+SET countUnused = -1;
+SET countUsed = -1;
+
+SET _id = IFNULL(_id, 0);
+
+CASE
+	WHEN _portType = 'INPUT' THEN
+    
+		#Check if the port is available and if input is allowed
+		SELECT COUNT(*) INTO countUnused FROM getControllerPortsUnused WHERE controllerId = _controllerId AND port = _port AND inputAllowed = true;
+		
+		IF countUnused = 1 THEN
+			#The port is available for use and input is allowed
+			RETURN TRUE;
+		END IF;
+        
+		SELECT 
+			COUNT(*)
+		INTO countUsed FROM
+			getControllerPortsUsed
+		WHERE
+			controllerId = _controllerId
+				AND port = _port
+				AND id = _id
+				AND portType = _portType;
+        
+		IF countUsed = 1 THEN
+			#This input is already using this port, so allow it to continue
+			RETURN TRUE;
+		ELSE
+			#This port is occupied by someone else
+			RETURN FALSE;
+		END IF;
+        
+	WHEN _portType = 'OUTPUT' THEN
+    
+		#Check if the port is available and if output is allowed
+		SELECT COUNT(*) INTO countUnused FROM getControllerPortsUnused WHERE controllerId = _controllerId AND port = _port AND outputAllowed = true;
+        
+		IF countUnused = 1 THEN
+			#The port is available for use and the output type is allowed
+			RETURN TRUE;
+		END IF;
+        
+        
+		SELECT 
+			COUNT(*)
+		INTO countUsed FROM
+			getControllerPortsUsed
+		WHERE
+			controllerId = _controllerId
+				AND port = _port
+				AND id = _id
+				AND portType = _portType;
+        
+		IF countUsed = 1 THEN
+			#This output is already using this port, so allow it to continue
+			RETURN TRUE;
+		ELSE
+			#This port is occupied by someone else OR the output type is not allowed
+			RETURN FALSE;
+		END IF;
+
+	ELSE 
+		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Invalid port type.';
+	
+END CASE;
+
+
+END$$
+
+DELIMITER ;
+
+-- -----------------------------------------------------
 -- View `firefly`.`getActionsJson`
 -- -----------------------------------------------------
 DROP TABLE IF EXISTS `firefly`.`getActionsJson`;
@@ -1887,7 +2100,7 @@ CREATE  OR REPLACE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `firefly`.`getC
 DROP TABLE IF EXISTS `firefly`.`getControllerPinsUsed`;
 DROP VIEW IF EXISTS `firefly`.`getControllerPinsUsed` ;
 USE `firefly`;
-CREATE  OR REPLACE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `firefly`.`getControllerPinsUsed` AS select `usedPins`.`controllerId` AS `controllerId`,`usedPins`.`switchId` AS `switchId`,`usedPins`.`pin` AS `pin`,`usedPins`.`pinType` AS `pinType`,json_object('controllerId',`usedPins`.`controllerId`,'switchId',`usedPins`.`switchId`,'pin',`usedPins`.`pin`,'pinType',`usedPins`.`pinType`) AS `json` from (select `firefly`.`switches`.`controllerId` AS `controllerId`,`firefly`.`inputs`.`switchId` AS `switchId`,`firefly`.`inputs`.`pin` AS `pin`,'INPUT' AS `pinType` from ((`firefly`.`inputs` join `firefly`.`switches` on((`firefly`.`inputs`.`switchId` = `firefly`.`switches`.`id`))) join `firefly`.`controllers` on((`firefly`.`switches`.`controllerId` = `firefly`.`controllers`.`id`))) union select `firefly`.`outputs`.`controllerId` AS `controllerId`,NULL AS `switchId`,`firefly`.`outputs`.`pin` AS `pin`,'OUTPUT' AS `pinType` from `firefly`.`outputs`) `usedPins` order by `usedPins`.`controllerId`,`usedPins`.`pin`;
+CREATE  OR REPLACE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `firefly`.`getControllerPinsUsed` AS select `usedPins`.`controllerId` AS `controllerId`,`usedPins`.`id` AS `id`,`usedPins`.`pin` AS `pin`,`usedPins`.`pinType` AS `pinType`,json_object('controllerId',`usedPins`.`controllerId`,'switchId',`usedPins`.`id`,'pin',`usedPins`.`pin`,'pinType',`usedPins`.`pinType`) AS `json` from (select `firefly`.`switches`.`controllerId` AS `controllerId`,`firefly`.`inputs`.`switchId` AS `id`,`firefly`.`inputs`.`pin` AS `pin`,'INPUT' AS `pinType` from ((`firefly`.`inputs` join `firefly`.`switches` on((`firefly`.`inputs`.`switchId` = `firefly`.`switches`.`id`))) join `firefly`.`controllers` on((`firefly`.`switches`.`controllerId` = `firefly`.`controllers`.`id`))) union select `firefly`.`outputs`.`controllerId` AS `controllerId`,`firefly`.`outputs`.`id` AS `id`,`firefly`.`outputs`.`pin` AS `pin`,'OUTPUT' AS `pinType` from `firefly`.`outputs`) `usedPins` order by `usedPins`.`controllerId`,`usedPins`.`pin`;
 
 -- -----------------------------------------------------
 -- View `firefly`.`getControllerPortsUnused`
