@@ -2207,6 +2207,39 @@ definitions:
           - "VARIABLE"
 
 
+  Button:
+    type: object
+    properties:
+      led:
+        type: object
+        properties:
+          color:
+            type: string
+            description: "Button LED color"
+          name:
+            type: string
+            description: "Internal input name"
+          port:
+            type: string
+            description: "Switch port"
+          intensities:
+            type: array
+            items:
+              $ref: "#/definitions/ButtonLEDIntensity"
+            
+
+
+  ButtonLEDIntensity:
+    type: object
+    properties:
+      name: 
+        type: string
+        description: "Brightness name"
+      brightness:
+        type: integer
+        description: "Brightness level"
+    
+
   Input:
     type: object
     required:
