@@ -1,0 +1,104 @@
+#dataTable {
+    vertical-align: center;
+    margin: 0px;
+}
+
+#dataTable table {
+    border: 1px solid black;
+}
+
+#dataTable table, th, td {
+
+    border: 1px dotted #808080;
+    text-align: center;
+}
+
+#dataTable th{
+    background-color: #313131;
+    color: white;
+    padding: 10px;
+}
+
+#dataTable tr:hover{
+    background-color: #c2c2c2;
+}
+
+tr:nth-child(odd) {
+    background-color: #f2f2f2;
+  }
+
+#dataTable td{
+    padding: 4px;
+    vertical-align: center;
+}
+
+#dataTable button{
+    margin: 5px 5px;
+}
+
+#pageName {
+    height: 120px;
+}
+
+#pageName #pageTitle{
+    font-size: 35px;
+}
+
+#pageName button{
+    margin: 0px;
+}
+
+
+body {
+    margin: 0px;
+}
+ 
+.sidebar {
+    margin: 0;
+    padding: 0;
+    width: 200px;
+    background-color: #f1f1f1;
+    position: fixed;
+    height: 100%;
+    overflow: auto;
+}
+
+.sidebar .productName{
+    background-color: #313131;
+    font-size: 14pt;
+    color: white;
+    padding: 4px;
+    text-align: center;
+    /*height: 80px;*/
+}
+
+.sidebar a {
+    display: block;
+    color: black;
+    padding: 16px;
+    text-decoration: none;
+}
+
+.sidebar a.child {
+    background-color: #fcfcfc;
+    color: black;
+    font-size: 8pt;
+    padding-left: 40px;
+    line-height: 0px;
+}
+
+.sidebar a.active {
+    background-color: #4CAF50;
+    color: white;
+}
+
+.sidebar a:hover:not(.active) {
+    background-color: #555;
+    color: white;
+}
+
+div.content {
+    margin-left: 200px;
+    padding: 1px 16px;
+    height: 1000px;
+}
