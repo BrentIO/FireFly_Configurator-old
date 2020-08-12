@@ -124,6 +124,10 @@
                 {
                     //Unknown error occurred, because it wasn't caught by the delete function
                     throw new Exception("Unexpected response during deletion", 500);
+                }else{
+
+                    $response = array("success" => true);
+                    print(json_encode($response));
                 }
 
             break;
