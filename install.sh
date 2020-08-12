@@ -103,6 +103,15 @@ if [ $status != 0 ]; then
   exit 1
 fi
 
+a2enmod rewrite
+
+status=$?
+
+if [ $status != 0 ]; then
+  echo -e "\n${RED}Unable to enable Apache rewrite${NC}\n"
+  exit 1
+fi
+
 echo -e "\n${BLUE}Restarting Apache${NC}"
 systemctl restart apache2
 
