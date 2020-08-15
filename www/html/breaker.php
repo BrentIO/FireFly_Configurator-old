@@ -1,9 +1,10 @@
 <?php
 
     require_once('./api/getConfig.php');
+    require_once('common.php');
 
-    #Verify login here
-
+    //Validate the user is logged in
+    checkLogin();
 
     $pageName = "breaker";
     $url = "http://" . $_SERVER['SERVER_ADDR'] . "/api/breaker";
