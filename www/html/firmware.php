@@ -290,8 +290,23 @@
 
                         success: function(data) {
                             $.each(data, function(i){
+
+                                switch(data[i].deviceType){
+                                    case "SWITCH":
+                                        deviceType = "Switch";
+                                        break;
+
+                                    case "CONTROLLER":
+                                        deviceType = "Controller";
+                                        break;
+
+                                    default:
+                                        deviceType = "Unknown";
+                                        break;
+                                }
+
                                 trHTML = "<tr class=\"dynamic\">"
-                                            + "<td>" + data[i].deviceType + "</td>"
+                                            + "<td>" + deviceType + "</td>"
                                             + "<td>" + data[i].version + "</td>"
                                             + "<td><a href=\"" + data[i].url + "\">" + data[i].url + "</a></td>"
                                             + "<td><button class=\"btn btn-default\" data-toggle=\"modal\" data-target=\"#modalEditItem\" data-backdrop=\"static\" data-operation=\"edit\" data-uniqueid=\"" + data[i].id + "\">Edit</button>"
