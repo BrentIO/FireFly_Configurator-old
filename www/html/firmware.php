@@ -51,7 +51,7 @@
                     if(operation == "add"){
 
                         //Set the modal title
-                        document.getElementById("operation").innerHTML= "Add New";
+                        document.getElementById("operation").innerHTML= "Add New Firmware";
                         editItemForm.elements["deviceType"].value = "SWITCH";
                         editItemForm.elements["url"].value = "http://" + window.location.hostname + "/firmware/";
 
@@ -61,7 +61,7 @@
                     if(operation == "edit"){
 
                         //Set the modal title
-                        document.getElementById("operation").innerHTML= "Edit Existing";
+                        document.getElementById("operation").innerHTML= "Edit Existing Firmware";
 
                         $.ajax({
 

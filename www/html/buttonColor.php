@@ -53,7 +53,7 @@
                     if(operation == "add"){
 
                         //Set the modal title
-                        document.getElementById("operation").innerHTML= "Add New";
+                        document.getElementById("operation").innerHTML= "Add New Button Color";
 
                     }
 
@@ -61,7 +61,7 @@
                     if(operation == "edit"){
 
                         //Set the modal title
-                        document.getElementById("operation").innerHTML= "Edit Existing";
+                        document.getElementById("operation").innerHTML= "Edit Existing Button Color";
 
                         $.ajax({
 
