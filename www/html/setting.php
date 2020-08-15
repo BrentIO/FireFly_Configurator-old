@@ -46,18 +46,13 @@
 
                     var editItemForm = document.editItem;
 
-                    if(operation == "add"){
-
-                        //Set the modal title
-                        document.getElementById("operation").innerHTML= "Add New";
-
-                    }
+                    document.getElementById("valueLabel").innerHTML = button.data('displayname')+ ":"; 
 
                     //If editing, retrieve the data from the API
                     if(operation == "edit"){
 
                         //Set the modal title
-                        document.getElementById("operation").innerHTML= "Edit Existing";
+                        document.getElementById("operation").innerHTML= "Edit Setting";
 
                         $.ajax({
 
@@ -71,8 +66,8 @@
                             success: function(data) {
 
                                 //Populate the field elements with the data returned by the API
-                                  editItemForm.elements["uniqueId"].value = data['id']; 
-                                editItemForm.elements["value"].value = data['value'];                        
+                                editItemForm.elements["uniqueId"].value = data['id']; 
+                                editItemForm.elements["value"].value = data['value'];              
                             },
 
                             error: function(data){
@@ -186,7 +181,7 @@
                                 trHTML = "<tr class=\"dynamic\">"
                                             + "<td>" + data[i].displayName + "</td>"
                                             + "<td>" + data[i].value + "</td>"
-                                             + "<td><button class=\"btn btn-default\" data-toggle=\"modal\" data-target=\"#modalEditItem\" data-backdrop=\"static\" data-operation=\"edit\" data-uniqueid=\"" + data[i].id + "\">Edit</button>"
+                                             + "<td><button class=\"btn btn-default\" data-toggle=\"modal\" data-target=\"#modalEditItem\" data-backdrop=\"static\" data-operation=\"edit\" data-displayname=\"" + data[i].displayName + "\" data-uniqueid=\"" + data[i].id + "\">Edit</button>"
                                             + "</td>"
                                         +"</tr>"
                                 $('#dataTable').append(trHTML);
@@ -236,7 +231,7 @@
                     <div class="modal-body" name="form">
                         <form name="editItem">
                             <input type="hidden" id="uniqueId">
-                            <label for="value">Value:</label>
+                            <label for="value" id="valueLabel"></label>
                             <input type="text" id="value" size="50">
                         </form>
                     </div>
