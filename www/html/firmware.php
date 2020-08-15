@@ -293,7 +293,7 @@
                                 trHTML = "<tr class=\"dynamic\">"
                                             + "<td>" + data[i].deviceType + "</td>"
                                             + "<td>" + data[i].version + "</td>"
-                                            + "<td>" + data[i].url + "</td>"
+                                            + "<td><a href=\"" + data[i].url + "\">" + data[i].url + "</a></td>"
                                             + "<td><button class=\"btn btn-default\" data-toggle=\"modal\" data-target=\"#modalEditItem\" data-backdrop=\"static\" data-operation=\"edit\" data-uniqueid=\"" + data[i].id + "\">Edit</button>"
                                                 + "<button class=\"btn btn-danger\" data-toggle=\"modal\" data-target=\"#modalDeleteItem\" data-backdrop=\"static\" data-devicetype=\"" + data[i].deviceType + "\" data-version=\"" + data[i].version + "\"  id=\"deleteButton\" data-uniqueid=\"" + data[i].id + "\">Delete</button>"
                                             + "</td>"
