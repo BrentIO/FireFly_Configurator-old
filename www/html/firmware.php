@@ -52,6 +52,8 @@
 
                         //Set the modal title
                         document.getElementById("operation").innerHTML= "Add New";
+                        editItemForm.elements["deviceType"].value = "SWITCH";
+                        editItemForm.elements["url"].value = "http://" + window.location.hostname + "/firmware/";
 
                     }
 
