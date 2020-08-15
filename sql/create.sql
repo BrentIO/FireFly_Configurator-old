@@ -2062,7 +2062,7 @@ CREATE  OR REPLACE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `firefly`.`getA
 DROP TABLE IF EXISTS `firefly`.`getBreakers`;
 DROP VIEW IF EXISTS `firefly`.`getBreakers` ;
 USE `firefly`;
-CREATE  OR REPLACE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `firefly`.`getBreakers` AS select `firefly`.`breakers`.`id` AS `id`,`firefly`.`breakers`.`name` AS `name`,`firefly`.`breakers`.`displayName` AS `displayName`,`firefly`.`breakers`.`amperage` AS `amperage`,json_object('id',`firefly`.`breakers`.`id`,'name',`firefly`.`breakers`.`name`,'displayName',`firefly`.`breakers`.`displayName`,'amperage',`firefly`.`breakers`.`amperage`) AS `json` from `firefly`.`breakers`;
+CREATE  OR REPLACE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `firefly`.`getBreakers` AS select `firefly`.`breakers`.`id` AS `id`,`firefly`.`breakers`.`name` AS `name`,`firefly`.`breakers`.`displayName` AS `displayName`,`firefly`.`breakers`.`amperage` AS `amperage`,json_object('id',`firefly`.`breakers`.`id`,'name',`firefly`.`breakers`.`name`,'displayName',`firefly`.`breakers`.`displayName`,'amperage',`firefly`.`breakers`.`amperage`) AS `json` from `firefly`.`breakers` order by `firefly`.`breakers`.`displayName`;
 
 -- -----------------------------------------------------
 -- View `firefly`.`getBrightnessNames`
@@ -2070,7 +2070,7 @@ CREATE  OR REPLACE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `firefly`.`getB
 DROP TABLE IF EXISTS `firefly`.`getBrightnessNames`;
 DROP VIEW IF EXISTS `firefly`.`getBrightnessNames` ;
 USE `firefly`;
-CREATE  OR REPLACE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `firefly`.`getBrightnessNames` AS select `firefly`.`brightnessNames`.`id` AS `id`,`firefly`.`brightnessNames`.`name` AS `name`,`firefly`.`brightnessNames`.`displayName` AS `displayName`,`firefly`.`brightnessNames`.`brightnessValue` AS `brightnessValue`,json_object('id',`firefly`.`brightnessNames`.`id`,'name',`firefly`.`brightnessNames`.`name`,'displayName',`firefly`.`brightnessNames`.`displayName`,'brightnessValue',`firefly`.`brightnessNames`.`brightnessValue`) AS `json` from `firefly`.`brightnessNames`;
+CREATE  OR REPLACE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `firefly`.`getBrightnessNames` AS select `firefly`.`brightnessNames`.`id` AS `id`,`firefly`.`brightnessNames`.`name` AS `name`,`firefly`.`brightnessNames`.`displayName` AS `displayName`,`firefly`.`brightnessNames`.`brightnessValue` AS `brightnessValue`,json_object('id',`firefly`.`brightnessNames`.`id`,'name',`firefly`.`brightnessNames`.`name`,'displayName',`firefly`.`brightnessNames`.`displayName`,'brightnessValue',`firefly`.`brightnessNames`.`brightnessValue`) AS `json` from `firefly`.`brightnessNames` order by `firefly`.`brightnessNames`.`displayName`;
 
 -- -----------------------------------------------------
 -- View `firefly`.`getButtonColors`
@@ -2078,7 +2078,7 @@ CREATE  OR REPLACE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `firefly`.`getB
 DROP TABLE IF EXISTS `firefly`.`getButtonColors`;
 DROP VIEW IF EXISTS `firefly`.`getButtonColors` ;
 USE `firefly`;
-CREATE  OR REPLACE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `firefly`.`getButtonColors` AS select `firefly`.`buttonColors`.`id` AS `id`,`firefly`.`buttonColors`.`name` AS `name`,json_object('id',`firefly`.`buttonColors`.`id`,'name',`firefly`.`buttonColors`.`name`,'displayName',`firefly`.`buttonColors`.`displayName`,'hexValue',concat('#',`firefly`.`buttonColors`.`hexValue`),'brightnessMinimum',`firefly`.`buttonColors`.`brightnessMinimum`,'brightnessMaximum',`firefly`.`buttonColors`.`brightnessMaximum`) AS `json` from `firefly`.`buttonColors`;
+CREATE  OR REPLACE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `firefly`.`getButtonColors` AS select `firefly`.`buttonColors`.`id` AS `id`,`firefly`.`buttonColors`.`name` AS `name`,json_object('id',`firefly`.`buttonColors`.`id`,'name',`firefly`.`buttonColors`.`name`,'displayName',`firefly`.`buttonColors`.`displayName`,'hexValue',concat('#',`firefly`.`buttonColors`.`hexValue`),'brightnessMinimum',`firefly`.`buttonColors`.`brightnessMinimum`,'brightnessMaximum',`firefly`.`buttonColors`.`brightnessMaximum`) AS `json` from `firefly`.`buttonColors` order by `buttonColors`.`displayName`;
 
 -- -----------------------------------------------------
 -- View `firefly`.`getColorBrightnessNames`
@@ -2134,7 +2134,7 @@ CREATE  OR REPLACE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `firefly`.`getC
 DROP TABLE IF EXISTS `firefly`.`getControllers`;
 DROP VIEW IF EXISTS `firefly`.`getControllers` ;
 USE `firefly`;
-CREATE  OR REPLACE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `firefly`.`getControllers` AS select `firefly`.`controllers`.`id` AS `id`,`FORMATMACADDRESS`(`firefly`.`controllers`.`macAddress`) AS `macAddress`,`firefly`.`controllers`.`name` AS `name`,`firefly`.`controllers`.`displayName` AS `displayName`,inet_ntoa(`firefly`.`controllers`.`ipAddress`) AS `ipAddress`,inet_ntoa(`firefly`.`controllers`.`subnet`) AS `subnet`,inet_ntoa(`firefly`.`controllers`.`dns`) AS `dns`,inet_ntoa(`firefly`.`controllers`.`gateway`) AS `gateway`,`GETMQTTUSERNAME`(`firefly`.`controllers`.`macAddress`) AS `mqttUsername`,`GETMQTTPASSWORD`(`firefly`.`controllers`.`macAddress`) AS `mqttPassword`,`firefly`.`controllers`.`hwVersion` AS `hwVersion`,json_object('id',`firefly`.`controllers`.`id`,'macAddress',`FORMATMACADDRESS`(`firefly`.`controllers`.`macAddress`),'name',`firefly`.`controllers`.`name`,'displayName',`firefly`.`controllers`.`displayName`,'ipAddress',inet_ntoa(`firefly`.`controllers`.`ipAddress`),'subnet',inet_ntoa(`firefly`.`controllers`.`subnet`),'dns',inet_ntoa(`firefly`.`controllers`.`dns`),'gateway',inet_ntoa(`firefly`.`controllers`.`gateway`),'mqttUsername',`GETMQTTUSERNAME`(`firefly`.`controllers`.`macAddress`),'mqttPassword',`GETMQTTPASSWORD`(`firefly`.`controllers`.`macAddress`),'hwVersion',`firefly`.`controllers`.`hwVersion`) AS `json` from `firefly`.`controllers`;
+CREATE  OR REPLACE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `firefly`.`getControllers` AS select `firefly`.`controllers`.`id` AS `id`,`FORMATMACADDRESS`(`firefly`.`controllers`.`macAddress`) AS `macAddress`,`firefly`.`controllers`.`name` AS `name`,`firefly`.`controllers`.`displayName` AS `displayName`,inet_ntoa(`firefly`.`controllers`.`ipAddress`) AS `ipAddress`,inet_ntoa(`firefly`.`controllers`.`subnet`) AS `subnet`,inet_ntoa(`firefly`.`controllers`.`dns`) AS `dns`,inet_ntoa(`firefly`.`controllers`.`gateway`) AS `gateway`,`GETMQTTUSERNAME`(`firefly`.`controllers`.`macAddress`) AS `mqttUsername`,`GETMQTTPASSWORD`(`firefly`.`controllers`.`macAddress`) AS `mqttPassword`,`firefly`.`controllers`.`hwVersion` AS `hwVersion`,json_object('id',`firefly`.`controllers`.`id`,'macAddress',`FORMATMACADDRESS`(`firefly`.`controllers`.`macAddress`),'name',`firefly`.`controllers`.`name`,'displayName',`firefly`.`controllers`.`displayName`,'ipAddress',inet_ntoa(`firefly`.`controllers`.`ipAddress`),'subnet',inet_ntoa(`firefly`.`controllers`.`subnet`),'dns',inet_ntoa(`firefly`.`controllers`.`dns`),'gateway',inet_ntoa(`firefly`.`controllers`.`gateway`),'mqttUsername',`GETMQTTUSERNAME`(`firefly`.`controllers`.`macAddress`),'mqttPassword',`GETMQTTPASSWORD`(`firefly`.`controllers`.`macAddress`),'hwVersion',`firefly`.`controllers`.`hwVersion`) AS `json` from `firefly`.`controllers` order by `firefly`.`controllers`.`displayName`;
 
 -- -----------------------------------------------------
 -- View `firefly`.`getFirmware`
@@ -2190,7 +2190,7 @@ CREATE  OR REPLACE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `firefly`.`getO
 DROP TABLE IF EXISTS `firefly`.`getSettings`;
 DROP VIEW IF EXISTS `firefly`.`getSettings` ;
 USE `firefly`;
-CREATE  OR REPLACE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `firefly`.`getSettings` AS select `firefly`.`settings`.`id` AS `id`,`firefly`.`settings`.`name` AS `name`,`firefly`.`settings`.`displayName` AS `displayName`,`firefly`.`settings`.`value` AS `value`,json_object('id',`firefly`.`settings`.`id`,'name',`firefly`.`settings`.`name`,'displayName',`firefly`.`settings`.`displayName`,'value',`firefly`.`settings`.`value`) AS `json` from `firefly`.`settings`;
+CREATE  OR REPLACE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `firefly`.`getSettings` AS select `firefly`.`settings`.`id` AS `id`,`firefly`.`settings`.`name` AS `name`,`firefly`.`settings`.`displayName` AS `displayName`,`firefly`.`settings`.`value` AS `value`,json_object('id',`firefly`.`settings`.`id`,'name',`firefly`.`settings`.`name`,'displayName',`firefly`.`settings`.`displayName`,'value',`firefly`.`settings`.`value`) AS `json` from `firefly`.`settings` order by `firefly`.`settings`.`displayName`;
 
 -- -----------------------------------------------------
 -- View `firefly`.`getSwitchBootstraps`
