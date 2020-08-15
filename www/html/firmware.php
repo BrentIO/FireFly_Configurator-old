@@ -352,7 +352,7 @@
                             <label for="version">Version:</label>
                             <input type="text" id="version"><br><br>
                             <label for="url">URL:</label>
-                            <input type="text" id="url">
+                            <input type="text" id="url" size="50">
                         </form>
                     </div>
                     <div class="modal-footer">
