@@ -11,11 +11,11 @@ INSERT INTO settings (name, displayName, value) VALUES ('wifiKey', 'WiFi Passwor
 INSERT INTO settings (name, displayName, value) VALUES ('firmwareRefreshMs', 'Firmware Refresh (ms)', 3600000);
 
 /* Create the button colors */
-CALL editButtonColor(NULL, 'Blue', 'Blue', '#034efc', 0, 100);
+CALL editButtonColor(NULL, 'Blue', 'Blue', '#4469C1', 0, 100);
 CALL editButtonColor(NULL, 'White', 'White', '#ffffff', 0, 100);
-CALL editButtonColor(NULL, 'Green', 'Green', '#488a20', 0,  100);
-CALL editButtonColor(NULL, 'Red', 'Red', '#a82727', 0,  100);
-CALL editButtonColor(NULL, 'Amber', 'Amber', '#c79112', 0, 100);
+CALL editButtonColor(NULL, 'Green', 'Green', '#64A43D', 0,  100);
+CALL editButtonColor(NULL, 'Red', 'Red', '#A82727', 0,  100);
+CALL editButtonColor(NULL, 'Amber', 'Amber', '#F2BA36', 0, 100);
 CALL editButtonColor(NULL, 'None', 'None', '#000000', 0, 100);
 
 /* Create brightness names */
