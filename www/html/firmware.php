@@ -347,7 +347,7 @@
                         <form name="editItem">
                             <input type="hidden" id="uniqueId">
                             <label for="deviceType">Device Type:</label>
-                            <select name="deviceType">
+                            <select id="deviceType">
                                 <option value="SWITCH">Switch</option>
                                 <option value="CONTROLLER">Controller</option>
                             </select><br><br>
