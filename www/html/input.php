@@ -145,6 +145,7 @@
                             })
 
                         ).then(function(){
+                                editItemForm.elements["switchId"].setAttribute("data-default", null);
                                 editItemForm.elements["enabled"].checked = true;
                                 editItemForm.elements["broadcastOnChange"].checked = true;
                                 editItemForm.elements["pinAutoAssign"].checked = true;
@@ -511,7 +512,8 @@
                                 }
 
                                 trHTML = "<tr class=\"dynamic\">"
-                                            + "<td>" + data[i].displayName + " <span style=\"width: 15px; height: 15px; margin:auto; display: inline-block; border: 0.5px solid gray; vertical-align: middle; border-radius: 50%; background: " + data[i].hexValue + "\"></span></td>"
+                                            + "<td>" + data[i].displayName + "</td>"
+                                            + "<td><span style=\"width: 15px; height: 15px; margin:auto; display: inline-block; border: 0.5px solid gray; vertical-align: middle; border-radius: 50%; background: " + data[i].hexValue + "\"></span> </td>"
                                             + "<td>" + data[i].switchDisplayName + " (position " + data[i].port + ")</td>"
                                             + "<td>" + data[i].controllerDisplayName + " (port " + data[i].controllerPort + ", pin " + data[i].pin + ")</td>"
                                             + "<td>" + circuitType + "</td>"
@@ -547,7 +549,7 @@
         <table id="dataTable">
             <tbody>
             <tr>
-                <th>Name</th>
+                <th colspan="2">Name</th>
                 <th>Switch</th>
                 <th>Controller</th>
                 <th>Circuit Type</th>
