@@ -6,20 +6,52 @@
     //Validate the user is logged in
     checkLogin();
 
-    $pageName = "controller";
-    $url = "http://" . $_SERVER['SERVER_ADDR'] . "/api/controller";
+    $pageName = "switch";
+    $url = "http://" . $_SERVER['SERVER_ADDR'] . "/api/switch";
+    $controllerURL = "http://" . $_SERVER['SERVER_ADDR'] . "/api/controller";
+    $firmwareURL = "http://" . $_SERVER['SERVER_ADDR'] . "/api/firmware";
 
 ?>
 <!DOCTYPE html>
 <html>
     <head>
-        <title>FireFly Configurator - Controllers</title>
+        <title>FireFly Configurator - Switches</title>
         <link rel="stylesheet" href="bootstrap.min.css">
         <link rel="stylesheet" href="style.css">
         <script src="jquery.min.js"></script>
         <script src="bootstrap.min.js"></script>
         <script src="jquery.toaster.js"></script>
         <script>
+
+            function controllerChanged(){
+                var editItemForm = document.editItem;
+
+                if(editItemForm.elements["controllerId"].value == editItemForm.elements["controllerId"].getAttribute("data-default")){
+                    //The current value was re-selected
+                    editItemForm.elements["portAutoAssign"].checked = false;
+                    editItemForm.elements["portAutoAssign"].disabled = false;
+                    setPortHidden(false);
+                }else{
+                    //A different value was selected, block the user from manually assigning the pin and port
+                    editItemForm.elements["portAutoAssign"].checked = true;
+                    editItemForm.elements["portAutoAssign"].disabled = true;
+
+                }       
+            }
+
+            function setPortHidden(value){
+                var editItemForm = document.editItem;
+                editItemForm.elements["controllerPort"].hidden = value;
+
+                if(value == true){
+
+                    document.getElementById('controllerPortLabel').style.visibility = 'hidden';
+
+                }else{
+                    document.getElementById('controllerPortLabel').style.visibility = 'visible';
+                }
+                            
+            }
 
             function setMQTTUsernameHidden(value){
                 var editItemForm = document.editItem;
@@ -36,6 +68,7 @@
             }
 
             function setMQTTPasswordHidden(value){
+                
                 var editItemForm = document.editItem;
                 editItemForm.elements["mqttPassword"].hidden = value;
                 
@@ -48,20 +81,21 @@
                 }
             }
 
+
+
             $(document).ready(function(){
 
-                class controller {
+                class switchClass {
                     id = null;
                     name = null;
                     displayName = null;
                     macAddress = null;
-                    ipAddress = null;
-                    subnet = null;
-                    dns = null;
-                    gateway = null;
+                    firmwareId = null;
+                    controllerId = null;
+                    controllerPort = null;
+                    hwVersion = null;
                     mqttUsername = null;
                     mqttPassword = null;
-                    hwVersion = null;
                 }
             
                 //Load the data on page load
@@ -85,56 +119,171 @@
                     if(operation == "add"){
 
                         //Set the modal title
-                        document.getElementById("operation").innerHTML= "Add New Controller";
-                        editItemForm.elements["hwVersion"].value = "2"; 
-                        editItemForm.elements["mqttUsernameDefault"].checked = true;
-                        editItemForm.elements["mqttPasswordDefault"].checked = true;
-                        setMQTTUsernameHidden(true);
-                        setMQTTPasswordHidden(true);                        
+                        document.getElementById("operation").innerHTML= "Add New Switch";
 
+                        $.when(
+
+                            //Get the list of controllers
+                            $.ajax({
+                                beforeSend: function(request) {
+                                    request.setRequestHeader("x-api-key", "<?php print(getConfig("x-api-key")); ?>");
+                                },
+                                url: "<?php print($controllerURL);?>",
+
+                                success: function(data) {
+
+                                    //Add the list of controllers to the drop-down
+                                    $.each(data, function(i){
+                                        optionHTML = "<option value=\"" + data[i].id + "\">" + data[i].displayName + "</option>";
+                                    
+                                        $('#controllerId').append(optionHTML);
+                                    });
+
+                                },
+
+                                fail: function(data){
+                                    $.toaster({ priority :'danger', title :'Getting Controllers Failed', message : data['status'] + ' ' + data['statusText']});
+                                }
+                            }),
+
+                            //Get the list of firmware
+                            $.ajax({
+                                beforeSend: function(request) {
+                                    request.setRequestHeader("x-api-key", "<?php print(getConfig("x-api-key")); ?>");
+                                },
+                                url: "<?php print($firmwareURL);?>",
+
+                                success: function(data) {
+                                    
+                                    //Add the list of device-appropriate firmware to the drop-down
+                                    $.each(data, function(i){
+
+                                        if(data[i].deviceType == "SWITCH"){
+
+                                            optionHTML = "<option value=\"" + data[i].id + "\">" + data[i].version + "</option>";
+                                            $('#firmwareId').append(optionHTML);
+
+                                        };
+                                    });
+                                },
+
+                                fail: function(data){
+                                    $.toaster({ priority :'danger', title :'Getting Firmware Failed', message : data['status'] + ' ' + data['statusText']});
+                                }
+                            })
+
+                        ).then(function(){
+                            editItemForm.elements["controllerId"].setAttribute("data-default", null);
+                            editItemForm.elements["portAutoAssign"].checked = true;
+                            editItemForm.elements["portAutoAssign"].disabled = true;
+                            setPortHidden(true);
+                            editItemForm.elements["hwVersion"].value = "2";
+
+                        });
                     }
 
                     //If editing, retrieve the data from the API
                     if(operation == "edit"){
 
                         //Set the modal title
-                        document.getElementById("operation").innerHTML= "Edit Existing Controller";
+                        document.getElementById("operation").innerHTML= "Edit Existing Switch";
 
-                        $.ajax({
+                        switchData = null;
 
-                            beforeSend: function(request) {
-                                request.setRequestHeader("x-api-key", "<?php print(getConfig("x-api-key")); ?>");
-                            },
+                        $.when(
 
-                            type: 'GET',
-                            url: "<?php print($url);?>" + '/' + button.data('uniqueid'),
+                            //Get the data about this ID
+                            $.ajax({
 
-                            success: function(data) {
+                                beforeSend: function(request) {
+                                    request.setRequestHeader("x-api-key", "<?php print(getConfig("x-api-key")); ?>");
+                                },
 
-                                //Populate the field elements with the data returned by the API
-                                editItemForm.elements["uniqueId"].value = data['id'];
-                                editItemForm.elements["name"].value = data['name'];
-                                editItemForm.elements["displayName"].value = data['displayName'];
-                                editItemForm.elements["macAddress"].value = data['macAddress'];
-                                editItemForm.elements["ipAddress"].value = data['ipAddress'];
-                                editItemForm.elements["subnet"].value = data['subnet'];
-                                editItemForm.elements["dns"].value = data['dns'];
-                                editItemForm.elements["gateway"].value = data['gateway'];
-                                editItemForm.elements["hwVersion"].value = data['hwVersion'];
+                                type: 'GET',
+                                url: "<?php print($url);?>" + '/' + button.data('uniqueid'),
 
-                                editItemForm.elements["mqttUsernameDefault"].checked = data['mqttUsernameDefault'];
-                                setMQTTUsernameHidden(data['mqttUsernameDefault']);
-                                editItemForm.elements["mqttUsername"].value = data['mqttUsername'];
+                                success: function(data) {
 
-                                editItemForm.elements["mqttPasswordDefault"].checked = data['mqttPasswordDefault'];
-                                setMQTTPasswordHidden(data['mqttPasswordDefault']);
-                                editItemForm.elements["mqttPassword"].value = data['mqttPassword'];
+                                    switchData = data;
+                                },
 
-                            },
+                                error: function(data){
+                                    $.toaster({ priority :'danger', title :'Failed', message : data['status'] + ' ' + data['statusText']});
+                                },
+                            }),
 
-                            error: function(data){
-                                $.toaster({ priority :'danger', title :'Failed', message : data['status'] + ' ' + data['statusText']});
-                            },
+                            //Get the list of controllers
+                            $.ajax({
+                                beforeSend: function(request) {
+                                    request.setRequestHeader("x-api-key", "<?php print(getConfig("x-api-key")); ?>");
+                                },
+                                url: "<?php print($controllerURL);?>",
+
+                                success: function(data) {
+
+                                    //Add the list of controllers to the drop-down
+                                    $.each(data, function(i){
+                                        optionHTML = "<option value=\"" + data[i].id + "\">" + data[i].displayName + "</option>";
+                                    
+                                        $('#controllerId').append(optionHTML);
+                                    });
+
+                                },
+
+                                fail: function(data){
+                                    $.toaster({ priority :'danger', title :'Getting Controllers Failed', message : data['status'] + ' ' + data['statusText']});
+                                }
+                            }),
+
+                            //Get the list of firmware
+                            $.ajax({
+                                beforeSend: function(request) {
+                                    request.setRequestHeader("x-api-key", "<?php print(getConfig("x-api-key")); ?>");
+                                },
+                                url: "<?php print($firmwareURL);?>",
+
+                                success: function(data) {
+                                    
+                                    //Add the list of device-appropriate firmware to the drop-down
+                                    $.each(data, function(i){
+
+                                        if(data[i].deviceType == "SWITCH"){
+
+                                            optionHTML = "<option value=\"" + data[i].id + "\">" + data[i].version + "</option>";
+                                            $('#firmwareId').append(optionHTML);
+
+                                        };
+                                    });
+                                },
+
+                                fail: function(data){
+                                    $.toaster({ priority :'danger', title :'Getting Firmware Failed', message : data['status'] + ' ' + data['statusText']});
+                                }
+                            })
+
+                        ).then(function(){
+
+                            //Populate the field elements with the data returned by the API
+                            editItemForm.elements["uniqueId"].value = switchData['id']; 
+                            editItemForm.elements["name"].value = switchData['name']; 
+                            editItemForm.elements["displayName"].value = switchData['displayName'];
+                            editItemForm.elements["macAddress"].value = switchData['macAddress'];
+                            editItemForm.elements["firmwareId"].value = switchData['firmwareId'];
+                            editItemForm.elements["controllerId"].value = switchData['controllerId'];
+                            editItemForm.elements["controllerId"].setAttribute("data-default", outputData['controllerId']);
+                            editItemForm.elements["controllerPort"].value = switchData['controllerPort'];
+                            editItemForm.elements["hwVersion"].value = switchData['hwVersion'];
+                            editItemForm.elements["mqttUsername"].value = switchData['mqttUsername'];
+                            editItemForm.elements["mqttPassword"].value = switchData['mqttPassword'];
+                            editItemForm.elements["hwVersion"].value = "2";
+
+                            editItemForm.elements["mqttUsernameDefault"].checked = switchData['mqttUsernameDefault'];
+                            setMQTTUsernameHidden(switchData['mqttUsernameDefault']);
+                            editItemForm.elements["mqttUsername"].value = switchData['mqttUsername'];
+
+                            editItemForm.elements["mqttPasswordDefault"].checked = switchData['mqttPasswordDefault'];
+                            setMQTTPasswordHidden(switchData['mqttPasswordDefault']);
+                            editItemForm.elements["mqttPassword"].value = switchData['mqttPassword'];
                         });
                     }
                 });
@@ -146,17 +295,21 @@
 
                     elementName = editItemForm.elements["name"];
 
-                    var item = new controller();
+                    var item = new switchClass();
 
                     item.id = editItemForm.elements["uniqueId"].value;
                     item.name = editItemForm.elements["name"].value;
                     item.displayName = editItemForm.elements["displayName"].value;
                     item.macAddress = editItemForm.elements["macAddress"].value;
-                    item.ipAddress = editItemForm.elements["ipAddress"].value;
-                    item.subnet = editItemForm.elements["subnet"].value;
-                    item.dns = editItemForm.elements["dns"].value;
-                    item.gateway = editItemForm.elements["gateway"].value;
+                    item.firmwareId = editItemForm.elements["firmwareId"].value;
+                    item.controllerId = editItemForm.elements["controllerId"].value;
                     item.hwVersion = editItemForm.elements["hwVersion"].value;
+
+                    if(editItemForm.elements["portAutoAssign"].checked){
+                        item.controllerPort = null;
+                    }else{
+                        item.controllerPort = editItemForm.elements["controllerPort"].value;
+                    }
 
                     if(editItemForm.elements["mqttUsernameDefault"].checked){
                         item.mqttUsername = null;
@@ -168,7 +321,7 @@
                         item.mqttPassword = null;
                     }else{
                         item.mqttPassword = editItemForm.elements["mqttPassword"].value;
-                    }                  
+                    } 
 
                     if(item.id == ""){
                         item.id = null;
@@ -219,7 +372,7 @@
 
                     var deleteItemForm = document.deleteItem;
 
-                    var item = new controller;
+                    var item = new switchClass;
 
                     item.id = deleteItemForm.elements["uniqueId"].value;
 
@@ -246,6 +399,20 @@
                         //Clear the data
                         editItemForm[i].value = null;
                     }
+
+                    //Delete the controller drop-down options
+                    while(document.getElementById("controllerId").length > 0){
+                        document.getElementById("controllerId").remove(0);
+                    }
+
+                    while(document.getElementById("firmwareId").length > 0){
+                        document.getElementById("firmwareId").remove(0);
+                    }
+
+                    //Re-enabled the form elements
+                    editItemForm.elements["portAutoAssign"].checked = false;
+                    editItemForm.elements["portAutoAssign"].disabled = false;
+                    setPortHidden(false);
 
                 };
 
@@ -358,9 +525,10 @@
                                 trHTML = "<tr class=\"dynamic\">"
                                             + "<td>" + data[i].displayName + "</td>"
                                             + "<td>" + data[i].macAddress + "</td>"
-                                            + "<td>" + data[i].ipAddress + "</td>"
+                                            + "<td>" + data[i].firmwareVersion + "</td>"
+                                            + "<td>" + data[i].controllerDisplayName + " (port " + data[i].controllerPort + ")</td>"
                                             + "<td><button class=\"btn btn-default\" data-toggle=\"modal\" data-target=\"#modalEditItem\" data-backdrop=\"static\" data-operation=\"edit\" data-uniqueid=\"" + data[i].id + "\">Edit</button>"
-                                                + "<button class=\"btn btn-danger\" data-toggle=\"modal\" data-target=\"#modalDeleteItem\" data-backdrop=\"static\" data-displayname=\"" + data[i].displayName + "\"  id=\"deleteButton\" data-uniqueid=\"" + data[i].id + "\">Delete</button>"
+                                                + "<button class=\"btn btn-danger\" data-toggle=\"modal\" data-target=\"#modalDeleteItem\" data-backdrop=\"static\" data-displayname=\"" + data[i].displayName + "\" id=\"deleteButton\" data-uniqueid=\"" + data[i].id + "\">Delete</button>"
                                             + "</td>"
                                         +"</tr>"
                                 $('#dataTable').append(trHTML);
@@ -383,7 +551,7 @@
         
         <div class="content">
         <div id="pageName">
-            <div id="pageTitle">Controllers</div><button data-toggle="modal" data-target="#modalEditItem" data-backdrop="static" data-operation="add" class="btn btn-success">Add New</button>
+            <div id="pageTitle">Switches</div><button data-toggle="modal" data-target="#modalEditItem" data-backdrop="static" data-operation="add" class="btn btn-success">Add New</button>
         </div>
 
         <table id="dataTable">
@@ -391,7 +559,8 @@
             <tr>
                 <th>Name</th>
                 <th>MAC Address</th>
-                <th>IP Address</th>
+                <th>Firmware Version</th>
+                <th>Controller</th>
                 <th>Operations</th>
             </tr>
             </tbody>
@@ -410,21 +579,21 @@
                     </div>
                     <div class="modal-body" name="form">
                         <form name="editItem">
-                            <input type="hidden" id="uniqueId">
+                        <input type="hidden" id="uniqueId">
                             <label for="name">Name:</label>
                             <input type="text" id="name"><br><br>
                             <label for="displayName">Display Name:</label>
                             <input type="text" id="displayName"><br><br>
                             <label for="macAddress">MAC Address:</label>
                             <input type="text" id="macAddress"><br><br>
-                            <label for="ipAddress">IP Address:</label>
-                            <input type="text" id="ipAddress"><br><br>
-                            <label for="subnet">Subnet:</label>
-                            <input type="text" id="subnet"><br><br>
-                            <label for="dns">DNS:</label>
-                            <input type="text" id="dns"><br><br>
-                            <label for="gateway">Gateway:</label>
-                            <input type="text" id="gateway"><br><br>
+                            <label for="controllerId">Controller:</label>
+                            <select id="controllerId" oninput="controllerChanged()"></select><br><br>
+                            <label for="portAutoAssign">Auto-Assign Port</label>
+                            <input type="checkbox" id="portAutoAssign" onchange="setPortHidden(this.checked)">
+                            <label for="controllerPort" id="controllerPortLabel">Port:</label>
+                            <input type="text" id="controllerPort" size="4" readonly><br><br>
+                            <label for="firmwareId">Firmware:</label>
+                            <select id="firmwareId"></select><br><br>
                             <label for="mqttUsernameDefault">Use Default MQTT Username</label>
                             <input type="checkbox" id="mqttUsernameDefault" onchange="setMQTTUsernameHidden(this.checked)"><br><br>
                             <label for="mqttUsername" id="mqttUsernameLabel">MQTT Username:</label>
@@ -437,6 +606,7 @@
                             <select id="hwVersion">
                                 <option value="2">Version 2</option>
                             </select>
+                           
                         </form>
                     </div>
                     <div class="modal-footer">
