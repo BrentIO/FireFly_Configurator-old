@@ -1216,10 +1216,29 @@ IF _pin IS NULL THEN
 END IF;
  
  
-SELECT ISCONTROLLERPINAVAILABLE(_controllerId, _pin, _id, 'INPUT', NULL) INTO badPinCheck;
+SELECT 
+    ISCONTROLLERPINAVAILABLE(_controllerId,
+            _pin,
+            _switchId,
+            'INPUT',
+            NULL)
+INTO badPinCheck;
         
 IF badPinCheck = 0 THEN
 	SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Pin in use.';
+END IF;
+
+
+SELECT 
+    COUNT(*)
+INTO badPinCheck FROM
+    inputs
+WHERE
+    switchId = _switchId AND pin = _pin
+        AND id != _id;
+        
+IF badPinCheck != 0 THEN
+	SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Switch has already reserved this pin.';
 END IF;
 
 
