@@ -367,7 +367,7 @@
                                 <option value="CONTROLLER">Controller</option>
                             </select><br><br>
                             <label for="version">Version:</label>
-                            <input type="text" id="version"><br><br>
+                            <input type="number" id="version" size="4" min="0" max="1000"><br><br>
                             <label for="url">URL:</label>
                             <input type="text" id="url" size="50">
                         </form>

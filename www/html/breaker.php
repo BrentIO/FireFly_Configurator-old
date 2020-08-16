@@ -351,7 +351,7 @@
                             <label for="displayName">Display Name:</label>
                             <input type="text" id="displayName"><br><br>
                             <label for="amperage">Amperage:</label>
-                            <input type="text" id="amperage">
+                            <input type="number" id="amperage" size="4" min="0" max="100">
                         </form>
                     </div>
                     <div class="modal-footer">
