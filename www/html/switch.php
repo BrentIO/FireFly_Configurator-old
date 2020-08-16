@@ -178,6 +178,10 @@
                             editItemForm.elements["portAutoAssign"].checked = true;
                             editItemForm.elements["portAutoAssign"].disabled = true;
                             setPortHidden(true);
+                            editItemForm.elements["mqttUsernameDefault"].checked = true;
+                            setMQTTUsernameHidden(true);
+                            editItemForm.elements["mqttPasswordDefault"].checked = true;
+                            setMQTTPasswordHidden(true);
                             editItemForm.elements["hwVersion"].value = "2";
 
                         });
