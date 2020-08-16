@@ -35,6 +35,7 @@
                     //A different value was selected, block the user from manually assigning the pin and port
                     editItemForm.elements["portAutoAssign"].checked = true;
                     editItemForm.elements["portAutoAssign"].disabled = true;
+                    setPortHidden(true);
 
                 }       
             }
@@ -270,7 +271,7 @@
                             editItemForm.elements["macAddress"].value = switchData['macAddress'];
                             editItemForm.elements["firmwareId"].value = switchData['firmwareId'];
                             editItemForm.elements["controllerId"].value = switchData['controllerId'];
-                            editItemForm.elements["controllerId"].setAttribute("data-default", outputData['controllerId']);
+                            editItemForm.elements["controllerId"].setAttribute("data-default", switchData['controllerId']);
                             editItemForm.elements["controllerPort"].value = switchData['controllerPort'];
                             editItemForm.elements["hwVersion"].value = switchData['hwVersion'];
                             editItemForm.elements["mqttUsername"].value = switchData['mqttUsername'];
