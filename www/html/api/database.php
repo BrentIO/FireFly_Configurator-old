@@ -129,11 +129,20 @@
 
             if($prepare == false){
 
-                if(getConfig('debugMode')){
+                //If the error number is 1644, that is a user-defined error, pass the data to the user
+                if(mysqli_errno($this->conn) == 1644){
+                    throw new Exception (mysqli_error($this->conn), 400);
+
+                } elseif(getConfig('debugMode')) {
+
+                    //Likely a SQL permission missing, if in debug, show the raw message
                     throw new Exception (mysqli_error($this->conn));
-                }else{
+
+                } else {
+                    
+                    //In debug, hide the odd exception
                     throw new Exception ("Database request failed");
-                }                
+                }             
             }
             
             //Execute the statement
@@ -141,9 +150,18 @@
 
             if(mysqli_error($this->conn)){
 
-                if(getConfig('debugMode')){
+                //If the error number is 1644, that is a user-defined error, pass the data to the user
+                if(mysqli_errno($this->conn) == 1644){
+                    throw new Exception (mysqli_error($this->conn), 400);
+
+                } elseif(getConfig('debugMode')) {
+
+                    //Likely a SQL permission missing, if in debug, show the raw message
                     throw new Exception (mysqli_error($this->conn));
-                }else{
+
+                } else {
+                    
+                    //In debug, hide the odd exception
                     throw new Exception ("Database request failed");
                 }  
 
