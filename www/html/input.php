@@ -61,6 +61,8 @@
 
             $(document).ready(function(){
 
+                $.toaster({ settings : {'donotdismiss' : ['danger']  }});
+
                 class input {
                     id = null;
                     displayName = null;

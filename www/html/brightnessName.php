@@ -30,6 +30,8 @@
         
             $(document).ready(function(){
 
+                $.toaster({ settings : {'donotdismiss' : ['danger']  }});
+
                 class brightnessName {
                     id = null;
                     name = null;

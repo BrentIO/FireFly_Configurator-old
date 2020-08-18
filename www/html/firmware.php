@@ -23,6 +23,8 @@
 
             $(document).ready(function(){
 
+                $.toaster({ settings : {'donotdismiss' : ['danger']  }});
+
                 class firmware {
                     id = null;
                     deviceType = null;

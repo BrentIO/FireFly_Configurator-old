@@ -86,6 +86,8 @@
 
             $(document).ready(function(){
 
+                $.toaster({ settings : {'donotdismiss' : ['danger']  }});
+
                 class switchClass {
                     id = null;
                     name = null;

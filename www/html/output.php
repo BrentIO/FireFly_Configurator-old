@@ -76,6 +76,8 @@
 
             $(document).ready(function(){
 
+                $.toaster({ settings : {'donotdismiss' : ['danger']  }});
+
                 class output {
                     id = null;
                     name = null;

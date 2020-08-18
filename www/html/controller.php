@@ -50,6 +50,8 @@
 
             $(document).ready(function(){
 
+                $.toaster({ settings : {'donotdismiss' : ['danger']  }});
+
                 class controller {
                     id = null;
                     name = null;

@@ -37,6 +37,7 @@
         <script src="./jquery.toaster.js"></script>
         <script>
             function displayLoginFailure(){
+                $.toaster({ settings : {'donotdismiss' : ['danger']  }});
                 $.toaster({ priority :'danger', title :'Login Failed', message : 'Incorrect Password'});
             };
         </script>
