@@ -117,7 +117,7 @@
                                 },
 
                                 fail: function(data){
-                                    $.toaster({ priority :'danger', title :'Getting Switches Failed', message : data['status'] + ' ' + data['statusText']});
+                                    $.toaster({ priority :'danger', title :'Getting Switches Failed', message : data['responseJSON']['error']});
                                 }
                             }),
 
@@ -140,7 +140,7 @@
                                 },
 
                                 fail: function(data){
-                                    $.toaster({ priority :'danger', title :'Getting Button Colors Failed', message : data['status'] + ' ' + data['statusText']});
+                                    $.toaster({ priority :'danger', title :'Getting Button Colors Failed', message : data['responseJSON']['error']});
                                 }
                             })
 
@@ -183,7 +183,7 @@
                                 },
 
                                 error: function(data){
-                                    $.toaster({ priority :'danger', title :'Failed', message : data['status'] + ' ' + data['statusText']});
+                                    $.toaster({ priority :'danger', title :'Failed', message : data['responseJSON']['error']});
                                 },
                             }),
 
@@ -206,7 +206,7 @@
                                 },
 
                                 fail: function(data){
-                                    $.toaster({ priority :'danger', title :'Getting Switches Failed', message : data['status'] + ' ' + data['statusText']});
+                                    $.toaster({ priority :'danger', title :'Getting Switches Failed', message : data['responseJSON']['error']});
                                 }
                             }),
 
@@ -229,7 +229,7 @@
                                 },
 
                                 fail: function(data){
-                                    $.toaster({ priority :'danger', title :'Getting Button Colors Failed', message : data['status'] + ' ' + data['statusText']});
+                                    $.toaster({ priority :'danger', title :'Getting Button Colors Failed', message : data['responseJSON']['error']});
                                 }
                             })
 
@@ -455,7 +455,7 @@
                         },
 
                         error: function(data){
-                            $.toaster({ priority :'danger', title :'Failed', message : data['status'] + ' ' + data['statusText']});
+                            $.toaster({ priority :'danger', title :'Failed', message : data['responseJSON']['error']});
                         },
 
                         complete: function(){
@@ -528,7 +528,7 @@
                         },
 
                         fail: function(data){
-                            $.toaster({ priority :'danger', title :'Failed', message : data['status'] + ' ' + data['statusText']});
+                            $.toaster({ priority :'danger', title :'Failed', message : data['responseJSON']['error']});
                         }
                     });
                 };

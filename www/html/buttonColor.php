@@ -84,7 +84,7 @@
                             },
 
                             error: function(data){
-                                $.toaster({ priority :'danger', title :'Failed', message : data['status'] + ' ' + data['statusText']});
+                                $.toaster({ priority :'danger', title :'Failed', message : data['responseJSON']['error']});
                             },
                         });
                     }
@@ -236,7 +236,7 @@
                         },
 
                         error: function(data){
-                            $.toaster({ priority :'danger', title :'Failed', message : data['status'] + ' ' + data['statusText']});
+                            $.toaster({ priority :'danger', title :'Failed', message : data['responseJSON']['error']});
                         },
 
                         complete: function(){
@@ -266,7 +266,7 @@
                         },
 
                         error: function(data){
-                            $.toaster({ priority :'danger', title :'Failed', message : data['status'] + ' ' + data['statusText']});
+                            $.toaster({ priority :'danger', title :'Failed', message : data['responseJSON']['error']});
                         },
 
                         complete: function(){
@@ -308,7 +308,7 @@
                         },
 
                         fail: function(data){
-                            $.toaster({ priority :'danger', title :'Failed', message : data['status'] + ' ' + data['statusText']});
+                            $.toaster({ priority :'danger', title :'Failed', message : data['responseJSON']['error']});
                         }
                     });
                 };
