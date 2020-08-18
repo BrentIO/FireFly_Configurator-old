@@ -1430,6 +1430,7 @@ BEGIN
 DECLARE _firmwareId_ int;
 DECLARE controllerCount int;
 DECLARE badPortCheck int;
+DECLARE badControllerMove int;
 
 SET _name = upper(replace(trim(_name), " ", ""));
 SET _displayName = trim(_displayName);
@@ -1493,6 +1494,26 @@ IF _firmwareId_ is null THEN
 	SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Invalid firmware.';
 
 END IF;
+
+SELECT 
+    COUNT(*) INTO badControllerMove
+FROM
+    (SELECT 
+        inputs.id, inputs.switchId, switches.controllerId
+    FROM
+        inputs
+    INNER JOIN switches ON inputs.switchId = switches.id) d
+WHERE
+    d.switchId = _id AND d.controllerId != _controllerId;
+    
+
+IF badControllerMove > 0 THEN
+
+	SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Inputs are assigned to this switch; The controller cannot be changed.';
+
+END IF;
+
+
 
 INSERT INTO switches
 	(id, controllerId, port, macAddress, hwVersion, name, displayName, firmwareId)
