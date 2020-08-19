@@ -369,6 +369,46 @@ CREATE TABLE IF NOT EXISTS `firefly`.`getSwitchButtons` (`switchId` INT, `json` 
 CREATE TABLE IF NOT EXISTS `firefly`.`getSwitches` (`id` INT, `controllerId` INT, `port` INT, `macAddress` INT, `hwVersion` INT, `firmwareId` INT, `name` INT, `displayName` INT, `mqttUsername` INT, `mqttPassword` INT, `controllerDisplayName` INT, `firmwareVersion` INT, `mqttUsernameDefault` INT, `mqttPasswordDefault` INT,`json` INT);
 
 -- -----------------------------------------------------
+-- Placeholder table for view `firefly`.`statBreakerUtilization`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `firefly`.`statBreakerUtilization` (`id` INT, `name` INT, `displayName` INT, `amperage` INT, `amperageUsed` INT, `utilization` INT, `json` INT);
+
+-- -----------------------------------------------------
+-- Placeholder table for view `firefly`.`statButtonColorCount`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `firefly`.`statButtonColorCount` (`json` INT);
+
+-- -----------------------------------------------------
+-- Placeholder table for view `firefly`.`statControllerCount`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `firefly`.`statControllerCount` (`json` INT);
+
+-- -----------------------------------------------------
+-- Placeholder table for view `firefly`.`statControllerPinUtilization`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `firefly`.`statControllerPinUtilization` (`controllerId` INT, `json` INT);
+
+-- -----------------------------------------------------
+-- Placeholder table for view `firefly`.`statControllerPortUtilization`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `firefly`.`statControllerPortUtilization` (`controllerId` INT, `json` INT);
+
+-- -----------------------------------------------------
+-- Placeholder table for view `firefly`.`statFaceplateCount`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `firefly`.`statFaceplateCount` (`json` INT);
+
+-- -----------------------------------------------------
+-- Placeholder table for view `firefly`.`statOutputType`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `firefly`.`statOutputType` (`json` INT);
+
+-- -----------------------------------------------------
+-- Placeholder table for view `firefly`.`statSwitchCount`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `firefly`.`statSwitchCount` (`switchCount` INT, `json` INT);
+
+-- -----------------------------------------------------
 -- function adjustBrightnessLevels
 -- -----------------------------------------------------
 
@@ -2255,6 +2295,70 @@ DROP TABLE IF EXISTS `firefly`.`getSwitches`;
 DROP VIEW IF EXISTS `firefly`.`getSwitches` ;
 USE `firefly`;
 CREATE  OR REPLACE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `firefly`.`getSwitches` AS select `firefly`.`switches`.`id` AS `id`,`firefly`.`switches`.`controllerId` AS `controllerId`,`firefly`.`switches`.`port` AS `port`,`FORMATMACADDRESS`(`firefly`.`switches`.`macAddress`) AS `macAddress`,`firefly`.`switches`.`hwVersion` AS `hwVersion`,`firefly`.`switches`.`firmwareId` AS `firmwareId`,`firefly`.`switches`.`name` AS `name`,`firefly`.`switches`.`displayName` AS `displayName`,`GETMQTTUSERNAME`(`firefly`.`switches`.`macAddress`) AS `mqttUsername`,`GETMQTTPASSWORD`(`firefly`.`switches`.`macAddress`) AS `mqttPassword`,`firefly`.`controllers`.`displayName` AS `controllerDisplayName`,`firefly`.`firmware`.`version` AS `firmwareVersion`,cast(if((`firefly`.`switches`.`mqttUsername` is null),'true','false') as json) AS `mqttUsernameDefault`,cast(if((`firefly`.`switches`.`mqttPassword` is null),'true','false') as json) AS `mqttPasswordDefault`,json_object('id',`firefly`.`switches`.`id`,'controllerId',`firefly`.`switches`.`controllerId`,'controllerDisplayName',`firefly`.`controllers`.`displayName`,'controllerPort',`firefly`.`switches`.`port`,'macAddress',`FORMATMACADDRESS`(`firefly`.`switches`.`macAddress`),'hwVersion',`firefly`.`switches`.`hwVersion`,'firmwareId',`firefly`.`switches`.`firmwareId`,'firmwareVersion',`firefly`.`firmware`.`version`,'name',`firefly`.`switches`.`name`,'displayName',`firefly`.`switches`.`displayName`,'mqttUsername',`GETMQTTUSERNAME`(`firefly`.`switches`.`macAddress`),'mqttUsernameDefault',cast(if((`firefly`.`switches`.`mqttUsername` is null),'true','false') as json),'mqttPassword',`GETMQTTPASSWORD`(`firefly`.`switches`.`macAddress`),'mqttPasswordDefault',cast(if((`firefly`.`switches`.`mqttPassword` is null),'true','false') as json)) AS `json` from ((`firefly`.`switches` join `firefly`.`firmware` on((`firefly`.`switches`.`firmwareId` = `firefly`.`firmware`.`id`))) join `firefly`.`controllers` on((`firefly`.`switches`.`controllerId` = `firefly`.`controllers`.`id`)));
+
+-- -----------------------------------------------------
+-- View `firefly`.`statBreakerUtilization`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `firefly`.`statBreakerUtilization`;
+DROP VIEW IF EXISTS `firefly`.`statBreakerUtilization` ;
+USE `firefly`;
+CREATE  OR REPLACE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `firefly`.`statBreakerUtilization` AS select `firefly`.`breakers`.`id` AS `id`,`firefly`.`breakers`.`name` AS `name`,`firefly`.`breakers`.`displayName` AS `displayName`,`firefly`.`breakers`.`amperage` AS `amperage`,`u`.`amperageUsed` AS `amperageUsed`,round(((`u`.`amperageUsed` / `firefly`.`breakers`.`amperage`) * 100),2) AS `utilization`,json_object('id',`firefly`.`breakers`.`id`,'name',`firefly`.`breakers`.`name`,'displayName',`firefly`.`breakers`.`displayName`,'amperage',`firefly`.`breakers`.`amperage`,'amperageUsed',`u`.`amperageUsed`,'utilization',round(((`u`.`amperageUsed` / `firefly`.`breakers`.`amperage`) * 100),2)) AS `json` from (`firefly`.`breakers` join (select sum(`firefly`.`outputs`.`amperage`) AS `amperageUsed`,`firefly`.`outputs`.`breakerId` AS `breakerId` from `firefly`.`outputs` group by `firefly`.`outputs`.`breakerId`) `u` on((`u`.`breakerId` = `firefly`.`breakers`.`id`))) order by `firefly`.`breakers`.`displayName`;
+
+-- -----------------------------------------------------
+-- View `firefly`.`statButtonColorCount`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `firefly`.`statButtonColorCount`;
+DROP VIEW IF EXISTS `firefly`.`statButtonColorCount` ;
+USE `firefly`;
+CREATE  OR REPLACE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `firefly`.`statButtonColorCount` AS select json_object('count',count(`firefly`.`inputs`.`id`),'color',`firefly`.`buttonColors`.`displayName`,'hexValue',concat('#',`firefly`.`buttonColors`.`hexValue`)) AS `json` from (`firefly`.`inputs` join `firefly`.`buttonColors` on((`firefly`.`inputs`.`colorId` = `firefly`.`buttonColors`.`id`))) group by `firefly`.`buttonColors`.`displayName`,`firefly`.`buttonColors`.`hexValue` order by `firefly`.`buttonColors`.`displayName`;
+
+-- -----------------------------------------------------
+-- View `firefly`.`statControllerCount`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `firefly`.`statControllerCount`;
+DROP VIEW IF EXISTS `firefly`.`statControllerCount` ;
+USE `firefly`;
+CREATE  OR REPLACE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `firefly`.`statControllerCount` AS select json_object('count',count(`d`.`controllerId`),'hwVersion',`firefly`.`controllers`.`hwVersion`) AS `json` from ((select `firefly`.`outputs`.`controllerId` AS `controllerId` from `firefly`.`outputs` union select `firefly`.`switches`.`controllerId` AS `controllerId` from `firefly`.`switches`) `d` join `firefly`.`controllers` on((`d`.`controllerId` = `firefly`.`controllers`.`id`))) group by `firefly`.`controllers`.`hwVersion` order by `firefly`.`controllers`.`hwVersion`;
+
+-- -----------------------------------------------------
+-- View `firefly`.`statControllerPinUtilization`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `firefly`.`statControllerPinUtilization`;
+DROP VIEW IF EXISTS `firefly`.`statControllerPinUtilization` ;
+USE `firefly`;
+CREATE  OR REPLACE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `firefly`.`statControllerPinUtilization` AS select `d`.`controllerId` AS `controllerId`,json_object('controllerId',`d`.`controllerId`,'displayName',`firefly`.`controllers`.`displayName`,'pins',json_arrayagg(json_object('pinType',`d`.`pinType`,'count',`d`.`countOf`,'utilization',`d`.`utilization`))) AS `json` from ((select `getControllerPinsUnused`.`controllerId` AS `controllerId`,count(`getControllerPinsUnused`.`pin`) AS `countOf`,'INPUT' AS `pinType`,'AVAILABLE' AS `utilization` from `firefly`.`getControllerPinsUnused` where (`getControllerPinsUnused`.`inputAllowed` = true) group by `getControllerPinsUnused`.`controllerId` union select `getControllerPinsUnused`.`controllerId` AS `controllerId`,count(`getControllerPinsUnused`.`pin`) AS `countOf`,'BINARY_OUTPUT' AS `pinType`,'AVAILABLE' AS `utilization` from `firefly`.`getControllerPinsUnused` where (`getControllerPinsUnused`.`binaryOutputAllowed` = true) group by `getControllerPinsUnused`.`controllerId` union select `getControllerPinsUnused`.`controllerId` AS `controllerId`,count(`getControllerPinsUnused`.`pin`) AS `countOf`,'VARIABLE_OUTPUT' AS `pinType`,'AVAILABLE' AS `utilization` from `firefly`.`getControllerPinsUnused` where (`getControllerPinsUnused`.`variableOutputAllowed` = true) group by `getControllerPinsUnused`.`controllerId` union select `firefly`.`controllers`.`id` AS `controllerId`,count(`firefly`.`controllerPins`.`pin`) AS `CountOf`,'INPUT' AS `pinType`,'TOTAL' AS `utilization` from (`firefly`.`controllerPins` join `firefly`.`controllers` on((`firefly`.`controllerPins`.`hwVersion` = `firefly`.`controllers`.`hwVersion`))) where (`firefly`.`controllerPins`.`inputAllowed` = true) group by `firefly`.`controllers`.`id` union select `firefly`.`controllers`.`id` AS `controllerId`,count(`firefly`.`controllerPins`.`pin`) AS `CountOf`,'BINARY_OUTPUT' AS `pinType`,'TOTAL' AS `utilization` from (`firefly`.`controllerPins` join `firefly`.`controllers` on((`firefly`.`controllerPins`.`hwVersion` = `firefly`.`controllers`.`hwVersion`))) where (`firefly`.`controllerPins`.`binaryOutputAllowed` = true) group by `firefly`.`controllers`.`id` union select `firefly`.`controllers`.`id` AS `controllerId`,count(`firefly`.`controllerPins`.`pin`) AS `CountOf`,'VARIABLE_OUTPUT' AS `pinType`,'TOTAL' AS `utilization` from (`firefly`.`controllerPins` join `firefly`.`controllers` on((`firefly`.`controllerPins`.`hwVersion` = `firefly`.`controllers`.`hwVersion`))) where (`firefly`.`controllerPins`.`variableOutputAllowed` = true) group by `firefly`.`controllers`.`id` union select `firefly`.`controllers`.`id` AS `controllerId`,count(`getControllerPinsUsed`.`pin`) AS `CountOf`,'INPUT' AS `pinType`,'ASSIGNED' AS `utilization` from ((`firefly`.`controllers` join `firefly`.`getControllerPinsUsed` on((`getControllerPinsUsed`.`controllerId` = `firefly`.`controllers`.`id`))) join `firefly`.`controllerPins` on(((`firefly`.`controllerPins`.`hwVersion` = `firefly`.`controllers`.`hwVersion`) and (`firefly`.`controllerPins`.`pin` = `getControllerPinsUsed`.`pin`)))) where (`firefly`.`controllerPins`.`inputAllowed` = true) group by `firefly`.`controllers`.`id` union select `firefly`.`controllers`.`id` AS `controllerId`,count(`getControllerPinsUsed`.`pin`) AS `CountOf`,'BINARY_OUTPUT' AS `pinType`,'ASSIGNED' AS `utilization` from ((`firefly`.`controllers` join `firefly`.`getControllerPinsUsed` on((`getControllerPinsUsed`.`controllerId` = `firefly`.`controllers`.`id`))) join `firefly`.`controllerPins` on(((`firefly`.`controllerPins`.`hwVersion` = `firefly`.`controllers`.`hwVersion`) and (`firefly`.`controllerPins`.`pin` = `getControllerPinsUsed`.`pin`)))) where (`firefly`.`controllerPins`.`binaryOutputAllowed` = true) group by `firefly`.`controllers`.`id` union select `firefly`.`controllers`.`id` AS `controllerId`,count(`getControllerPinsUsed`.`pin`) AS `CountOf`,'VARIABLE_OUTPUT' AS `pinType`,'ASSIGNED' AS `utilization` from ((`firefly`.`controllers` join `firefly`.`getControllerPinsUsed` on((`getControllerPinsUsed`.`controllerId` = `firefly`.`controllers`.`id`))) join `firefly`.`controllerPins` on(((`firefly`.`controllerPins`.`hwVersion` = `firefly`.`controllers`.`hwVersion`) and (`firefly`.`controllerPins`.`pin` = `getControllerPinsUsed`.`pin`)))) where (`firefly`.`controllerPins`.`variableOutputAllowed` = true) group by `firefly`.`controllers`.`id` union select `firefly`.`controllers`.`id` AS `controllerId`,count(`getControllerPinsUsed`.`id`) AS `countOf`,'VARIABLE_OUTPUT' AS `pinType`,'ASSIGNED' AS `utilization` from ((`firefly`.`controllers` join `firefly`.`controllerPins` on((`firefly`.`controllers`.`hwVersion` = `firefly`.`controllerPins`.`hwVersion`))) left join `firefly`.`getControllerPinsUsed` on(((`getControllerPinsUsed`.`controllerId` = `firefly`.`controllers`.`id`) and (`getControllerPinsUsed`.`pin` = `firefly`.`controllerPins`.`pin`)))) where (`firefly`.`controllerPins`.`variableOutputAllowed` = true) group by `firefly`.`controllers`.`id` having (count(`getControllerPinsUsed`.`id`) = 0) union select `firefly`.`controllers`.`id` AS `controllerId`,count(`getControllerPinsUsed`.`id`) AS `countOf`,'BINARY_OUTPUT' AS `pinType`,'ASSIGNED' AS `utilization` from ((`firefly`.`controllers` join `firefly`.`controllerPins` on((`firefly`.`controllers`.`hwVersion` = `firefly`.`controllerPins`.`hwVersion`))) left join `firefly`.`getControllerPinsUsed` on(((`getControllerPinsUsed`.`controllerId` = `firefly`.`controllers`.`id`) and (`getControllerPinsUsed`.`pin` = `firefly`.`controllerPins`.`pin`)))) where (`firefly`.`controllerPins`.`binaryOutputAllowed` = true) group by `firefly`.`controllers`.`id` having (count(`getControllerPinsUsed`.`id`) = 0) union select `firefly`.`controllers`.`id` AS `controllerId`,count(`getControllerPinsUsed`.`id`) AS `countOf`,'INPUT' AS `pinType`,'ASSIGNED' AS `utilization` from ((`firefly`.`controllers` join `firefly`.`controllerPins` on((`firefly`.`controllers`.`hwVersion` = `firefly`.`controllerPins`.`hwVersion`))) left join `firefly`.`getControllerPinsUsed` on(((`getControllerPinsUsed`.`controllerId` = `firefly`.`controllers`.`id`) and (`getControllerPinsUsed`.`pin` = `firefly`.`controllerPins`.`pin`)))) where (`firefly`.`controllerPins`.`inputAllowed` = true) group by `firefly`.`controllers`.`id` having (count(`getControllerPinsUsed`.`id`) = 0)) `d` join `firefly`.`controllers` on((`d`.`controllerId` = `firefly`.`controllers`.`id`))) group by `d`.`controllerId` order by `firefly`.`controllers`.`displayName`;
+
+-- -----------------------------------------------------
+-- View `firefly`.`statControllerPortUtilization`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `firefly`.`statControllerPortUtilization`;
+DROP VIEW IF EXISTS `firefly`.`statControllerPortUtilization` ;
+USE `firefly`;
+CREATE  OR REPLACE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `firefly`.`statControllerPortUtilization` AS select `d`.`controllerId` AS `controllerId`,json_object('controllerId',`d`.`controllerId`,'displayName',`firefly`.`controllers`.`displayName`,'ports',json_arrayagg(json_object('count',`d`.`portCount`,'type',`d`.`portType`,'status',`d`.`utilization`))) AS `json` from ((select `getControllerPortsUnused`.`controllerId` AS `controllerId`,count(`getControllerPortsUnused`.`port`) AS `portCount`,'INPUT' AS `portType`,'AVAILABLE' AS `utilization` from `firefly`.`getControllerPortsUnused` where (`getControllerPortsUnused`.`inputAllowed` = true) group by `getControllerPortsUnused`.`controllerId` union select `getControllerPortsUnused`.`controllerId` AS `controllerId`,count(`getControllerPortsUnused`.`port`) AS `portCount`,'OUTPUT' AS `portType`,'AVAILABLE' AS `utilization` from `firefly`.`getControllerPortsUnused` where (`getControllerPortsUnused`.`outputAllowed` = true) group by `getControllerPortsUnused`.`controllerId` union select `getControllerPortsUsed`.`controllerId` AS `controllerId`,count(`getControllerPortsUsed`.`port`) AS `portCount`,`getControllerPortsUsed`.`portType` AS `porttype`,'ASSIGNED' AS `utilization` from `firefly`.`getControllerPortsUsed` group by `getControllerPortsUsed`.`controllerId`,`getControllerPortsUsed`.`portType` union select `firefly`.`controllers`.`id` AS `controllerId`,count(`firefly`.`controllerPorts`.`port`) AS `portCount`,'INPUT' AS `portType`,'TOTAL' AS `utilization` from (`firefly`.`controllerPorts` join `firefly`.`controllers` on((`firefly`.`controllerPorts`.`hwVersion` = `firefly`.`controllers`.`hwVersion`))) where (`firefly`.`controllerPorts`.`inputAllowed` = true) group by `firefly`.`controllers`.`id` union select `firefly`.`controllers`.`id` AS `controllerId`,count(`firefly`.`controllerPorts`.`port`) AS `portCount`,'OUTPUT' AS `portType`,'TOTAL' AS `utilization` from (`firefly`.`controllerPorts` join `firefly`.`controllers` on((`firefly`.`controllerPorts`.`hwVersion` = `firefly`.`controllers`.`hwVersion`))) where (`firefly`.`controllerPorts`.`outputAllowed` = true) group by `firefly`.`controllers`.`id` union select `firefly`.`controllers`.`id` AS `id`,count(`getControllerPortsUsed`.`port`) AS `portCount`,'INPUT' AS `portType`,'ASSIGNED' AS `utilization` from (`firefly`.`controllers` left join `firefly`.`getControllerPortsUsed` on((`getControllerPortsUsed`.`controllerId` = `firefly`.`controllers`.`id`))) where (`getControllerPortsUsed`.`portType` is null) group by `firefly`.`controllers`.`id`,`getControllerPortsUsed`.`portType` union select `firefly`.`controllers`.`id` AS `id`,count(`getControllerPortsUsed`.`port`) AS `portCount`,'OUTPUT' AS `portType`,'ASSIGNED' AS `utilization` from (`firefly`.`controllers` left join `firefly`.`getControllerPortsUsed` on((`getControllerPortsUsed`.`controllerId` = `firefly`.`controllers`.`id`))) where (`getControllerPortsUsed`.`portType` is null) group by `firefly`.`controllers`.`id`,`getControllerPortsUsed`.`portType`) `d` join `firefly`.`controllers` on((`d`.`controllerId` = `firefly`.`controllers`.`id`))) group by `d`.`controllerId` order by `firefly`.`controllers`.`displayName`;
+
+-- -----------------------------------------------------
+-- View `firefly`.`statFaceplateCount`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `firefly`.`statFaceplateCount`;
+DROP VIEW IF EXISTS `firefly`.`statFaceplateCount` ;
+USE `firefly`;
+CREATE  OR REPLACE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `firefly`.`statFaceplateCount` AS select json_object('holeCount',`d`.`holeCount`,'count',count(`d`.`switchId`)) AS `json` from (select `firefly`.`inputs`.`switchId` AS `switchId`,count(`firefly`.`inputs`.`port`) AS `holeCount` from `firefly`.`inputs` group by `firefly`.`inputs`.`switchId`) `d` group by `d`.`holeCount` order by `d`.`holeCount`;
+
+-- -----------------------------------------------------
+-- View `firefly`.`statOutputType`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `firefly`.`statOutputType`;
+DROP VIEW IF EXISTS `firefly`.`statOutputType` ;
+USE `firefly`;
+CREATE  OR REPLACE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `firefly`.`statOutputType` AS select json_object('count',`d`.`countOf`,'outputType',`d`.`outputType`) AS `json` from (select count(0) AS `countOf`,'VARIABLE' AS `outputType` from `firefly`.`outputs` where (`firefly`.`outputs`.`outputType` = 'VARIABLE') union select count(0) AS `countOf`,'BINARY' AS `outputType` from `firefly`.`outputs` where (`firefly`.`outputs`.`outputType` = 'BINARY')) `d` order by `d`.`outputType`;
+
+-- -----------------------------------------------------
+-- View `firefly`.`statSwitchCount`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `firefly`.`statSwitchCount`;
+DROP VIEW IF EXISTS `firefly`.`statSwitchCount` ;
+USE `firefly`;
+CREATE  OR REPLACE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `firefly`.`statSwitchCount` AS select count(`d`.`switchId`) AS `switchCount`,json_object('count',count(`d`.`switchId`)) AS `json` from (select distinct `firefly`.`inputs`.`switchId` AS `switchId` from (`firefly`.`switches` join `firefly`.`inputs` on((`firefly`.`inputs`.`switchId` = `firefly`.`switches`.`id`)))) `d`;
 
 SET SQL_MODE=@OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;

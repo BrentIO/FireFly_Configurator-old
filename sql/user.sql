@@ -23,6 +23,14 @@ GRANT SELECT ON firefly.getSettings TO 'firefly'@'localhost';
 GRANT SELECT ON firefly.getSwitchBootstraps TO 'firefly'@'localhost';
 GRANT SELECT ON firefly.getSwitchButtons TO 'firefly'@'localhost';
 GRANT SELECT ON firefly.getSwitches TO 'firefly'@'localhost';
+GRANT SELECT ON firefly.statBreakerUtilization TO 'firefly'@'localhost';
+GRANT SELECT ON firefly.statButtonColorCount TO 'firefly'@'localhost';
+GRANT SELECT ON firefly.statControllerCount TO 'firefly'@'localhost';
+GRANT SELECT ON firefly.statControllerPinUtilization TO 'firefly'@'localhost';
+GRANT SELECT ON firefly.statControllerPortUtilization TO 'firefly'@'localhost';
+GRANT SELECT ON firefly.statFaceplateCount TO 'firefly'@'localhost';
+GRANT SELECT ON firefly.statOutputType TO 'firefly'@'localhost';
+GRANT SELECT ON firefly.statSwitchCount TO 'firefly'@'localhost';
 
 
 
