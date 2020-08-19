@@ -11,6 +11,7 @@
             <div class="child"><a <?php if($pageName == "buttonColor"){?>class="active"<?php };?>href="buttonColor.php">Button Colors</a></div>
             <div class="child"><a <?php if($pageName == "brightnessName"){?>class="active"<?php };?>href="brightnessName.php">Brightness Names</a></div>
             <a <?php if($pageName == "connectivityMap"){?>class="active"<?php };?>href="map.php">Connectivity Map</a>
+            <a <?php if($pageName == "statistics"){?>class="active"<?php };?>href="statistics.php">Statistics</a>
             <a href="logout.php">Logout</a>
         </div>
       

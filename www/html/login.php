@@ -8,7 +8,7 @@
         if(isset($_SESSION['loggedIn']) == true){
 
             if($_SESSION['loggedIn'] == true) {
-                header("Location: breaker.php");
+                header("Location: statistics.php");
                 exit();
             }
         }
@@ -18,7 +18,7 @@
             if($_POST['password'] == getConfig('guiPassword')) {
               
                 $_SESSION['loggedIn'] = true;
-                header("Location: breaker.php");
+                header("Location: statistics.php");
                 exit();
 
             }else{
