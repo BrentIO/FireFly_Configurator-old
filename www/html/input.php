@@ -514,9 +514,9 @@
                                 }
 
                                 trHTML = "<tr class=\"dynamic\">"
-                                            + "<td>" + data[i].displayName + "</td>"
-                                            + "<td><span style=\"width: 15px; height: 15px; margin:auto; display: inline-block; border: 0.5px solid gray; vertical-align: middle; border-radius: 50%; background: " + data[i].hexValue + "\"></span> </td>"
                                             + "<td>" + data[i].switchDisplayName + " (position " + data[i].port + ")</td>"
+                                            + "<td><span style=\"width: 15px; height: 15px; margin:auto; display: inline-block; border: 0.5px solid gray; vertical-align: middle; border-radius: 50%; background: " + data[i].hexValue + "\"></span> </td>"
+                                            + "<td>" + data[i].displayName + "</td>"
                                             + "<td>" + data[i].controllerDisplayName + " (port " + data[i].controllerPort + ", pin " + data[i].pin + ")</td>"
                                             + "<td>" + circuitType + "</td>"
                                             + "<td>" + broadcastOnChange + "</td>"
@@ -551,8 +551,8 @@
         <table id="dataTable">
             <tbody>
             <tr>
-                <th colspan="2">Name</th>
-                <th>Switch</th>
+                <th colspan="2">Switch</th>
+                <th>Name</th>
                 <th>Controller</th>
                 <th>Circuit Type</th>
                 <th>Broadcast on Change</th>
