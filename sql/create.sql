@@ -2342,7 +2342,7 @@ CREATE  OR REPLACE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `firefly`.`stat
 DROP TABLE IF EXISTS `firefly`.`statFaceplateCount`;
 DROP VIEW IF EXISTS `firefly`.`statFaceplateCount` ;
 USE `firefly`;
-CREATE  OR REPLACE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `firefly`.`statFaceplateCount` AS select json_object('holeCount',`d`.`holeCount`,'count',count(`d`.`switchId`)) AS `json` from (select `firefly`.`inputs`.`switchId` AS `switchId`,count(`firefly`.`inputs`.`port`) AS `holeCount` from `firefly`.`inputs` group by `firefly`.`inputs`.`switchId`) `d` group by `d`.`holeCount` order by `d`.`holeCount`;
+CREATE  OR REPLACE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `firefly`.`statFaceplateCount` AS select json_object('positions',`d`.`positions`,'quantity',count(`d`.`switchId`)) AS `json` from (select `firefly`.`inputs`.`switchId` AS `switchId`,count(`firefly`.`inputs`.`port`) AS `positions` from `firefly`.`inputs` group by `firefly`.`inputs`.`switchId`) `d` group by `d`.`positions` order by `d`.`positions`;
 
 -- -----------------------------------------------------
 -- View `firefly`.`statOutputType`
