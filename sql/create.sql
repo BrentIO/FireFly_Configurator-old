@@ -406,7 +406,7 @@ CREATE TABLE IF NOT EXISTS `firefly`.`statOutputType` (`json` INT);
 -- -----------------------------------------------------
 -- Placeholder table for view `firefly`.`statSwitchCount`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `firefly`.`statSwitchCount` (`switchCount` INT, `json` INT);
+CREATE TABLE IF NOT EXISTS `firefly`.`statSwitchCount` (`switchCount` INT, `hwVersion` INT, `json` INT);
 
 -- -----------------------------------------------------
 -- function adjustBrightnessLevels
@@ -2358,7 +2358,7 @@ CREATE  OR REPLACE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `firefly`.`stat
 DROP TABLE IF EXISTS `firefly`.`statSwitchCount`;
 DROP VIEW IF EXISTS `firefly`.`statSwitchCount` ;
 USE `firefly`;
-CREATE  OR REPLACE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `firefly`.`statSwitchCount` AS select count(`d`.`switchId`) AS `switchCount`,json_object('count',count(`d`.`switchId`)) AS `json` from (select distinct `firefly`.`inputs`.`switchId` AS `switchId` from (`firefly`.`switches` join `firefly`.`inputs` on((`firefly`.`inputs`.`switchId` = `firefly`.`switches`.`id`)))) `d`;
+CREATE  OR REPLACE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `firefly`.`statSwitchCount` AS select count(`d`.`switchId`) AS `switchCount`,`d`.`hwVersion` AS `hwVersion`,json_object('count',count(`d`.`switchId`),'hwVersion',`d`.`hwVersion`) AS `json` from (select distinct `firefly`.`inputs`.`switchId` AS `switchId`,`firefly`.`switches`.`hwVersion` AS `hwVersion` from (`firefly`.`switches` join `firefly`.`inputs` on((`firefly`.`inputs`.`switchId` = `firefly`.`switches`.`id`)))) `d` group by `d`.`hwVersion`;
 
 SET SQL_MODE=@OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
