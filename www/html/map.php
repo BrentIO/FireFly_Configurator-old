@@ -67,7 +67,7 @@
 
                         success: function(data) {
 
-                            outputData = data;                   
+                            outputData = data.sort((a, b) => (a.port > b.port) ? 1 : -1);                
                         },
 
                         error: function(data){
@@ -104,8 +104,8 @@
                         url: "<?php print($switchUrl);?>",
 
                         success: function(data) {
-
-                            switchData = data;                   
+  
+                            switchData = data.sort((a, b) => (a.controllerPort > b.controllerPort) ? 1 : -1);             
                         },
 
                         error: function(data){
@@ -124,7 +124,7 @@
 
                         success: function(data) {
 
-                            inputData = data;                   
+                             inputData = data.sort((a, b) => (a.port > b.port) ? 1 : -1);              
                         },
 
                         error: function(data){
