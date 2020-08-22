@@ -133,3 +133,11 @@ body.login {
 input.password {
     text-align: center;
 }
+
+.badge-outputBinary{
+    background-color: #4469C1;
+}
+
+.badge-outputVariable{
+    background-color: #F2BA36;
+}
