@@ -36,17 +36,24 @@
         <script src="bootstrap.min.js"></script>
         <script src="./jquery.toaster.js"></script>
         <script>
+
             function displayLoginFailure(){
                 $.toaster({ settings : {'donotdismiss' : ['danger']  }});
                 $.toaster({ priority :'danger', title :'Login Failed', message : 'Incorrect Password'});
             };
+
+            function setFocus(){
+                var loginForm = document.loginForm;
+                loginForm.elements["password"].focus();
+            }
+
         </script>
         
     </head>
-    <body class="login" <?php if($loginFailed == true){ ?>onload="displayLoginFailure()"<?php };?>>
+    <body class="login" onload="setFocus();<?php if($loginFailed == true){ ?>displayLoginFailure()<?php };?>">
         <div class="loginboxOuter">
             <div class="loginboxInner">
-                <form action="login.php" method = "post">
+                <form action="login.php" method = "post" name="loginForm">
                     <input type="password" name="password" placeholder="Password" class="password"><br>
                     <button type="submit" class="btn btn-primary" id="loginButton">Login</button>
                 </form>
