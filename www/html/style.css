@@ -142,16 +142,17 @@ input.password {
     background-color: #F2BA36;
 }
 
-#electricalMap{
-    overflow-x: scroll;
-}
-
-#electricalMapBreakers{
+#electricalMapView{
     display: flex;
     flex-wrap: nowrap; 
     overflow: auto;
 }
 
+#controlMapView{
+    display: flex;
+    flex-wrap: nowrap; 
+    overflow: auto;
+}
 
 .map-Name {
     font-size: 14pt;
@@ -162,6 +163,10 @@ input.password {
 }
 
 .tree li .outputDetail {
+    font-size: 8pt;
+}
+
+.tree li .inputDetail {
     font-size: 8pt;
 }
 
