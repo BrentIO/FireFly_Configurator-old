@@ -291,10 +291,11 @@
         <div class="content">
             <div id="pageName">
                 <div id="pageTitle">Connectivity Map</div>
-                <div class="map-Name">Electrical Map</div>
+            </div>
+                <div class="sub-header">Electrical Map</div>
                 <div class="tree" id="electricalMap"></div>
                 <br>
-                <div class="map-Name">Control Map</div>
+                <div class="sub-header">Control Map</div>
                 <div class="tree" id="controlMap"></div>
             </div>
         </div>
