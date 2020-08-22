@@ -17,7 +17,7 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>FireFly Configurator - Connectivty Map</title>
+        <title>FireFly Configurator - Connectivity Map</title>
         <link rel="stylesheet" href="bootstrap.min.css">
         <link rel="stylesheet" href="style.css">
         <script src="jquery.min.js"></script>
@@ -290,7 +290,7 @@
         
         <div class="content">
             <div id="pageName">
-                <div id="pageTitle">Connectivty Map</div>
+                <div id="pageTitle">Connectivity Map</div>
                 <div class="map-Name">Electrical Map</div>
                 <div class="tree" id="electricalMap"></div>
                 <br>
