@@ -1,25 +1,60 @@
-#dataTable {
+.spinner {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    height:60px;
+    width:60px;
+    margin:0px auto;
+    -webkit-animation: rotation .6s infinite linear;
+    -moz-animation: rotation .6s infinite linear;
+    -o-animation: rotation .6s infinite linear;
+    animation: rotation .6s infinite linear;
+    border-left:6px solid #ccc;
+    border-right:6px solid #ccc;
+    border-bottom:6px solid #ccc;
+    border-top:6px solid #61A89D;
+    border-radius:100%;
+ }
+
+ @-webkit-keyframes rotation {
+    from {-webkit-transform: rotate(0deg);}
+    to {-webkit-transform: rotate(359deg);}
+ }
+ @-moz-keyframes rotation {
+    from {-moz-transform: rotate(0deg);}
+    to {-moz-transform: rotate(359deg);}
+ }
+ @-o-keyframes rotation {
+    from {-o-transform: rotate(0deg);}
+    to {-o-transform: rotate(359deg);}
+ }
+ @keyframes rotation {
+    from {transform: rotate(0deg);}
+    to {transform: rotate(359deg);}
+ }
+
+.dataTable {
     vertical-align: center;
     margin: 0px;
 }
 
-#dataTable table {
+.dataTable table {
     border: 1px solid black;
 }
 
-#dataTable table, th, td {
+.dataTable table, th, td {
 
     border: 1px dotted #808080;
     text-align: center;
 }
 
-#dataTable th{
+.dataTable th{
     background-color: #313131;
     color: white;
     padding: 10px;
 }
 
-#dataTable tr:hover{
+.dataTable tr:hover{
     background-color: #c2c2c2;
 }
 
@@ -27,12 +62,12 @@ tr:nth-child(odd) {
     background-color: #f2f2f2;
   }
 
-#dataTable td{
+.dataTable td{
     padding: 4px;
     vertical-align: center;
 }
 
-#dataTable button{
+.dataTable button{
     margin: 5px 5px;
 }
 
@@ -99,7 +134,6 @@ body {
 div.content {
     margin-left: 200px;
     padding: 1px 16px;
-    height: 1000px;
 }
 
 div.loginboxOuter {
@@ -158,6 +192,148 @@ input.password {
     font-size: 14pt;
 }
 
+.breakerStatisticBox{
+    margin-left: 20px;
+    display: flex;
+    flex-wrap: nowrap; 
+    overflow: scroll;
+}
+
+.breakerStatistic{
+    border: 1px solid #cccccc;
+    border-radius: 10px;
+    width: 125px;
+    min-width: 125px;
+    min-height: 125px;
+    padding: 3px;
+    margin: 6px;
+    overflow: auto;
+}
+
+.breakerStatistic .breakerStatisticContent{
+    text-align: center;
+    font-size: 9pt;
+    position: relative;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.breakerStatistic .breakerName{
+    font-size: 14pt;
+}
+
+.breakerStatisticContent .progress{
+    height: 10px;
+    width: 100%;
+    line-height: 10px;
+}
+
+.breakerStatisticContent .progress-bar{
+    font-size: 8pt;
+    line-height: 10px;
+}
+
+.breakerStatisticContent .progress .ok{
+    background-color: #32a852;
+}
+
+.breakerStatisticContent .progress .warning{
+    background-color: #d18a2c;
+}
+
+.breakerStatisticContent .progress .danger{
+    background-color: #fa4a3e;
+}
+
+.breakerStatisticContent .progress .progressRemaining{
+    color:#808080;
+    font-size: 8pt;
+    line-height: 10px;
+}
+
+.controllerStatisticBox{
+    margin-left: 20px;
+    display: flex;
+    flex-wrap: nowrap; 
+    overflow: scroll;
+}
+
+.controllerStatistic{
+    border: 1px solid #cccccc;
+    border-radius: 10px;
+    width: 125px;
+    min-width: 125px;
+    padding: 3px;
+    margin: 6px;
+    overflow: auto;
+}
+
+.controllerStatisticContent{
+    text-align: center;
+    font-size: 9pt;
+    position: relative;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.controllerStatistic .controllerName{
+    font-size: 14pt;
+}
+
+.controllerStatisticContent .portPinBox{
+    border: 1px solid #e3e3e3;
+    background-color: #f5f5f5;
+    padding: 5px;
+    border-radius: 5px;
+}
+
+.controllerStatisticContent .portPinHeader{
+    font-weight: bold;
+    text-align: left;
+    font-size: 10pt;
+}
+
+.controllerStatisticContent .progress{
+    height: 10px;
+    width: 100%;
+    line-height: 10px;
+}
+
+.controllerStatisticContent .progress-bar{
+    font-size: 8pt;
+    line-height: 10px;
+}
+
+.controllerStatisticContent .progress .ok{
+    background-color: #32a852;
+}
+
+.controllerStatisticContent .progress .warning{
+    background-color: #d18a2c;
+}
+
+.controllerStatisticContent .progress .danger{
+    background-color: #fa4a3e;
+}
+
+.controllerStatisticContent .progress .progressRemaining{
+    color:#808080;
+    font-size: 8pt;
+    line-height: 10px;
+}
+
+
+
+.tree .breakerDetail .highUtilization {
+    color: #fa4a3e;
+}
+
+.tree .outputDetail .outputDisabled {
+    color: #fa4a3e;
+}
+
 .tree li .breakerDetail {
     font-size: 8pt;
 }
@@ -174,13 +350,7 @@ input.password {
     font-size: 8pt;
 }
 
-.breakerDetail .highUtilization {
-    color: #fa4a3e;
-}
 
-.outputDetail .outputDisabled {
-    color: #fa4a3e;
-}
 
 .tree ul {
     padding-top: 20px;
