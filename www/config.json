@@ -1,5 +1,5 @@
 {
-    "debugMode" : true,
+    "debugMode" : false,
     "sqlServer": "localhost",
     "database": "firefly",
     "sqlUsername": "firefly",
