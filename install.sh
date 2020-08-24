@@ -78,7 +78,14 @@ fi
 
 # Copy FireFly Configurator Files
 echo -e "\n${BLUE}Gitting FireFly Configurator Files${NC}"
-#git clone https://github.com/BrentIO/FireFly_Configurator ~/firefly
+git clone https://github.com/BrentIO/FireFly_Configurator ~/firefly
+
+status=$?
+
+if [ $status != 0 ]; then
+  echo -e "\n${RED}Cloning from GitHub failed.${NC}\n"
+  exit 1
+fi
 
 # Move the contents of html out to Apache
 echo -e "\n${BLUE}Moving files to www${NC}"
