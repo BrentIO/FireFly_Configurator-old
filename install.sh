@@ -110,12 +110,12 @@ if [ $status != 0 ]; then
   exit 1
 fi
 
-a2enmod rewrite
+a2enmod rewrite headers
 
 status=$?
 
 if [ $status != 0 ]; then
-  echo -e "\n${RED}Unable to enable Apache rewrite${NC}\n"
+  echo -e "\n${RED}Unable to enable Apache rewrite and headers${NC}\n"
   exit 1
 fi
 
