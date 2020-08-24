@@ -119,4 +119,4 @@ You can now log into MySQL with username `remote`.
 
 
 ## Test the installation
-To test the installation, point your browser to `http://{serverIP}/api/heartbeat.php`.  You should see the current date and timeUTC with `{"status":"ok"}`
+To test the installation, point your browser to `http://{serverIP}/api/heartbeat`.  You should see the current date and timeUTC with `{"status":"ok"}`
