@@ -567,7 +567,7 @@
                                                 + "<button class=\"btn btn-danger\" data-toggle=\"modal\" data-target=\"#modalDeleteItem\" data-backdrop=\"static\" id=\"deleteButton\" data-actiontype=\"" + data[i].actionType + "\" data-outputdisplayname=\"" + data[i].outputDisplayName + "\" data-inputdisplayname=\"" + data[i].inputDisplayName + "\" data-uniqueid=\"" + data[i].id + "\">Delete</button>"
                                             + "</td>"
                                         +"</tr>"
-                                $('#dataTable').append(trHTML);
+                                $('#dynamicData').append(trHTML);
                             });
                         },
 
@@ -590,7 +590,7 @@
             <div id="pageTitle">Actions</div><button data-toggle="modal" data-target="#modalEditItem" data-backdrop="static" data-operation="add" class="btn btn-success">Add New</button>
         </div>
 
-        <table id="dataTable">
+        <table class="dataTable" id="dynamicData">
             <tbody>
             <tr>
                 <th colspan="2">Switch</th>

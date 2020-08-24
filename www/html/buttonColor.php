@@ -298,14 +298,14 @@
                         success: function(data) {
                             $.each(data, function(i){
                                 trHTML = "<tr class=\"dynamic\">"
-                                            + "<td style=\"text-align:left;\"><span style=\"width: 30px; height: 30px; margin:auto; display: inline-block; border: 1px solid gray; vertical-align: middle; border-radius: 2px; background: " + data[i].hexValue + "\"></span> " + data[i].displayName + "</td>"
+                                            + "<td style=\"text-align:left;\"><span style=\"width: 30px; height: 30px; margin:auto; display: inline-block; border: 1px solid gray; vertical-align: middle; border-radius: 5px; background: " + data[i].hexValue + "\"></span> " + data[i].displayName + "</td>"
                                             + "<td>" + data[i].brightnessMinimum + "</td>"
                                             + "<td>" + data[i].brightnessMaximum + "</td>"
                                             + "<td><button class=\"btn btn-default\" data-toggle=\"modal\" data-target=\"#modalEditItem\" data-backdrop=\"static\" data-operation=\"edit\" data-uniqueid=\"" + data[i].id + "\">Edit</button>"
                                                 + "<button class=\"btn btn-danger\" data-toggle=\"modal\" data-target=\"#modalDeleteItem\" data-backdrop=\"static\" data-displayname=\"" + data[i].displayName + "\" data-name=\"" + data[i].name + "\"  data-hexvalue=\"" + data[i].hexValue + "\" id=\"deleteButton\" data-uniqueid=\"" + data[i].id + "\">Delete</button>"
                                             + "</td>"
                                         +"</tr>"
-                                $('#dataTable').append(trHTML);
+                                $('#dynamicData').append(trHTML);
                             });
                         },
 
@@ -328,7 +328,7 @@
             <div id="pageTitle">Button Colors</div><button data-toggle="modal" data-target="#modalEditItem" data-backdrop="static" data-operation="add" class="btn btn-success">Add New</button>
         </div>
 
-        <table id="dataTable">
+        <table class="dataTable" id="dynamicData">
             <tbody>
             <tr>
                 <th>Name</th>

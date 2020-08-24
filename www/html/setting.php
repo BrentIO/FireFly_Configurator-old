@@ -186,7 +186,7 @@
                                              + "<td><button class=\"btn btn-default\" data-toggle=\"modal\" data-target=\"#modalEditItem\" data-backdrop=\"static\" data-operation=\"edit\" data-displayname=\"" + data[i].displayName + "\" data-uniqueid=\"" + data[i].id + "\">Edit</button>"
                                             + "</td>"
                                         +"</tr>"
-                                $('#dataTable').append(trHTML);
+                                $('#dynamicData').append(trHTML);
                             });
                         },
 
@@ -209,7 +209,7 @@
             <div id="pageTitle">Settings</div>
         </div>
 
-        <table id="dataTable">
+        <table class="dataTable" id="dynamicData">
             <tbody>
             <tr>
                 <th>Setting</th>
