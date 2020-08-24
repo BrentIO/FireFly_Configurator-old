@@ -75,7 +75,7 @@
 
             case strtolower("switchCount"):
 
-                print(getStat("SELECT json FROM statSwitchCount;"));
+                print(listStat("SELECT json FROM statSwitchCount;"));
 
             break;        
 
@@ -120,20 +120,6 @@
             //Return the list from SQL
             return($response);
 
-        }
-
-    }
-
-    function getStat($sql){
-
-        global $database;
-        global $simpleRest;
-
-        $response = $database->query($sql);
-
-        if(is_array(json_decode($response)) == False){
-                   
-            return($response);
         }
 
     }
