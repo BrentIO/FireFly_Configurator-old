@@ -78,7 +78,7 @@ fi
 
 # Copy FireFly Configurator Files
 echo -e "\n${BLUE}Gitting FireFly Configurator Files${NC}"
-git clone https://github.com/BrentIO/FireFly_Configurator ~/firefly
+git clone https://github.com/BrentIO/FireFly_Configurator /tmp/firefly
 
 status=$?
 
