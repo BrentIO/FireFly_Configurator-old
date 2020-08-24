@@ -265,10 +265,6 @@
 
                         });
 
-                        if(controllerChildCount > 0){
-                            //innerLiHTML = innerLiHTML + "</ul>";
-                        }
-
                         liHTML = liHTML + innerLiHTML;
                         liHTML = liHTML + "</li>";
 
@@ -277,6 +273,8 @@
                     });
 
                     document.getElementById("controlMapView").innerHTML = document.getElementById("controlMapView").innerHTML + "</ul>"; 
+
+                    document.getElementById("spinner").style.visibility = "hidden";
 
                 });
 
@@ -289,6 +287,7 @@
 <?php include "menu.php"?>
         
         <div class="content">
+        <div class="spinner" id="spinner"></div>
             <div id="pageName">
                 <div id="pageTitle">Connectivity Map</div>
             </div>
