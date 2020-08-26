@@ -94,7 +94,7 @@
                             //Get the data 
                             if(data[i].controllerId == controllerId){
 
-                                optionHTML = "<option value=\"" + data[i].id + "\" data-outputtype=\"" + data[i].outputType + "\">" + data[i].displayName + "</option>";
+                                optionHTML = "<option value=\"" + data[i].id + "\" data-outputtype=\"" + data[i].outputType + "\">(" + data[i].name + ") " + data[i].displayName + "</option>";
                                 $('#outputId').append(optionHTML);
 
                             }

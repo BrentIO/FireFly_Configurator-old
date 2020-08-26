@@ -111,7 +111,7 @@
 
                                     //Add the list of switches to the drop-down
                                     $.each(data, function(i){
-                                        optionHTML = "<option value=\"" + data[i].id + "\">" + data[i].displayName + "</option>";
+                                        optionHTML = "<option value=\"" + data[i].id + "\">(" + data[i].name + ") "  + data[i].displayName + "</option>";
                                     
                                         $('#switchId').append(optionHTML);
                                     });
@@ -200,7 +200,7 @@
 
                                     //Add the list of switches to the drop-down
                                     $.each(data, function(i){
-                                        optionHTML = "<option value=\"" + data[i].id + "\">" + data[i].displayName + "</option>";
+                                        optionHTML = "<option value=\"" + data[i].id + "\">(" + data[i].name + ") " + data[i].displayName + "</option>";
                                     
                                         $('#switchId').append(optionHTML);
                                     });

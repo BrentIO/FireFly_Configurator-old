@@ -358,6 +358,7 @@
                         success: function(data) {
                             $.each(data, function(i){
                                 trHTML = "<tr class=\"dynamic\">"
+                                            + "<td>" + data[i].name + "</td>"
                                             + "<td>" + data[i].displayName + "</td>"
                                             + "<td>" + data[i].macAddress + "</td>"
                                             + "<td>" + data[i].ipAddress + "</td>"
@@ -391,7 +392,8 @@
         <table class="dataTable" id="dynamicData">
             <tbody>
             <tr>
-                <th>Name</th>
+                <th>Short Name</th>
+                <th>Display Name</th>
                 <th>MAC Address</th>
                 <th>IP Address</th>
                 <th>Operations</th>
@@ -413,7 +415,7 @@
                     <div class="modal-body" name="form">
                         <form name="editItem">
                             <input type="hidden" id="uniqueId">
-                            <label for="name">Name:</label>
+                            <label for="name">Short Name:</label>
                             <input type="text" id="name"><br><br>
                             <label for="displayName">Display Name:</label>
                             <input type="text" id="displayName"><br><br>

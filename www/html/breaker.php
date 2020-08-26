@@ -326,7 +326,7 @@
         <table class="dataTable" id="dynamicData">
             <tbody>
             <tr>
-                <th>Name</th>
+                <th>Short Name</th>
                 <th>Display Name</th>
                 <th>Amperage</th>
                 <th>Operations</th>
@@ -348,7 +348,7 @@
                     <div class="modal-body" name="form">
                         <form name="editItem">
                             <input type="hidden" id="uniqueId">
-                            <label for="name">Name:</label>
+                            <label for="name">Short Name:</label>
                             <input type="text" id="name"><br><br>
                             <label for="displayName">Display Name:</label>
                             <input type="text" id="displayName"><br><br>
