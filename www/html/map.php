@@ -147,7 +147,7 @@
                             utilizationPercentText = "<br>Utilization: " + breakerData[i].amperageUsed + " Amps (" + breakerData[i].utilization + "%)";
                         }
 
-                        liHTML = "<li><a href=\"#\">" + breakerData[i].displayName + "<div class=\"breakerDetail\">Capacity: " + breakerData[i].amperage + " Amps" + utilizationPercentText + "</div></a>"
+                        liHTML = "<li><a href=\"#\">(" + breakerData[i].name + ") " + breakerData[i].displayName + "<div class=\"breakerDetail\">Capacity: " + breakerData[i].amperage + " Amps" + utilizationPercentText + "</div></a>"
 
                         circuitCount = 0;
                         innerLiHTML = "";
@@ -180,7 +180,7 @@
                                     statusText = "";
                                 }
 
-                                innerLiHTML = innerLiHTML + "<li><a href=\"#\">" + outputData[j].displayName + "<div class=\"outputDetail\">Amperage: " + outputData[j].amperage + " Amps<br>Type: " + outputType + " " + statusText + "</div></a>";
+                                innerLiHTML = innerLiHTML + "<li><a href=\"#\">(" + outputData[j].name + ") " + outputData[j].displayName + "<div class=\"outputDetail\">Amperage: " + outputData[j].amperage + " Amps<br>Type: " + outputType + " " + statusText + "</div></a>";
                                 innerLiHTML = innerLiHTML + "<ul><li><a href=\"#\">" + outputData[j].controllerDisplayName + "<div class=\"controllerDetail\">Port: " + outputData[j].port + "<br>Pin: " + outputData[j].pin + "</div></a></li></ul></li>";
                                 circuitCount = circuitCount + 1;
 
@@ -219,7 +219,7 @@
                                     innerLiHTML = innerLiHTML + "<ul>";
                                 }
 
-                                innerLiHTML = innerLiHTML + "<li><a href=\"#\">" + switchData[j].displayName + "<div class=\"inputDetail\">Controller Port: " + switchData[j].controllerPort + "</div></a>";
+                                innerLiHTML = innerLiHTML + "<li><a href=\"#\">(" + switchData[j].name + ") " + switchData[j].displayName + "<div class=\"inputDetail\">Controller Port: " + switchData[j].controllerPort + "</div></a>";
 
                                 inputCount = 0;
 
