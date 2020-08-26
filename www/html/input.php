@@ -109,6 +109,11 @@
 
                                 success: function(data) {
 
+                                    //Add the default selection
+                                    optionHTML="<option selected disabled>Select...</option>";
+
+                                    $('#switchId').append(optionHTML);
+
                                     //Add the list of switches to the drop-down
                                     $.each(data, function(i){
                                         optionHTML = "<option value=\"" + data[i].id + "\">(" + data[i].name + ") "  + data[i].displayName + "</option>";
