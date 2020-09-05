@@ -96,7 +96,7 @@
                             //Get the data 
                             if(data[i].controllerId == controllerId){
 
-                                optionHTML = "<option value=\"" + data[i].id + "\" data-outputtype=\"" + data[i].outputType + "\">(" + data[i].name + ") " + data[i].displayName + "</option>";
+                                optionHTML = "<option value=\"" + data[i].id + "\" data-outputtype=\"" + data[i].outputType + "\">" + data[i].name + " : " + data[i].displayName + "</option>";
                                 $('#outputId').append(optionHTML);
 
                             }
@@ -209,7 +209,7 @@
 
                                     //Add the list of inputs to the drop-down
                                     $.each(data, function(i){
-                                        optionHTML = "<option value=\"" + data[i].id + "\" data-controllerid=\"" + data[i].controllerId + "\" data-hexvalue=\"" + data[i].hexValue + "\">" + data[i].switchDisplayName + " (position " + data[i].port + ") : " + data[i].displayName + "</option>";
+                                        optionHTML = "<option value=\"" + data[i].id + "\" data-controllerid=\"" + data[i].controllerId + "\" data-hexvalue=\"" + data[i].hexValue + "\">" + data[i].displayName + " : " + data[i].switchDisplayName + " (position " + data[i].port + ")</option>";
                                     
                                         $('#inputId').append(optionHTML);
                                     });
@@ -272,7 +272,7 @@
 
                                     //Add the list of inputs to the drop-down
                                     $.each(data, function(i){
-                                        optionHTML = "<option value=\"" + data[i].id + "\" data-controllerid=\"" + data[i].controllerId + "\" data-hexvalue=\"" + data[i].hexValue + "\">" + data[i].switchDisplayName + " (position " + data[i].port + ") : " + data[i].displayName + "</option>";
+                                        optionHTML = "<option value=\"" + data[i].id + "\" data-controllerid=\"" + data[i].controllerId + "\" data-hexvalue=\"" + data[i].hexValue + "\">" + data[i].displayName + " : " + data[i].switchDisplayName + " (position " + data[i].port + ")</option>";
                                     
                                         $('#inputId').append(optionHTML);
                                     });
