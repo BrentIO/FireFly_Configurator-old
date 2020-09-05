@@ -2238,7 +2238,7 @@ CREATE  OR REPLACE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `firefly`.`getC
 DROP TABLE IF EXISTS `firefly`.`getControllerOutputs`;
 DROP VIEW IF EXISTS `firefly`.`getControllerOutputs` ;
 USE `firefly`;
-CREATE  OR REPLACE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `firefly`.`getControllerOutputs` AS select `getOutputs`.`controllerId` AS `controllerId`,json_arrayagg(json_object('name',`getOutputs`.`name`,'outputType',`getOutputs`.`outputType`,'pin',`getOutputs`.`pin`,'enabled',`getOutputs`.`enabled`)) AS `json` from `firefly`.`getOutputs` group by `getOutputs`.`controllerId`;
+CREATE  OR REPLACE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `firefly`.`getControllerOutputs` AS select `getOutputs`.`controllerId` AS `controllerId`,json_arrayagg(json_object('name',`getOutputs`.`name`,'outputType',`getOutputs`.`outputType`,'pin',`getOutputs`.`pin`,'enabled',if((`getOutputs`.`enabled` = '1'),cast(true as json),cast(false as json)))) AS `json` from `firefly`.`getOutputs` group by `getOutputs`.`controllerId`;
 
 -- -----------------------------------------------------
 -- View `firefly`.`getInputs`
