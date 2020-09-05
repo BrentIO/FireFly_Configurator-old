@@ -74,6 +74,8 @@
 
                             success: function(data) {
 
+                                data = data.sort((a, b) => (a.name > b.name) ? 1 : -1);  
+
                                 //Populate the field elements with the data returned by the API
                                 editItemForm.elements["name"].value = data['name']; 
                                 editItemForm.elements["uniqueId"].value = data['id']; 

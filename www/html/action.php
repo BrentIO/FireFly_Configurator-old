@@ -83,6 +83,8 @@
 
                     success: function(data) {
 
+                        data = data.sort((a, b) => (a.name > b.name) ? 1 : -1);  
+
                         //Add the default selection
                         optionHTML="<option selected disabled>Select...</option>";
 
@@ -198,6 +200,8 @@
 
                                 success: function(data) {
 
+                                    data = data.sort((a, b) => (a.displayName > b.displayName) ? 1 : -1);     
+
                                     //Add the default selection
                                     optionHTML="<option selected disabled>Select...</option>";
 
@@ -242,7 +246,8 @@
 
                                 success: function(data) {
 
-                                    actionData = data;              
+                                    actionData = data.sort((a, b) => (a.inputDisplayName > b.inputDisplayName) ? 1 : -1);  
+           
                                 },
 
                                 error: function(data){
@@ -257,6 +262,8 @@
                                 url: "<?php print($inputUrl);?>",
 
                                 success: function(data) {
+
+                                    data = data.sort((a, b) => (a.displayName > b.displayName) ? 1 : -1);  
 
                                     //Add the default selection
                                     optionHTML="<option selected disabled>Select...</option>";
