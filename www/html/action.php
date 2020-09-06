@@ -568,7 +568,7 @@
                                             + "<td>" + data[i].switchDisplayName + " (position " + data[i].port + ")</td>"
                                             + "<td><span style=\"width: 15px; height: 15px; margin:auto; display: inline-block; border: 0.5px solid gray; vertical-align: middle; border-radius: 50%; background: " + data[i].hexValue + "\"></span> </td>"
                                             + "<td>" + data[i].inputDisplayName + "</td>"
-                                            + "<td>" + data[i].outputDisplayName + "</td>"
+                                            + "<td>" + data[i].outputName + " : " + data[i].outputDisplayName + "</td>"
                                             + "<td>" + actionType + "</td>"
                                             + "<td><button class=\"btn btn-default\" data-toggle=\"modal\" data-target=\"#modalEditItem\" data-backdrop=\"static\" data-operation=\"edit\" data-uniqueid=\"" + data[i].id + "\">Edit</button>"
                                                 + "<button class=\"btn btn-danger\" data-toggle=\"modal\" data-target=\"#modalDeleteItem\" data-backdrop=\"static\" id=\"deleteButton\" data-actiontype=\"" + data[i].actionType + "\" data-outputdisplayname=\"" + data[i].outputDisplayName + "\" data-inputdisplayname=\"" + data[i].inputDisplayName + "\" data-uniqueid=\"" + data[i].id + "\">Delete</button>"
