@@ -109,6 +109,8 @@
 
                                 success: function(data) {
 
+                                    data = data.sort((a, b) => (a.name > b.name) ? 1 : -1);
+
                                     //Add the default selection
                                     optionHTML="<option selected disabled>Select...</option>";
 
@@ -204,6 +206,8 @@
                                 url: "<?php print($switchURL);?>",
 
                                 success: function(data) {
+
+                                    data = data.sort((a, b) => (a.name > b.name) ? 1 : -1);
 
                                     //Add the list of switches to the drop-down
                                     $.each(data, function(i){
@@ -492,6 +496,9 @@
                         url: "<?php print($url);?>",
 
                         success: function(data) {
+
+                            data = data.sort((a, b) => (a.displayName > b.displayName) ? 1 : -1);
+
                             $.each(data, function(i){
 
                                 switch(data[i].circuitType){

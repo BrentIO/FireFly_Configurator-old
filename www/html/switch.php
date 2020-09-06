@@ -530,6 +530,9 @@
                         url: "<?php print($url);?>",
 
                         success: function(data) {
+
+                            data = data.sort((a, b) => (a.name > b.name) ? 1 : -1);
+
                             $.each(data, function(i){
                                 trHTML = "<tr class=\"dynamic\">"
                                             + "<td>" + data[i].name + "</td>"
