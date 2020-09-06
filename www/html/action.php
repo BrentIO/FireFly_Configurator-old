@@ -631,7 +631,7 @@
                             <input type="radio" id="increase" name="action" value="INCREASE" style="visibility: hidden;">
                             <label for="increase" style="visibility: hidden;" id="increaseLabel">Increase</label><br>
                             <input type="radio" id="decrease" name="action" value="DECREASE" style="visibility: hidden;">
-                            <label style="visibility: hidden;" id="decreaseLabel">Decrease</label><br>
+                            <label for="decrease" style="visibility: hidden;" id="decreaseLabel">Decrease</label><br>
                             <input type="radio" id="toggle" name="action" value="TOGGLE" style="visibility: hidden;">
                             <label for="toggle" style="visibility: hidden;" id="toggleLabel">Toggle</label>                  
                         </form>
