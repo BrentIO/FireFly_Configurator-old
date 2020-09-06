@@ -31,6 +31,8 @@ GRANT SELECT ON firefly.statControllerPortUtilization TO 'firefly'@'localhost';
 GRANT SELECT ON firefly.statFaceplateCount TO 'firefly'@'localhost';
 GRANT SELECT ON firefly.statOutputType TO 'firefly'@'localhost';
 GRANT SELECT ON firefly.statSwitchCount TO 'firefly'@'localhost';
+GRANT SELECT ON getBootstrapInputs TO 'firefly'@'localhost';
+GRANT SELECT ON getBootstrapOutputs TO 'firefly'@'localhost';
 
 
 

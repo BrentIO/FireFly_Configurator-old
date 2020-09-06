@@ -409,6 +409,17 @@ CREATE TABLE IF NOT EXISTS `firefly`.`statOutputType` (`json` INT);
 CREATE TABLE IF NOT EXISTS `firefly`.`statSwitchCount` (`switchCount` INT, `hwVersion` INT, `json` INT);
 
 -- -----------------------------------------------------
+-- Placeholder table for view `firefly`.`getBootstrapInputs`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `firefly`.`getBootstrapInputs` (`id` INT);
+
+-- -----------------------------------------------------
+-- Placeholder table for view `firefly`.`getBootstrapOutputs`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `firefly`.`getBootstrapOutputs` (`id` INT);
+
+
+-- -----------------------------------------------------
 -- function adjustBrightnessLevels
 -- -----------------------------------------------------
 
@@ -2174,7 +2185,7 @@ CREATE  OR REPLACE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `firefly`.`getC
 DROP TABLE IF EXISTS `firefly`.`getControllerBootstraps`;
 DROP VIEW IF EXISTS `firefly`.`getControllerBootstraps` ;
 USE `firefly`;
-CREATE  OR REPLACE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `firefly`.`getControllerBootstraps` AS select `firefly`.`controllers`.`id` AS `id`,`FORMATMACADDRESS`(`firefly`.`controllers`.`macAddress`) AS `macAddress`,hex(`firefly`.`controllers`.`macAddress`) AS `deviceName`,`firefly`.`controllers`.`name` AS `name`,`firefly`.`controllers`.`displayName` AS `displayName`,inet_ntoa(`firefly`.`controllers`.`ipAddress`) AS `ipAddress`,inet_ntoa(`firefly`.`controllers`.`subnet`) AS `subnet`,inet_ntoa(`firefly`.`controllers`.`dns`) AS `dns`,inet_ntoa(`firefly`.`controllers`.`gateway`) AS `gateway`,json_object('name',`firefly`.`controllers`.`name`,'network',json_object('macAddress',`FORMATMACADDRESS`(`firefly`.`controllers`.`macAddress`),'ipAddress',inet_ntoa(`firefly`.`controllers`.`ipAddress`),'subnet',inet_ntoa(`firefly`.`controllers`.`subnet`),'dns',inet_ntoa(`firefly`.`controllers`.`dns`),'gateway',inet_ntoa(`firefly`.`controllers`.`gateway`)),'mqtt',json_object('serverName',`GETSETTING`('mqttServer'),'port',cast(`GETSETTING`('mqttPort') as unsigned),'username',`GETMQTTUSERNAME`(`firefly`.`controllers`.`macAddress`),'password',`GETMQTTPASSWORD`(`firefly`.`controllers`.`macAddress`),'topics',json_object('client',`GETSETTING`('clientTopic'),'control',`GETSETTING`('controlTopic'),'event',`GETSETTING`('eventTopic'))),'outputs',ifnull(`getControllerOutputs`.`json`,json_array()),'inputs',ifnull(`getControllerInputs`.`json`,json_array())) AS `json` from ((`firefly`.`controllers` left join `firefly`.`getControllerOutputs` on((`firefly`.`controllers`.`id` = `getControllerOutputs`.`controllerId`))) left join `firefly`.`getControllerInputs` on((`firefly`.`controllers`.`id` = `getControllerInputs`.`controllerId`)));
+CREATE  OR REPLACE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `firefly`.`getControllerBootstraps` AS select `firefly`.`controllers`.`id` AS `id`,`FORMATMACADDRESS`(`firefly`.`controllers`.`macAddress`) AS `macAddress`,hex(`firefly`.`controllers`.`macAddress`) AS `deviceName`,`firefly`.`controllers`.`name` AS `name`,`firefly`.`controllers`.`displayName` AS `displayName`,inet_ntoa(`firefly`.`controllers`.`ipAddress`) AS `ipAddress`,inet_ntoa(`firefly`.`controllers`.`subnet`) AS `subnet`,inet_ntoa(`firefly`.`controllers`.`dns`) AS `dns`,inet_ntoa(`firefly`.`controllers`.`gateway`) AS `gateway`,json_object('name',`firefly`.`controllers`.`name`,'network',json_object('macAddress',`FORMATMACADDRESS`(`firefly`.`controllers`.`macAddress`),'ipAddress',inet_ntoa(`firefly`.`controllers`.`ipAddress`),'subnet',inet_ntoa(`firefly`.`controllers`.`subnet`),'dns',inet_ntoa(`firefly`.`controllers`.`dns`),'gateway',inet_ntoa(`firefly`.`controllers`.`gateway`)),'mqtt',json_object('serverName',`GETSETTING`('mqttServer'),'port',cast(`GETSETTING`('mqttPort') as unsigned),'username',`GETMQTTUSERNAME`(`firefly`.`controllers`.`macAddress`),'password',`GETMQTTPASSWORD`(`firefly`.`controllers`.`macAddress`),'topics',json_object('client',`GETSETTING`('clientTopic'),'control',`GETSETTING`('controlTopic'),'event',`GETSETTING`('eventTopic'))),'outputIds',json_extract(`getControllerOutputs`.`json`,'$[*].id'),'inputIds',json_extract(`getControllerInputs`.`json`,'$[*].id')) AS `json` from ((`firefly`.`controllers` left join `firefly`.`getControllerOutputs` on((`firefly`.`controllers`.`id` = `getControllerOutputs`.`controllerid`))) left join `firefly`.`getControllerInputs` on((`firefly`.`controllers`.`id` = `getControllerInputs`.`controllerId`)));
 
 -- -----------------------------------------------------
 -- View `firefly`.`getControllerPinsUnused`
@@ -2230,7 +2241,7 @@ CREATE  OR REPLACE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `firefly`.`getF
 DROP TABLE IF EXISTS `firefly`.`getControllerInputs`;
 DROP VIEW IF EXISTS `firefly`.`getControllerInputs` ;
 USE `firefly`;
-CREATE  OR REPLACE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `firefly`.`getControllerInputs` AS select `firefly`.`switches`.`controllerId` AS `controllerId`,json_arrayagg(json_object('name',concat(`firefly`.`switches`.`name`,'B',`firefly`.`inputs`.`port`),'pin',`firefly`.`inputs`.`pin`,'circuitType',`firefly`.`inputs`.`circuitType`,'broadcastOnStateChange',((0 <> `firefly`.`inputs`.`broadcastOnChange`) is true),'enabled',((0 <> `firefly`.`inputs`.`enabled`) is true),'actions',`getInputActions`.`json`)) AS `json` from ((`firefly`.`inputs` join `firefly`.`switches` on((`firefly`.`inputs`.`switchId` = `firefly`.`switches`.`id`))) join `firefly`.`getInputActions` on((`getInputActions`.`inputId` = `firefly`.`inputs`.`id`))) group by `firefly`.`switches`.`controllerId`;
+CREATE  OR REPLACE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `firefly`.`getControllerInputs` AS select `firefly`.`switches`.`controllerId` AS `controllerId`,json_arrayagg(json_object('id',`firefly`.`inputs`.`id`,'name',concat(`firefly`.`switches`.`name`,'B',`firefly`.`inputs`.`port`),'pin',`firefly`.`inputs`.`pin`,'circuitType',`firefly`.`inputs`.`circuitType`,'broadcastOnStateChange',((0 <> `firefly`.`inputs`.`broadcastOnChange`) is true),'enabled',((0 <> `firefly`.`inputs`.`enabled`) is true),'actions',`getInputActions`.`json`)) AS `json` from ((`firefly`.`inputs` join `firefly`.`switches` on((`firefly`.`inputs`.`switchId` = `firefly`.`switches`.`id`))) join `firefly`.`getInputActions` on((`getInputActions`.`inputId` = `firefly`.`inputs`.`id`))) group by `firefly`.`switches`.`controllerId`;
 
 -- -----------------------------------------------------
 -- View `firefly`.`getControllerOutputs`
@@ -2238,7 +2249,7 @@ CREATE  OR REPLACE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `firefly`.`getC
 DROP TABLE IF EXISTS `firefly`.`getControllerOutputs`;
 DROP VIEW IF EXISTS `firefly`.`getControllerOutputs` ;
 USE `firefly`;
-CREATE  OR REPLACE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `firefly`.`getControllerOutputs` AS select `getOutputs`.`controllerId` AS `controllerId`,json_arrayagg(json_object('name',`getOutputs`.`name`,'outputType',`getOutputs`.`outputType`,'pin',`getOutputs`.`pin`,'enabled',if((`getOutputs`.`enabled` = '1'),cast(true as json),cast(false as json)))) AS `json` from `firefly`.`getOutputs` group by `getOutputs`.`controllerId`;
+CREATE  OR REPLACE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `firefly`.`getControllerOutputs` AS select `getOutputs`.`controllerId` AS `controllerid`,json_arrayagg(json_object('id',`getOutputs`.`id`,'name',`getOutputs`.`name`,'outputType',`getOutputs`.`outputType`,'pin',`getOutputs`.`pin`,'enabled',if((`getOutputs`.`enabled` = '1'),cast(true as json),cast(false as json)))) AS `json` from `firefly`.`getOutputs` group by `getOutputs`.`controllerId`;
 
 -- -----------------------------------------------------
 -- View `firefly`.`getInputs`
@@ -2359,6 +2370,22 @@ DROP TABLE IF EXISTS `firefly`.`statSwitchCount`;
 DROP VIEW IF EXISTS `firefly`.`statSwitchCount` ;
 USE `firefly`;
 CREATE  OR REPLACE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `firefly`.`statSwitchCount` AS select count(`d`.`switchId`) AS `switchCount`,`d`.`hwVersion` AS `hwVersion`,json_object('count',count(`d`.`switchId`),'hwVersion',`d`.`hwVersion`) AS `json` from (select distinct `firefly`.`inputs`.`switchId` AS `switchId`,`firefly`.`switches`.`hwVersion` AS `hwVersion` from (`firefly`.`switches` join `firefly`.`inputs` on((`firefly`.`inputs`.`switchId` = `firefly`.`switches`.`id`)))) `d` group by `d`.`hwVersion`;
+
+-- -----------------------------------------------------
+-- View `firefly`.`getBootstrapInputs`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `firefly`.`getBootstrapInputs`;
+DROP VIEW IF EXISTS `firefly`.`getBootstrapInputs` ;
+USE `firefly`;
+CREATE  OR REPLACE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `firefly`.`getBootstrapInputs` AS select `getInputs`.`id` AS `id`,json_object('name',`getInputs`.`displayName`,'pin',`getInputs`.`pin`,'broadcastOnChange',cast(`getInputs`.`broadcastOnChange` as json),'circuitType',`getInputs`.`circuitType`,'enabled',cast(`getInputs`.`enabled` as json),'actions',ifnull(`getInputActions`.`json`,json_array())) AS `json` from (`firefly`.`getInputs` left join `firefly`.`getInputActions` on((`getInputs`.`id` = `getInputActions`.`inputId`)));
+
+-- -----------------------------------------------------
+-- View `firefly`.`getBootstrapOutputs`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `firefly`.`getBootstrapOutputs`;
+DROP VIEW IF EXISTS `firefly`.`getBootstrapOutputs` ;
+USE `firefly`;
+CREATE  OR REPLACE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `firefly`.`getBootstrapOutputs` AS select `firefly`.`outputs`.`id` AS `id`,json_object('name',`firefly`.`outputs`.`name`,'outputType',`firefly`.`outputs`.`outputType`,'enabled',if((`firefly`.`outputs`.`enabled` = 1),cast(true as json),cast(false as json)),'pin',`firefly`.`outputs`.`pin`) AS `json` from `firefly`.`outputs`;
 
 SET SQL_MODE=@OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
