@@ -952,6 +952,81 @@ paths:
           description: "Internal Server Error"
 
 
+  /controller/{deviceName}/bootstrap/inputs/{id}:
+    get:
+      tags:
+      - "Controllers"
+      produces:
+      - "application/json"
+      description: "Retrieves an input for bootstrap with a given ID" 
+      operationId: getControllerBootstrapInputs
+      parameters:
+      - name: "deviceName"
+        in: "path"
+        description: "The device name (MAC Address) of the controller to retrieve"
+        required: true
+        type: "string"
+      - name: "id"
+        in: "path"
+        description: "The ID of the input to retrieve"
+        required: true
+        type: "integer"
+      security: 
+        - ApiKeyAuth: [] 
+      responses:
+        200:
+          description: "Success"
+          schema:
+              $ref: "#/definitions/ControllerBootstrapInput"
+        400:
+          description: "Bad Request"
+          schema:
+            $ref: "#/definitions/Error"
+        401:
+          description: "Unauthorized"
+        404:
+          description: "Not Found"
+        500:
+          description: "Internal Server Error"
+
+  /controller/{deviceName}/bootstrap/outputs/{id}:
+    get:
+      tags:
+      - "Controllers"
+      produces:
+      - "application/json"
+      description: "Retrieves an ouputs for bootstrap with a given ID" 
+      operationId: getControllerBootstrapOutputs
+      parameters:
+      - name: "deviceName"
+        in: "path"
+        description: "The device name (MAC Address) of the controller to retrieve"
+        required: true
+        type: "string"
+      - name: "id"
+        in: "path"
+        description: "The ID of the output to retrieve"
+        required: true
+        type: "integer"
+      security: 
+        - ApiKeyAuth: [] 
+      responses:
+        200:
+          description: "Success"
+          schema:
+              $ref: "#/definitions/ControllerBootstrapOutput"
+        400:
+          description: "Bad Request"
+          schema:
+            $ref: "#/definitions/Error"
+        401:
+          description: "Unauthorized"
+        404:
+          description: "Not Found"
+        500:
+          description: "Internal Server Error"
+
+
   /controller/{id}/pins/available:
     get:
       tags:
@@ -2113,11 +2188,12 @@ definitions:
       inputs:
         type: array
         items:
-          $ref: "#/definitions/ControllerBootstrapInput"
+          type: integer
       outputs:
         type: array
         items:
-          $ref: "#/definitions/ControllerBootstrapOutput"
+          type: integer
+
 
 
   PinAvailable:
@@ -2379,6 +2455,22 @@ definitions:
       name:
         type: string
         description: "Internal input name"
+      action:
+        type: array
+        description: "Actions associated with this input"
+        items:
+          type: object
+          properties:
+            name:
+              type: string
+              description: "Name of the output"
+            action:
+              type: string
+              description: "The action that will be taken on the output when the input is triggered"
+              enum:
+                - INCREASE
+                - DECREASE
+                - TOGGLE
       enabled:
         type: boolean
       circuitType:
@@ -2562,3 +2654,5 @@ definitions:
           - INCREASE
           - DECREASE
           - TOGGLE
+
+
