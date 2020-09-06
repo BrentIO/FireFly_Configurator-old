@@ -17,22 +17,12 @@
         //Always assume success
         $simpleRest->setHttpHeaders(200);
 
-        //Get the body contents
-        $data = json_decode(file_get_contents('php://input'), true);
-
-        //If there is JSON in the body, make sure it is valid
-        if (json_last_error() !== JSON_ERROR_NONE && strlen(file_get_contents('php://input'))>0) {
-
-            throw new Exception("Invalid body", 400);
-        }
-
         //Populate the object with a preferene for the URL rather than the payload
         if(isset($_GET_lower['devicename'])){
 
             $controllerBootstrap->deviceName = $_GET_lower['devicename'];
             $controllerBootstrap->deviceName = strtoupper($controllerBootstrap->deviceName);
-        }     
-        
+        }
         
         switch(strtolower($_SERVER['REQUEST_METHOD'])){
 
@@ -81,9 +71,10 @@
 
             global $database;
             global $simpleRest;
-
+            
             if($this->deviceName != NULL){
                 $response = $database->query("SELECT json FROM getControllerBootstraps WHERE deviceName = '" . $this->deviceName . "';");
+                
             }
 
             if(is_array(json_decode($response)) == False){
