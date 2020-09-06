@@ -188,9 +188,7 @@
 
                                 success: function(data) {
 
-                                    data = data.sort((a, b) => (a.name > b.name) ? 1 : -1);
-
-                                    inputData = data;
+                                    inputData = data
                                 },
 
                                 error: function(data){
