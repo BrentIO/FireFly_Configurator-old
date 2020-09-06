@@ -5,14 +5,6 @@ SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION';
 
 -- -----------------------------------------------------
--- Schema mydb
--- -----------------------------------------------------
--- -----------------------------------------------------
--- Schema firefly
--- -----------------------------------------------------
-DROP SCHEMA IF EXISTS `firefly` ;
-
--- -----------------------------------------------------
 -- Schema firefly
 -- -----------------------------------------------------
 CREATE SCHEMA IF NOT EXISTS `firefly` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci ;
@@ -21,7 +13,6 @@ USE `firefly` ;
 -- -----------------------------------------------------
 -- Table `firefly`.`buttonColors`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `firefly`.`buttonColors` ;
 
 CREATE TABLE IF NOT EXISTS `firefly`.`buttonColors` (
   `id` INT NOT NULL AUTO_INCREMENT,
@@ -41,7 +32,6 @@ COLLATE = utf8mb4_0900_ai_ci;
 -- -----------------------------------------------------
 -- Table `firefly`.`switches`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `firefly`.`switches` ;
 
 CREATE TABLE IF NOT EXISTS `firefly`.`switches` (
   `id` INT NOT NULL AUTO_INCREMENT,
@@ -66,7 +56,6 @@ COLLATE = utf8mb4_0900_ai_ci;
 -- -----------------------------------------------------
 -- Table `firefly`.`inputs`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `firefly`.`inputs` ;
 
 CREATE TABLE IF NOT EXISTS `firefly`.`inputs` (
   `id` INT NOT NULL AUTO_INCREMENT,
@@ -88,7 +77,6 @@ COLLATE = utf8mb4_0900_ai_ci;
 -- -----------------------------------------------------
 -- Table `firefly`.`controllers`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `firefly`.`controllers` ;
 
 CREATE TABLE IF NOT EXISTS `firefly`.`controllers` (
   `id` INT NOT NULL AUTO_INCREMENT,
@@ -113,7 +101,6 @@ COLLATE = utf8mb4_0900_ai_ci;
 -- -----------------------------------------------------
 -- Table `firefly`.`outputs`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `firefly`.`outputs` ;
 
 CREATE TABLE IF NOT EXISTS `firefly`.`outputs` (
   `id` INT NOT NULL AUTO_INCREMENT,
@@ -137,7 +124,6 @@ COLLATE = utf8mb4_0900_ai_ci;
 -- -----------------------------------------------------
 -- Table `firefly`.`actions`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `firefly`.`actions` ;
 
 CREATE TABLE IF NOT EXISTS `firefly`.`actions` (
   `id` INT NOT NULL AUTO_INCREMENT,
@@ -155,7 +141,6 @@ COLLATE = utf8mb4_0900_ai_ci;
 -- -----------------------------------------------------
 -- Table `firefly`.`breakers`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `firefly`.`breakers` ;
 
 CREATE TABLE IF NOT EXISTS `firefly`.`breakers` (
   `id` INT NOT NULL AUTO_INCREMENT,
@@ -172,7 +157,6 @@ COLLATE = utf8mb4_0900_ai_ci;
 -- -----------------------------------------------------
 -- Table `firefly`.`brightnessNames`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `firefly`.`brightnessNames` ;
 
 CREATE TABLE IF NOT EXISTS `firefly`.`brightnessNames` (
   `id` INT NOT NULL AUTO_INCREMENT,
@@ -190,7 +174,6 @@ COLLATE = utf8mb4_0900_ai_ci;
 -- -----------------------------------------------------
 -- Table `firefly`.`controllerPins`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `firefly`.`controllerPins` ;
 
 CREATE TABLE IF NOT EXISTS `firefly`.`controllerPins` (
   `id` INT NOT NULL AUTO_INCREMENT,
@@ -210,7 +193,6 @@ COLLATE = utf8mb4_0900_ai_ci;
 -- -----------------------------------------------------
 -- Table `firefly`.`controllerPorts`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `firefly`.`controllerPorts` ;
 
 CREATE TABLE IF NOT EXISTS `firefly`.`controllerPorts` (
   `id` INT NOT NULL AUTO_INCREMENT,
@@ -229,7 +211,6 @@ COLLATE = utf8mb4_0900_ai_ci;
 -- -----------------------------------------------------
 -- Table `firefly`.`firmware`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `firefly`.`firmware` ;
 
 CREATE TABLE IF NOT EXISTS `firefly`.`firmware` (
   `id` INT NOT NULL AUTO_INCREMENT,
@@ -247,7 +228,6 @@ COLLATE = utf8mb4_0900_ai_ci;
 -- -----------------------------------------------------
 -- Table `firefly`.`settings`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `firefly`.`settings` ;
 
 CREATE TABLE IF NOT EXISTS `firefly`.`settings` (
   `id` INT NOT NULL AUTO_INCREMENT,
