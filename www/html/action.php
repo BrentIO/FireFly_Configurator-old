@@ -246,7 +246,7 @@
 
                                 success: function(data) {
 
-                                    actionData = data.sort((a, b) => (a.inputDisplayName > b.inputDisplayName) ? 1 : -1);  
+                                    actionData = data;  
            
                                 },
 
