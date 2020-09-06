@@ -12,6 +12,7 @@
     $controllerUrl = "http://" . $_SERVER['SERVER_ADDR'] . "/api/controller";
     $switchUrl = "http://" . $_SERVER['SERVER_ADDR'] . "/api/switch";
     $inputUrl = "http://" . $_SERVER['SERVER_ADDR'] . "/api/input";
+    $actionUrl = "http://" . $_SERVER['SERVER_ADDR'] . "/api/action";
 
 ?>
 <!DOCTYPE html>
@@ -34,6 +35,7 @@
                 controllerData = null;
                 inputData = null;
                 switchData = null;
+                inputActions = null;
 
                 $.when(
 
@@ -130,6 +132,25 @@
                         error: function(data){
                             $.toaster({ priority :'danger', title :'Failed to Retrieve Inputs', message : data['responseJSON']['error']});
                         }
+                    }),
+
+                    $.ajax({
+
+                        beforeSend: function(request) {
+                            request.setRequestHeader("x-api-key", "<?php print(getConfig("x-api-key")); ?>");
+                        },
+
+                        type: 'GET',
+                        url: "<?php print($actionUrl);?>",
+
+                        success: function(data) {
+
+                            actionData = data;              
+                        },
+
+                        error: function(data){
+                            $.toaster({ priority :'danger', title :'Failed to Retrieve Actions', message : data['responseJSON']['error']});
+                        }
                     })
 
 
@@ -163,15 +184,22 @@
                                 }
 
                                 switch(outputData[j].outputType){
+
                                     case "BINARY":
-                                        outputType = "Binary";
+                                        className = "badge badge-outputBinary";
+                                        label = "Binary";
                                     break;
+
                                     case "VARIABLE":
-                                        outputType = "Variable";
+                                        className = "badge badge-outputVariable";
+                                        label = "Variable";
                                     break;
+                                        
                                     default:
-                                        outputType = "Unknown";
+                                        className = "badge";
+                                        label = "Unknown";
                                     break;
+
                                 }
 
                                 if(outputData[j].enabled != true){
@@ -180,7 +208,7 @@
                                     statusText = "";
                                 }
 
-                                innerLiHTML = innerLiHTML + "<li><a href=\"#\">(" + outputData[j].name + ") " + outputData[j].displayName + "<div class=\"outputDetail\">Amperage: " + outputData[j].amperage + " Amps<br>Type: " + outputType + " " + statusText + "</div></a>";
+                                innerLiHTML = innerLiHTML + "<li><a href=\"#\">(" + outputData[j].name + ") " + outputData[j].displayName + "<div class=\"outputDetail\"><span class=\""+className+"\">" + label + "</span><br>Amperage: " + outputData[j].amperage + " Amps<br>" + statusText + "</div></a>";
                                 innerLiHTML = innerLiHTML + "<ul><li><a href=\"#\">" + outputData[j].controllerDisplayName + "<div class=\"controllerDetail\">Port: " + outputData[j].port + "<br>Pin: " + outputData[j].pin + "</div></a></li></ul></li>";
                                 circuitCount = circuitCount + 1;
 
@@ -209,6 +237,8 @@
                         controllerChildCount = 0;
                         innerLiHTML = "";
 
+                        //innerLiHTML = innerLiHTML + "<li><a href=\"#\">Inputs</a><ul>";
+
                         //Get the list of switches attached to this controller
                         $.each(switchData, function(j){
 
@@ -223,21 +253,62 @@
 
                                 inputCount = 0;
 
-                                //Get the list of switches for this switch
+                                
+
+                                //Get the list of inputs for this switch
                                 $.each(inputData, function(k){
 
-
                                     if(inputData[k].switchId == switchData[j].id){
-
+                                        
                                         if(inputCount == 0){
                                             innerLiHTML = innerLiHTML + "<ul>";
                                         }
 
-                                        innerLiHTML = innerLiHTML + "<li><a href=\"#\">" + inputData[k].displayName + " <span style=\"width: 15px; height: 15px; margin:auto; display: inline-block; border: 0.5px solid gray; vertical-align: middle; border-radius: 50%; background: " + inputData[k].hexValue + ";\"></span><div class=\"inputDetail\">Position: " + inputData[k].port + "<br>Controller Pin: " + inputData[k].pin + "</div></a></li>";
+                                        innerLiHTML = innerLiHTML + "<li><a href=\"#\">Position " + inputData[k].port  + " <span style=\"width: 15px; height: 15px; margin:auto; display: inline-block; border: 0.5px solid gray; vertical-align: middle; border-radius: 50%; background: " + inputData[k].hexValue + ";\"></span><div class=\"inputDetail\">Controller Pin: " + inputData[k].pin + "</div></a>";
+
+                                        actionCount = 0;
+
+                                        //Get the list of actions for this input
+                                        $.each(actionData, function(m){
+
+                                            if(actionData[m].inputId == inputData[k].id){
+
+                                                if(actionCount == 0){
+                                                    innerLiHTML = innerLiHTML + "<ul>";
+                                                }
+
+                                                switch(actionData[m].actionType){
+                                                    case "INCREASE":
+                                                        actionType = "Increase";
+                                                        break;
+
+                                                    case "DECREASE":
+                                                        actionType = "Decrease";
+                                                        break;
+
+                                                    case "TOGGLE":
+                                                        actionType = "Toggle";
+                                                        break;
+
+                                                    default:
+                                                        actionType = "Unknown";
+                                                        break;
+                                                }
+
+                                                innerLiHTML = innerLiHTML + "<li><a href=\"#\">(" + actionData[m].outputName + ") " + actionData[m].outputDisplayName + " <div class=\"actionDetail\">Action: " + actionType + "</div></a></li>";
+
+                                                actionCount = actionCount + 1;
+                                            }
+
+                                        });
+
+                                        if(actionCount > 0){
+                                            innerLiHTML = innerLiHTML + "</ul>";
+                                        }
 
                                         innerLiHTML = innerLiHTML + "</li>"
 
-                                        inputCount = inputCount+1;
+                                        inputCount = inputCount + 1;
 
                                     }
 
@@ -247,23 +318,90 @@
                                     innerLiHTML = innerLiHTML + "</ul>";
                                 }
 
+                    
                                 controllerChildCount = controllerChildCount + 1;
                                 innerLiHTML = innerLiHTML + "</li>"
 
                             }
 
+                            
                         });
+
+                        //innerLiHTML = innerLiHTML + "</ul></li>";
+                        innerLiHTML = innerLiHTML + "<li><a href=\"#\">Outputs</a><ul>";
 
                         //Get the list of outputs attached to this controller
                         $.each(outputData, function(j){
 
                             if(outputData[j].controllerId == controllerData[i].id){
 
-                                innerLiHTML = innerLiHTML + "<li><a href=\"#\">" + outputData[j].displayName + "<div class=\"outputDetail\">Controller Port: " + outputData[j].port + "<br>Type: " + outputType + "</div></a></li>";
+                                switch(outputData[j].outputType){
+
+                                    case "BINARY":
+                                        className = "badge badge-outputBinary";
+                                        label = "Binary";
+                                    break;
+
+                                    case "VARIABLE":
+                                        className = "badge badge-outputVariable";
+                                        label = "Variable";
+                                    break;
+                                        
+                                    default:
+                                        className = "badge";
+                                        label = "Unknown";
+                                    break;
+
+                                }
+
+                                innerLiHTML = innerLiHTML + "<li><a href=\"#\">(" + outputData[j].name + ") " + outputData[j].displayName + "<div class=\"outputDetail\"><span class=\""+className+"\">" + label + "</span><br>Controller Port: " + outputData[j].port + "</div></a>";
+
+                                actionCount = 0;
+
+                                //Get the list of actions for this input
+                                $.each(actionData, function(m){
+
+                                    if(actionData[m].outputId == outputData[j].id){
+
+                                        if(actionCount == 0){
+                                            innerLiHTML = innerLiHTML + "<ul>";
+                                        }
+
+                                        switch(actionData[m].actionType){
+                                            case "INCREASE":
+                                                actionType = "Increase";
+                                                break;
+
+                                            case "DECREASE":
+                                                actionType = "Decrease";
+                                                break;
+
+                                            case "TOGGLE":
+                                                actionType = "Toggle";
+                                                break;
+
+                                            default:
+                                                actionType = "Unknown";
+                                                break;
+                                        }
+
+                                        innerLiHTML = innerLiHTML + "<li><a href=\"#\">" + actionData[m].switchDisplayName + " (" + actionData[m].port  + ")<div class=\"actionDetail\">Input: " + actionData[m].inputDisplayName + " <span style=\"width: 10px; height: 10px; margin:auto; display: inline-block; border: 0.5px solid gray; vertical-align: middle; border-radius: 50%; background: " + actionData[m].hexValue + ";\"></span><br>Action: " + actionType + "</div></a></li>";
+
+                                        actionCount = actionCount + 1;
+                                    }
+
+                                });
+
+                                if(actionCount > 0){
+                                    innerLiHTML = innerLiHTML + "</ul>";
+                                }
                                 controllerChildCount = controllerChildCount + 1;
+                                innerLiHTML = innerLiHTML + "</li>"
                             }
 
                         });
+
+                        innerLiHTML = innerLiHTML + "</ul></li>";
 
                         liHTML = liHTML + innerLiHTML;
                         liHTML = liHTML + "</li>";
@@ -273,7 +411,6 @@
                     });
 
                     document.getElementById("controlMapView").innerHTML = document.getElementById("controlMapView").innerHTML + "</ul>"; 
-
                     document.getElementById("spinner").style.visibility = "hidden";
 
                 });

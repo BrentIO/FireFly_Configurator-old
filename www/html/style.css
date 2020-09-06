@@ -346,6 +346,10 @@ input.password {
     font-size: 8pt;
 }
 
+.tree li .actionDetail {
+    font-size: 8pt;
+}
+
 .tree li .controllerDetail {
     font-size: 8pt;
 }
