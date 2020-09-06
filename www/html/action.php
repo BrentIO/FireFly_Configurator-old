@@ -543,6 +543,9 @@
                         url: "<?php print($url);?>",
 
                         success: function(data) {
+
+                            data = data.sort((a, b) => (a.inputDisplayName > b.inputDisplayName) ? 1 : -1);
+
                             $.each(data, function(i){
 
                                 switch(data[i].actionType){
