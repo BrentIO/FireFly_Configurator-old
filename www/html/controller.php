@@ -8,6 +8,7 @@
 
     $pageName = "controller";
     $url = "http://" . $_SERVER['SERVER_ADDR'] . "/api/controller";
+    $bootstrapURL = "http://" . $_SERVER['SERVER_ADDR'] . "/api/controller/{deviceName}/bootstrap";
 
 ?>
 <!DOCTYPE html>
@@ -233,6 +234,88 @@
 
                 });
 
+                function closeModalAfterBootstrap(){
+                    //Hide the modal
+                    $("#modalBootstrap").modal("hide");
+                }
+
+                $('#modalBootstrap').on('show.bs.modal', function (event) {
+                    /*************************************************
+                    **  Handle the delete item modal being requested**
+                    *************************************************/
+
+                    //Retrieve the data associated to the button press event
+                    var button = $(event.relatedTarget);
+                    var displayName = button.data('displayname');
+
+                    //Clear existing input
+                    destroyBootstrapData();
+
+                    var bootstrapForm = document.bootstrapForm;
+
+                    //Set the hidden input value to the ID
+                    bootstrapForm.elements["deviceName"].value = button.data('devicename');
+                    bootstrapForm.elements["deviceName"].value = bootstrapForm.elements["deviceName"].value.replaceAll(":","");
+
+                    //Set the prompt text on the modal
+                    document.getElementById("controllerDisplayName").innerHTML = "Bootstrap " + displayName;            
+
+                });
+
+                function postBootstrapToController(ipAddress, password, payload){
+
+                    $.ajax({
+
+                        beforeSend: function(request) {
+                            request.setRequestHeader("x-api-key", password);
+                        },
+                        
+                        type: 'POST',
+                        url: "http://" + ipAddress + "/bootstrap",
+                        data: JSON.stringify(payload),
+
+                        success: function(data) {
+
+                            closeModalAfterBootstrap();                        
+                            $.toaster({ priority :'success', title :'Bootstrap Sent', message : 'Successful'});
+
+                        },
+
+                        error: function(data){
+                                                        
+                            $.toaster({ priority :'danger', title :'Bootstrap Error', message : "Unable to bootstrap."});
+                        },
+                    });
+
+                }
+
+
+                $(document).on('click', '#buttonBootstrap', function(event){
+
+                    var bootstrapForm = document.bootstrapForm;
+                    var bootstrapURL = "<?php print($bootstrapURL); ?>"
+                    bootstrapURL = bootstrapURL.replace("{deviceName}", bootstrapForm.elements["deviceName"].value);
+                    bootstrapData = "";
+
+                    //Get the bootstrap from the server
+                    $.ajax({
+
+                        type: 'GET',
+                        url: bootstrapURL,
+
+                        success: function(bootstrapPayload) {
+
+                            postBootstrapToController(bootstrapForm.elements["ipAddress"].value, bootstrapForm.elements["password"].value, bootstrapPayload);
+
+                        },
+
+                        error: function(data){
+                            $.toaster({ priority :'danger', title :'Retrieval Error', message : data['responseJSON']['error']});
+                        },
+                    });
+
+                });
+
 
                 function destroyEditData(){
                     /*************************************************
@@ -265,6 +348,23 @@
                         
                         //Clear the data
                         deleteItemForm[i].value = null;
+                    }
+
+                };
+
+                function destroyBootstrapData(){
+                    /*************************************************
+                    **  Destroys the data on the bootstrap form     **
+                    *************************************************/
+
+                    //Get the form inputs
+                    var bootstrapForm = document.bootstrapForm;
+
+                    //For each input
+                    for(var i = 0; i < bootstrapForm.length; i++){
+                        
+                        //Clear the data
+                        bootstrapForm[i].value = null;
                     }
 
                 };
@@ -362,7 +462,8 @@
                                             + "<td>" + data[i].displayName + "</td>"
                                             + "<td>" + data[i].macAddress + "</td>"
                                             + "<td>" + data[i].ipAddress + "</td>"
-                                            + "<td><button class=\"btn btn-default\" data-toggle=\"modal\" data-target=\"#modalEditItem\" data-backdrop=\"static\" data-operation=\"edit\" data-uniqueid=\"" + data[i].id + "\">Edit</button>"
+                                            + "<td><button class=\"btn btn-primary\" data-toggle=\"modal\" data-target=\"#modalBootstrap\" data-backdrop=\"static\" id=\"bootstrapButton\" data-displayname=\"" + data[i].displayName + "\" data-devicename=\"" + data[i].macAddress + "\">Bootstrap</button>"
+                                                +"<button class=\"btn btn-default\" data-toggle=\"modal\" data-target=\"#modalEditItem\" data-backdrop=\"static\" data-operation=\"edit\" data-uniqueid=\"" + data[i].id + "\">Edit</button>"
                                                 + "<button class=\"btn btn-danger\" data-toggle=\"modal\" data-target=\"#modalDeleteItem\" data-backdrop=\"static\" data-displayname=\"" + data[i].displayName + "\"  id=\"deleteButton\" data-uniqueid=\"" + data[i].id + "\">Delete</button>"
                                             + "</td>"
                                         +"</tr>"
@@ -469,6 +570,34 @@
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
                         <button type="submit" class="btn btn-danger" id="buttonDelete">Delete</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bootstrap Modal -->
+        <div class="modal fade" id="modalBootstrap" role="dialog">
+            <div class="modal-dialog">
+
+                <!-- Modal content-->
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h4 class="modal-title" id="controllerDisplayName"></h4>
+                    </div>
+
+                    <div class="modal-body">
+                    <form name="bootstrapForm">
+                        <input type="hidden" id="deviceName">
+                        <label for="ipAddress">Current IP Address:</label>
+                        <input type="text" id="ipAddress" minlength="7" maxlength="15" size="15"><br><br>
+                        <label for="password">Password:</label>
+                        <input type="text" id="password">
+                    </form>                    
+                    <div id="bootstrapPrompt"></div></div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary" id="buttonBootstrap">Bootstrap</button>
                     </div>
                 </div>
             </div>
