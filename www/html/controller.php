@@ -17,9 +17,10 @@
         <title>FireFly Configurator - Controllers</title>
         <link rel="stylesheet" href="bootstrap.min.css">
         <link rel="stylesheet" href="style.css">
-        <script src="jquery.min.js"></script>
-        <script src="bootstrap.min.js"></script>
-        <script src="jquery.toaster.js"></script>
+        <script src="jquery.min.js" type="text/javascript"></script>
+        <script src="bootstrap.min.js" type="text/javascript"></script>
+        <script src="jquery.toaster.js" type="text/javascript"></script>
+        <script src="mqtt.min.js" type="text/javascript"></script>
         <script>
 
             function setMQTTUsernameHidden(value){
@@ -47,6 +48,60 @@
                 }else{
                     document.getElementById('mqttPasswordLabel').style.visibility = 'visible';
                 }
+            }
+
+            function bootstrapDevice(macAddress){
+
+                deviceName = macAddress.replaceAll(":","");
+
+                //Get the bootstrap data
+                var bootstrapURL = "<?php print($bootstrapURL); ?>"
+                bootstrapURL = bootstrapURL.replace("{deviceName}", deviceName);
+                provisionData = "";
+
+                //Get the bootstrap from the server
+                $.ajax({
+
+                    type: 'GET',
+                    url: bootstrapURL,
+
+                    success: function(data) {
+
+                        var options = {
+                            username: data.mqtt.username.replaceAll("$DEVICENAME$", deviceName),
+                            password: data.mqtt.password.replaceAll("$DEVICENAME$", deviceName),
+                            port: 9001,
+                            clientId: 'webclient_' + Math.random().toString(16).substr(2, 8),
+                            clean: true,
+                        }
+
+                        //Connect to MQTT with the device's credentials
+                        var mqttClient = mqtt.connect("ws://" + data.mqtt.serverName + "", options);
+
+                        mqttClient.on('error', function (err) {
+                            $.toaster({ priority :'danger', title :'MQTT Connection', message : err});
+                            mqttClient.end();
+                        });
+
+                        mqttClient.publish(data.mqtt.topics.client.replaceAll("$DEVICENAME$", deviceName) + "/bootstrap", bootstrapURL, function(){
+
+                            //Close connection to MQTT
+                            mqttClient.end();
+
+                            //Display success message to user
+                            $.toaster({ priority :'success', title :'Bootstrap Request Sent', message : 'Successful'}); 
+
+                        });
+
+    
+
+                    },
+
+                    error: function(data){
+                        $.toaster({ priority :'danger', title :'Retrieval Error', message : data['responseJSON']['error']});
+                    },
+
+                });
             }
 
             $(document).ready(function(){
