@@ -234,14 +234,14 @@
 
                 });
 
-                function closeModalAfterBootstrap(){
+                function closeModalAfterProvisioning(){
                     //Hide the modal
-                    $("#modalBootstrap").modal("hide");
+                    $("#modalProvisioning").modal("hide");
                 }
 
-                $('#modalBootstrap').on('show.bs.modal', function (event) {
+                $('#modalProvisioning').on('show.bs.modal', function (event) {
                     /*************************************************
-                    **  Handle the delete item modal being requested**
+                    **  Handle the Provisioning modal being requested**
                     *************************************************/
 
                     //Retrieve the data associated to the button press event
@@ -249,20 +249,20 @@
                     var displayName = button.data('displayname');
 
                     //Clear existing input
-                    destroyBootstrapData();
+                    destroyProvisioningData();
 
-                    var bootstrapForm = document.bootstrapForm;
+                    var provisionForm = document.provisionForm;
 
                     //Set the hidden input value to the ID
-                    bootstrapForm.elements["deviceName"].value = button.data('devicename');
-                    bootstrapForm.elements["deviceName"].value = bootstrapForm.elements["deviceName"].value.replaceAll(":","");
+                    provisionForm.elements["deviceName"].value = button.data('devicename');
+                    provisionForm.elements["deviceName"].value = provisionForm.elements["deviceName"].value.replaceAll(":","");
 
                     //Set the prompt text on the modal
-                    document.getElementById("controllerDisplayName").innerHTML = "Bootstrap " + displayName;            
+                    document.getElementById("controllerDisplayName").innerHTML = "Provision " + displayName;            
 
                 });
 
-                function postBootstrapToController(ipAddress, password, payload){
+                function postProvisioningToController(ipAddress, password, payload){
 
                     $.ajax({
 
@@ -271,31 +271,33 @@
                         },
                         
                         type: 'POST',
-                        url: "http://" + ipAddress + "/bootstrap",
+                        url: "http://" + ipAddress + "/provision",
                         data: JSON.stringify(payload),
 
                         success: function(data) {
 
-                            closeModalAfterBootstrap();                        
-                            $.toaster({ priority :'success', title :'Bootstrap Sent', message : 'Successful'});
+                            closeModalAfterProvisioning();                        
+                            $.toaster({ priority :'success', title :'Provisioning Sent', message : 'Successful'});
 
                         },
 
                         error: function(data){
+
+                            console.log(data);
                                                         
-                            $.toaster({ priority :'danger', title :'Bootstrap Error', message : "Unable to bootstrap."});
+                            $.toaster({ priority :'danger', title :'Provisioning Error', message : "Unable to provision."});
                         },
                     });
 
                 }
 
 
-                $(document).on('click', '#buttonBootstrap', function(event){
+                $(document).on('click', '#buttonProvision', function(event){
 
-                    var bootstrapForm = document.bootstrapForm;
+                    var provisionForm = document.provisionForm;
                     var bootstrapURL = "<?php print($bootstrapURL); ?>"
-                    bootstrapURL = bootstrapURL.replace("{deviceName}", bootstrapForm.elements["deviceName"].value);
-                    bootstrapData = "";
+                    bootstrapURL = bootstrapURL.replace("{deviceName}", provisionForm.elements["deviceName"].value);
+                    provisionData = "";
 
                     //Get the bootstrap from the server
                     $.ajax({
@@ -305,7 +307,7 @@
 
                         success: function(bootstrapPayload) {
 
-                            postBootstrapToController(bootstrapForm.elements["ipAddress"].value, bootstrapForm.elements["password"].value, bootstrapPayload);
+                            postProvisioningToController(provisionForm.elements["ipAddress"].value, provisionForm.elements["password"].value, bootstrapPayload);
 
                         },
 
@@ -352,22 +354,24 @@
 
                 };
 
-                function destroyBootstrapData(){
+                function destroyProvisioningData(){
                     /*************************************************
-                    **  Destroys the data on the bootstrap form     **
+                    **  Destroys the data on the provision form     **
                     *************************************************/
 
                     //Get the form inputs
-                    var bootstrapForm = document.bootstrapForm;
+                    var provisionForm = document.provisionForm;
 
                     //For each input
-                    for(var i = 0; i < bootstrapForm.length; i++){
+                    for(var i = 0; i < provisionForm.length; i++){
                         
                         //Clear the data
-                        bootstrapForm[i].value = null;
+                        provisionForm[i].value = null;
                     }
 
                 };
+
+                
 
 
                 function editItem(item){
@@ -462,7 +466,8 @@
                                             + "<td>" + data[i].displayName + "</td>"
                                             + "<td>" + data[i].macAddress + "</td>"
                                             + "<td>" + data[i].ipAddress + "</td>"
-                                            + "<td><button class=\"btn btn-primary\" data-toggle=\"modal\" data-target=\"#modalBootstrap\" data-backdrop=\"static\" id=\"bootstrapButton\" data-displayname=\"" + data[i].displayName + "\" data-devicename=\"" + data[i].macAddress + "\">Bootstrap</button>"
+                                            + "<td><button class=\"btn btn-primary\" data-toggle=\"modal\" data-target=\"#modalProvisioning\" data-backdrop=\"static\" id=\"provisionButton\" data-displayname=\"" + data[i].displayName + "\" data-devicename=\"" + data[i].macAddress + "\">Provision</button>"
+                                                +"<button class=\"btn btn-info\" id=\"bootstrapButton\" onClick=\"bootstrapDevice('" + data[i].macAddress + "');\">Bootstrap</button>"
                                                 +"<button class=\"btn btn-default\" data-toggle=\"modal\" data-target=\"#modalEditItem\" data-backdrop=\"static\" data-operation=\"edit\" data-uniqueid=\"" + data[i].id + "\">Edit</button>"
                                                 + "<button class=\"btn btn-danger\" data-toggle=\"modal\" data-target=\"#modalDeleteItem\" data-backdrop=\"static\" data-displayname=\"" + data[i].displayName + "\"  id=\"deleteButton\" data-uniqueid=\"" + data[i].id + "\">Delete</button>"
                                             + "</td>"
@@ -575,8 +580,8 @@
             </div>
         </div>
 
-        <!-- Bootstrap Modal -->
-        <div class="modal fade" id="modalBootstrap" role="dialog">
+        <!-- Provisioning Modal -->
+        <div class="modal fade" id="modalProvisioning" role="dialog">
             <div class="modal-dialog">
 
                 <!-- Modal content-->
@@ -587,17 +592,17 @@
                     </div>
 
                     <div class="modal-body">
-                    <form name="bootstrapForm">
+                    <form name="provisionForm">
                         <input type="hidden" id="deviceName">
                         <label for="ipAddress">Current IP Address:</label>
                         <input type="text" id="ipAddress" minlength="7" maxlength="15" size="15"><br><br>
-                        <label for="password">Password:</label>
+                        <label for="password">Controller Key:</label>
                         <input type="text" id="password">
                     </form>                    
-                    <div id="bootstrapPrompt"></div></div>
+                    <div id="provisionPrompt"></div></div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                        <button type="submit" class="btn btn-primary" id="buttonBootstrap">Bootstrap</button>
+                        <button type="submit" class="btn btn-primary" id="buttonProvision">Provision</button>
                     </div>
                 </div>
             </div>
