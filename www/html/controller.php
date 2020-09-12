@@ -338,9 +338,13 @@
 
                         error: function(data){
 
-                            console.log(data);
+                            if(data.status == 0){
+                                errMessage = "Unknown Error";
+                            }else{
+                                errMessage = data.statusText + " (" + data.status + ")";
+                            }
                                                         
-                            $.toaster({ priority :'danger', title :'Provisioning Error', message : "Unable to provision."});
+                            $.toaster({ priority :'danger', title :'Provisioning Failed', message : errMessage});
                         },
                     });
 
