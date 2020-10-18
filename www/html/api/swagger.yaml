@@ -737,8 +737,6 @@ paths:
         description: "The device name (MAC Address) of the switch to retrieve"
         required: true
         type: "string"
-      security: 
-        - ApiKeyAuth: [] 
       responses:
         200:
           description: "Success"
@@ -933,8 +931,6 @@ paths:
         description: "The device name (MAC Address) of the controller to retrieve"
         required: true
         type: "string"
-      security: 
-        - ApiKeyAuth: [] 
       responses:
         200:
           description: "Success"

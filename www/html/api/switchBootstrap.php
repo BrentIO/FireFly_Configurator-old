@@ -4,7 +4,8 @@
     require_once('simpleRest.php');
     require_once('database.php');
 
-    $simpleRest = new simpleRest();
+    //Do not require auth for this page
+    $simpleRest = new simpleRest(false);
     $switchBootstrap = new switchBootstrap();
 
     $_GET_lower = array_change_key_case($_GET, CASE_LOWER);
