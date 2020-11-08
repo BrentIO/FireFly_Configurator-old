@@ -83,7 +83,7 @@
                             mqttClient.end();
                         });
 
-                        mqttClient.publish(data.mqtt.topics.client.replaceAll("$DEVICENAME$", deviceName) + "/bootstrap", bootstrapURL, function(){
+                        mqttClient.publish(data.mqtt.topics.client.replaceAll("$DEVICENAME$", deviceName) + "/bootstrap/set", bootstrapURL, function(){
 
                             //Close connection to MQTT
                             mqttClient.end();
