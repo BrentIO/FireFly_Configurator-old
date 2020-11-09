@@ -136,9 +136,90 @@
                     },
 
                 });
-                }
+            }
 
+            function flashFirmware(macAddress, firmwareId){
 
+                deviceName = macAddress.replaceAll(":","");
+
+                //Build the bootstrap URL data, which is necessary to retrieve MQTT credentials
+                var bootstrapURL = "<?php print($bootstrapURL); ?>"
+                bootstrapURL = bootstrapURL.replace("{deviceName}", deviceName);
+
+                //Build the firmwareURLwithId
+                firmwareURLwithId = "<?php print($firmwareURL); ?>/" + firmwareId;
+
+                firmwareBinURL = ""
+
+                $.when(
+
+                    //Get the firmware binary URL from the server
+                    $.ajax({
+
+                        type: 'GET',
+                        url: firmwareURLwithId,
+
+                        beforeSend: function(request) {
+                            request.setRequestHeader("x-api-key", "<?php print(getConfig("x-api-key")); ?>");
+                        },
+
+                        success: function(data) {
+
+                            firmwareBinURL = data.url;
+
+                        },
+
+                        error: function(data){
+                            $.toaster({ priority :'danger', title :'Firmware URL Retrieval Error', message : data['responseJSON']['error']});
+                        },
+
+                    })
+                    
+                ).then(function(){
+
+                    $.ajax({
+
+                    type: 'GET',
+                    url: bootstrapURL,
+
+                    success: function(data) {
+
+                        var options = {
+                            username: data.mqtt.username.replaceAll("$DEVICENAME$", deviceName),
+                            password: data.mqtt.password.replaceAll("$DEVICENAME$", deviceName),
+                            port: 9001,
+                            clientId: 'webclient_' + Math.random().toString(16).substr(2, 8),
+                            clean: true,
+                        }
+
+                        //Connect to MQTT with the device's credentials
+                        var mqttClient = mqtt.connect("ws://" + data.mqtt.serverName + "", options);
+
+                        mqttClient.on('error', function (err) {
+                            $.toaster({ priority :'danger', title :'MQTT Connection', message : err});
+                            mqttClient.end();
+                        });
+
+                        mqttClient.publish(data.mqtt.topics.client.replaceAll("$DEVICENAME$", deviceName) + "/firmware/set", firmwareBinURL, function(){
+
+                            //Close connection to MQTT
+                            mqttClient.end();
+
+                            //Display success message to user
+                            $.toaster({ priority :'success', title :'Firmware Request Sent', message : 'Successful'}); 
+
+                        });
+
+                    },
+
+                    error: function(data){
+                        $.toaster({ priority :'danger', title :'Bootstrap Retrieval Error', message : data['responseJSON']['error']});
+                    },
+
+                    });
+
+                });
+            }
 
             $(document).ready(function(){
 
@@ -595,7 +676,8 @@
                                             + "<td>" + data[i].firmwareVersion + "</td>"
                                             + "<td>" + data[i].controllerDisplayName + " (port " + data[i].controllerPort + ")</td>"
                                             + "<td><button class=\"btn btn-default\" data-toggle=\"modal\" data-target=\"#modalEditItem\" data-backdrop=\"static\" data-operation=\"edit\" data-uniqueid=\"" + data[i].id + "\">Edit</button>"
-                                                +"<button class=\"btn btn-info\" id=\"bootstrapButton\" onClick=\"bootstrapDevice('" + data[i].macAddress + "');\">Bootstrap</button>"
+                                                + "<button class=\"btn btn-info\" id=\"bootstrapButton\" onClick=\"bootstrapDevice('" + data[i].macAddress + "');\">Bootstrap</button>"
+                                                + "<button class=\"btn btn-info\" id=\"flashFirmwareButton\" onClick=\"flashFirmware('" + data[i].macAddress + "','" + data[i].firmwareId + "');\">Flash Firmware</button>"
                                                 + "<button class=\"btn btn-danger\" data-toggle=\"modal\" data-target=\"#modalDeleteItem\" data-backdrop=\"static\" data-displayname=\"" + data[i].displayName + "\" id=\"deleteButton\" data-uniqueid=\"" + data[i].id + "\">Delete</button>"
                                             + "</td>"
                                         +"</tr>"
