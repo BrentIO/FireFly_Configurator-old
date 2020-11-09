@@ -10,6 +10,7 @@
     $url = "http://" . $_SERVER['SERVER_ADDR'] . "/api/switch";
     $controllerURL = "http://" . $_SERVER['SERVER_ADDR'] . "/api/controller";
     $firmwareURL = "http://" . $_SERVER['SERVER_ADDR'] . "/api/firmware";
+    $bootstrapURL = "http://" . $_SERVER['SERVER_ADDR'] . "/api/switch/{deviceName}/bootstrap";
 
 ?>
 <!DOCTYPE html>
@@ -21,6 +22,7 @@
         <script src="jquery.min.js"></script>
         <script src="bootstrap.min.js"></script>
         <script src="jquery.toaster.js"></script>
+        <script src="mqtt.min.js" type="text/javascript"></script>
         <script>
 
             function controllerChanged(){
@@ -81,6 +83,60 @@
                     document.getElementById('mqttPasswordLabel').style.visibility = 'visible';
                 }
             }
+
+            function bootstrapDevice(macAddress){
+
+                deviceName = macAddress.replaceAll(":","");
+
+                //Get the bootstrap data
+                var bootstrapURL = "<?php print($bootstrapURL); ?>"
+                bootstrapURL = bootstrapURL.replace("{deviceName}", deviceName);
+                provisionData = "";
+
+                //Get the bootstrap from the server
+                $.ajax({
+
+                    type: 'GET',
+                    url: bootstrapURL,
+
+                    success: function(data) {
+
+                        var options = {
+                            username: data.mqtt.username.replaceAll("$DEVICENAME$", deviceName),
+                            password: data.mqtt.password.replaceAll("$DEVICENAME$", deviceName),
+                            port: 9001,
+                            clientId: 'webclient_' + Math.random().toString(16).substr(2, 8),
+                            clean: true,
+                        }
+
+                        //Connect to MQTT with the device's credentials
+                        var mqttClient = mqtt.connect("ws://" + data.mqtt.serverName + "", options);
+
+                        mqttClient.on('error', function (err) {
+                            $.toaster({ priority :'danger', title :'MQTT Connection', message : err});
+                            mqttClient.end();
+                        });
+
+                        mqttClient.publish(data.mqtt.topics.client.replaceAll("$DEVICENAME$", deviceName) + "/bootstrap/set", bootstrapURL, function(){
+
+                            //Close connection to MQTT
+                            mqttClient.end();
+
+                            //Display success message to user
+                            $.toaster({ priority :'success', title :'Bootstrap Request Sent', message : 'Successful'}); 
+
+                        });
+
+
+
+                    },
+
+                    error: function(data){
+                        $.toaster({ priority :'danger', title :'Retrieval Error', message : data['responseJSON']['error']});
+                    },
+
+                });
+                }
 
 
 
@@ -539,6 +595,7 @@
                                             + "<td>" + data[i].firmwareVersion + "</td>"
                                             + "<td>" + data[i].controllerDisplayName + " (port " + data[i].controllerPort + ")</td>"
                                             + "<td><button class=\"btn btn-default\" data-toggle=\"modal\" data-target=\"#modalEditItem\" data-backdrop=\"static\" data-operation=\"edit\" data-uniqueid=\"" + data[i].id + "\">Edit</button>"
+                                                +"<button class=\"btn btn-info\" id=\"bootstrapButton\" onClick=\"bootstrapDevice('" + data[i].macAddress + "');\">Bootstrap</button>"
                                                 + "<button class=\"btn btn-danger\" data-toggle=\"modal\" data-target=\"#modalDeleteItem\" data-backdrop=\"static\" data-displayname=\"" + data[i].displayName + "\" id=\"deleteButton\" data-uniqueid=\"" + data[i].id + "\">Delete</button>"
                                             + "</td>"
                                         +"</tr>"
