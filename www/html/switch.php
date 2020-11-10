@@ -677,7 +677,7 @@
                                             + "<td>" + data[i].controllerDisplayName + " (port " + data[i].controllerPort + ")</td>"
                                             + "<td><button class=\"btn btn-default\" data-toggle=\"modal\" data-target=\"#modalEditItem\" data-backdrop=\"static\" data-operation=\"edit\" data-uniqueid=\"" + data[i].id + "\">Edit</button>"
                                                 + "<button class=\"btn btn-info\" id=\"bootstrapButton\" onClick=\"bootstrapDevice('" + data[i].macAddress + "');\">Bootstrap</button>"
-                                                + "<button class=\"btn btn-info\" id=\"flashFirmwareButton\" onClick=\"flashFirmware('" + data[i].macAddress + "','" + data[i].firmwareId + "');\">Flash Firmware</button>"
+                                                + "<button class=\"btn btn-warning\" id=\"flashFirmwareButton\" onClick=\"flashFirmware('" + data[i].macAddress + "','" + data[i].firmwareId + "');\">Flash Firmware</button>"
                                                 + "<button class=\"btn btn-danger\" data-toggle=\"modal\" data-target=\"#modalDeleteItem\" data-backdrop=\"static\" data-displayname=\"" + data[i].displayName + "\" id=\"deleteButton\" data-uniqueid=\"" + data[i].id + "\">Delete</button>"
                                             + "</td>"
                                         +"</tr>"
