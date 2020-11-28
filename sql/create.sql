@@ -241,6 +241,19 @@ ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_0900_ai_ci;
 
+
+-- -----------------------------------------------------
+-- Table `firefly`.`reservedPorts`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `firefly`.`reservedPorts` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `switchId` INT NOT NULL,
+  `port` INT NOT NULL,
+  PRIMARY KEY (`id`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_0900_ai_ci;
+
 USE `firefly` ;
 
 -- -----------------------------------------------------
@@ -738,6 +751,8 @@ IF actionsCount > 0 THEN
 	SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'One or more actions are using this input.';
 
 END IF;
+
+CALL manageReservedPort((SELECT switchId FROM inputs WHERE id = _id), _id, 'DELETE');
 
 DELETE FROM inputs where id = _id;
 
@@ -1651,6 +1666,120 @@ END$$
 DELIMITER ;
 
 -- -----------------------------------------------------
+-- procedure manageReservedPort
+-- -----------------------------------------------------
+
+DELIMITER $$
+USE `firefly`$$
+CREATE PROCEDURE `manageReservedPort`(
+IN _switchIdDestination INT,
+IN _inputId INT,
+IN _method ENUM('EDIT','DELETE')
+)
+BEGIN
+
+DECLARE _switchIdCurrent_ INT;
+DECLARE _inputCountCurrent_ INT;
+DECLARE _inputCountDestination_ INT;
+DECLARE _controllerId_ INT;
+
+#Get the current switch this input is connected to
+SELECT switchId
+	INTO _switchIdCurrent_
+    FROM inputs
+    WHERE id = _inputId;
+    
+#Get the number of input counts on the current switch
+SELECT 
+	COUNT(inputs.id)
+INTO _inputCountCurrent_ FROM
+	switches
+		INNER JOIN
+	inputs ON inputs.switchId = switches.Id
+WHERE
+	switches.id = _switchIdCurrent_
+GROUP BY switches.Id;
+
+#Get the number of input counts on the destination switch
+SELECT 
+	COUNT(inputs.id)
+INTO _inputCountDestination_ FROM
+	switches
+		INNER JOIN
+	inputs ON inputs.switchId = switches.Id
+WHERE
+	switches.id = _switchIdDestination
+GROUP BY switches.Id;
+
+IF _inputCountCurrent_ IS NULL THEN
+
+	SET _inputCountCurrent_ = 0;
+
+END IF;
+
+IF _inputCountDestination_ IS NULL THEN
+
+	SET _inputCountDestination_ = 0;
+
+END IF;
+
+#Handle Editing
+IF _method = 'EDIT' THEN
+
+	#If the _inputId passed is NULL then increment the destination by 1
+	IF _inputId IS NULL THEN
+		SET _inputCountDestination_ = _inputCountDestination_ + 1;
+	END IF;
+
+	#See if the current and destinations are the same
+	IF _switchIdCurrent_ != _switchIdDestination THEN
+		
+		#The origin and destination are not the same, subtract 1 from the current count and add 1 to the destination
+		SET _inputCountCurrent_ = _inputCountCurrent_ - 1;
+        SET _inputCountDestination_ = _inputCountDestination_ + 1;
+
+	END IF;
+
+	#See if we need to release a reservation when we move the input from one switch to the other
+	IF _inputCountCurrent_ < 5 THEN
+
+		#Delete any existing reservations
+		DELETE FROM reservedPorts WHERE switchId = _switchIdCurrent_;
+
+	END IF;
+
+	#See if the destination needs a port reservation
+	IF _inputCountDestination_ > 4 THEN
+
+		#Reservation required     
+		INSERT INTO reservedPorts (
+			switchId,
+			port)
+		SELECT _switchIdDestination, getNextPort((SELECT controllerId FROM switches WHERE switches.id = _switchIdDestination), 'INPUT')
+        WHERE NOT EXISTS(SELECT id FROM reservedPorts WHERE switchId = _switchIdDestination);
+ 
+	END IF;
+
+END IF;
+
+IF _method = 'DELETE' THEN
+
+	SET _inputCountCurrent_ = _inputCountCurrent_ - 1;
+    
+    IF _inputCountCurrent_ < 5 THEN
+    
+    #Delete the reservation if it exists
+    DELETE FROM reservedPorts WHERE switchId = _switchIdDestination;    
+    
+    END IF;
+
+END IF;
+
+END$$
+
+DELIMITER ;
+
+-- -----------------------------------------------------
 -- function getMQTTPassword
 -- -----------------------------------------------------
 
@@ -2197,7 +2326,7 @@ CREATE  OR REPLACE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `firefly`.`getC
 DROP TABLE IF EXISTS `firefly`.`getControllerPortsUsed`;
 DROP VIEW IF EXISTS `firefly`.`getControllerPortsUsed` ;
 USE `firefly`;
-CREATE  OR REPLACE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `firefly`.`getControllerPortsUsed` AS select `usedPorts`.`controllerId` AS `controllerId`,`usedPorts`.`id` AS `id`,`usedPorts`.`port` AS `port`,`usedPorts`.`portType` AS `portType`,json_object('controllerId',`usedPorts`.`controllerId`,'id',`usedPorts`.`id`,'port',`usedPorts`.`port`,'portType',`usedPorts`.`portType`) AS `json` from (select `firefly`.`switches`.`controllerId` AS `controllerId`,`firefly`.`switches`.`id` AS `id`,`firefly`.`switches`.`port` AS `port`,'INPUT' AS `portType` from `firefly`.`switches` union select `firefly`.`outputs`.`controllerId` AS `controllerId`,`firefly`.`outputs`.`id` AS `id`,`firefly`.`outputs`.`port` AS `port`,'OUTPUT' AS `portType` from `firefly`.`outputs`) `usedPorts`;
+CREATE  OR REPLACE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `firefly`.`getControllerPortsUsed` AS select `usedPorts`.`controllerId` AS `controllerId`,`usedPorts`.`id` AS `id`,`usedPorts`.`port` AS `port`,`usedPorts`.`portType` AS `portType`,json_object('controllerId',`usedPorts`.`controllerId`,'id',`usedPorts`.`id`,'port',`usedPorts`.`port`,'portType',`usedPorts`.`portType`) AS `json` from (select `firefly`.`switches`.`controllerId` AS `controllerId`,`firefly`.`switches`.`id` AS `id`,`firefly`.`switches`.`port` AS `port`,'INPUT' AS `portType` from `firefly`.`switches` union select `firefly`.`outputs`.`controllerId` AS `controllerId`,`firefly`.`outputs`.`id` AS `id`,`firefly`.`outputs`.`port` AS `port`,'OUTPUT' AS `portType` from `firefly`.`outputs` union select `firefly`.`switches`.`controllerId` AS `controllerId`,`firefly`.`switches`.`id` AS `id`,`firefly`.`reservedPorts`.`port` AS `port`,'RESERVED' AS `portType` from (`firefly`.`switches` join `firefly`.`reservedPorts` on((`firefly`.`reservedPorts`.`switchId` = `firefly`.`switches`.`id`)))) `usedPorts`;
 
 -- -----------------------------------------------------
 -- View `firefly`.`getControllers`
