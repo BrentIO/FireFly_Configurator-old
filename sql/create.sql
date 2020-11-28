@@ -735,8 +735,6 @@ USE `firefly`$$
 CREATE PROCEDURE `deleteInput`(IN _id int)
 BEGIN
 
-
-
 DECLARE actionsCount int;
 
 SELECT 
@@ -2020,7 +2018,7 @@ END IF;
 
 IF returnValue is null THEN
 
-	SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'No ports available.';
+	SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'No controller ports available.';
 
 END IF;
 
